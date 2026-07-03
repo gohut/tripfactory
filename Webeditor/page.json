@@ -1,0 +1,1031 @@
+{
+  "pageName": "home",
+  "elements": [
+    {
+      "id": "image_mr30j74b",
+      "type": "image",
+      "src": "./asset/bg.png",
+      "layouts": {
+        "desktop": {
+          "x": -367,
+          "y": 2,
+          "w": 1533,
+          "h": 2868,
+          "styles": {},
+          "animation": "none",
+          "advAnim": {
+            "enabled": false,
+            "type": "loop",
+            "speed": 1.5,
+            "delay": 0,
+            "frames": [
+              {
+                "x": -366,
+                "y": 4,
+                "w": 1533,
+                "h": 2868,
+                "opacity": 1,
+                "scale": 1
+              },
+              {
+                "x": -366,
+                "y": 24,
+                "w": 1533,
+                "h": 2868,
+                "opacity": 1,
+                "scale": 1
+              }
+            ],
+            "animateOnAppear": false,
+            "smooth": false
+          }
+        },
+        "mobile": {
+          "x": 40,
+          "y": 40,
+          "w": 200,
+          "h": 80,
+          "styles": {},
+          "animation": "none"
+        }
+      }
+    },
+    {
+      "id": "image_mr30j74a",
+      "type": "image",
+      "src": "./asset/ref.jpg",
+      "layouts": {
+        "desktop": {
+          "x": 252,
+          "y": 1018,
+          "w": 313,
+          "h": 577,
+          "styles": {},
+          "animation": "none"
+        },
+        "mobile": {
+          "x": 40,
+          "y": 40,
+          "w": 200,
+          "h": 80,
+          "styles": {},
+          "animation": "none"
+        }
+      }
+    },
+    {
+      "id": "container_mr30j74c",
+      "type": "container",
+      "layouts": {
+        "desktop": {
+          "x": -381,
+          "y": 1281,
+          "w": 1570,
+          "h": 1043,
+          "styles": {
+            "background": "#f4ece1",
+            "borderRadius": "8px"
+          },
+          "animation": "none",
+          "children": []
+        },
+        "mobile": {
+          "x": 40,
+          "y": 40,
+          "w": 200,
+          "h": 80,
+          "styles": {
+            "background": "#1f2937",
+            "borderRadius": "8px"
+          },
+          "animation": "none",
+          "children": []
+        }
+      },
+      "shape": "circle"
+    },
+    {
+      "id": "container_mr30j74d",
+      "type": "container",
+      "layouts": {
+        "desktop": {
+          "x": -392,
+          "y": 1780,
+          "w": 1590,
+          "h": 1390,
+          "styles": {
+            "background": "#f4ece1",
+            "borderRadius": "8px",
+            "opacity": 1
+          },
+          "animation": "none",
+          "children": [],
+          "advAnim": {
+            "enabled": true
+          },
+          "animScale": 1
+        },
+        "mobile": {
+          "x": 40,
+          "y": 40,
+          "w": 200,
+          "h": 80,
+          "styles": {
+            "background": "#1f2937",
+            "borderRadius": "8px"
+          },
+          "animation": "none",
+          "children": []
+        }
+      }
+    },
+    {
+      "id": "text_mr30j74e",
+      "type": "text",
+      "content": "Wedding",
+      "layouts": {
+        "desktop": {
+          "x": -86,
+          "y": 228,
+          "w": 935,
+          "h": 391,
+          "styles": {
+            "fontSize": "159px",
+            "color": "#ffffff",
+            "fontFamily": "system-ui, sans-serif"
+          },
+          "animation": "fadeIn",
+          "borderCfg": {
+            "enabled": false,
+            "style": "solid",
+            "width": 1,
+            "color": "#000000",
+            "opacity": 1
+          },
+          "shadowCfg": {
+            "enabled": true,
+            "color": "#000000",
+            "intensity": 100
+          },
+          "animDuration": 2.6
+        },
+        "mobile": {
+          "x": 40,
+          "y": 40,
+          "w": 200,
+          "h": 80,
+          "styles": {
+            "fontSize": "16px",
+            "color": "#e4e4e7",
+            "fontFamily": "system-ui, sans-serif"
+          },
+          "animation": "none"
+        }
+      },
+      "fontFilePath": "./asset/Elementary_Gothic_Bookhand.ttf"
+    },
+    {
+      "id": "text_mr30j74f",
+      "type": "text",
+      "content": "Day",
+      "layouts": {
+        "desktop": {
+          "x": 184,
+          "y": 478,
+          "w": 463,
+          "h": 394,
+          "styles": {
+            "fontSize": "159px",
+            "color": "#ffffff",
+            "fontFamily": "system-ui, sans-serif"
+          },
+          "animation": "fadeIn",
+          "borderCfg": {
+            "enabled": false,
+            "style": "solid",
+            "width": 1,
+            "color": "#000000",
+            "opacity": 1
+          },
+          "shadowCfg": {
+            "enabled": true,
+            "color": "#000000",
+            "intensity": 50
+          },
+          "parent": null,
+          "animDuration": 2.6
+        },
+        "mobile": {
+          "x": 64,
+          "y": 64,
+          "w": 200,
+          "h": 80,
+          "styles": {
+            "fontSize": "16px",
+            "color": "#e4e4e7",
+            "fontFamily": "system-ui, sans-serif"
+          },
+          "animation": "none",
+          "parent": null
+        }
+      },
+      "fontFilePath": "./asset/Elementary_Gothic_Bookhand.ttf"
+    },
+    {
+      "id": "text_mr30j74g",
+      "type": "text",
+      "content": "Meera",
+      "layouts": {
+        "desktop": {
+          "x": -71,
+          "y": 1419,
+          "w": 442,
+          "h": 221,
+          "styles": {
+            "fontSize": "95px",
+            "color": "#38563c",
+            "fontFamily": "system-ui, sans-serif"
+          },
+          "animation": "none",
+          "borderCfg": {
+            "enabled": false,
+            "style": "solid",
+            "width": 1,
+            "color": "#000000",
+            "opacity": 1
+          },
+          "shadowCfg": {
+            "enabled": false,
+            "color": "#000000",
+            "intensity": 50
+          },
+          "parent": null
+        },
+        "mobile": {
+          "x": 88,
+          "y": 88,
+          "w": 200,
+          "h": 80,
+          "styles": {
+            "fontSize": "16px",
+            "color": "#e4e4e7",
+            "fontFamily": "system-ui, sans-serif"
+          },
+          "animation": "none",
+          "parent": null
+        }
+      },
+      "fontFilePath": "./asset/Elementary_Gothic_Bookhand.ttf"
+    },
+    {
+      "id": "text_mr30j74h",
+      "type": "text",
+      "content": "&",
+      "layouts": {
+        "desktop": {
+          "x": 313,
+          "y": 1404,
+          "w": 164,
+          "h": 67,
+          "styles": {
+            "fontSize": "108px",
+            "color": "#729d77",
+            "fontFamily": "system-ui, sans-serif",
+            "background": "#f4ece1"
+          },
+          "animation": "none",
+          "borderCfg": {
+            "enabled": false,
+            "style": "solid",
+            "width": 1,
+            "color": "#000000",
+            "opacity": 1
+          },
+          "shadowCfg": {
+            "enabled": false,
+            "color": "#000000",
+            "intensity": 50
+          },
+          "parent": null,
+          "advAnim": {
+            "enabled": false,
+            "type": "loop",
+            "speed": 1.5,
+            "delay": 0,
+            "frames": [
+              {
+                "x": 313,
+                "y": 1404,
+                "w": 182,
+                "h": 211,
+                "opacity": 1,
+                "scale": 1
+              },
+              {
+                "x": 313,
+                "y": 1424,
+                "w": 182,
+                "h": 211,
+                "opacity": 1,
+                "scale": 1
+              }
+            ],
+            "animateOnAppear": false,
+            "smooth": false
+          }
+        },
+        "mobile": {
+          "x": 112,
+          "y": 112,
+          "w": 200,
+          "h": 80,
+          "styles": {
+            "fontSize": "16px",
+            "color": "#e4e4e7",
+            "fontFamily": "system-ui, sans-serif"
+          },
+          "animation": "none",
+          "parent": null
+        }
+      },
+      "fontFilePath": "./asset/Elementary_Gothic_Bookhand.ttf"
+    },
+    {
+      "id": "text_mr31kkvb",
+      "type": "text",
+      "content": "Nelson",
+      "layouts": {
+        "desktop": {
+          "x": 496,
+          "y": 1414,
+          "w": 442,
+          "h": 221,
+          "styles": {
+            "fontSize": "95px",
+            "color": "#38563c",
+            "fontFamily": "system-ui, sans-serif"
+          },
+          "animation": "none",
+          "borderCfg": {
+            "enabled": false,
+            "style": "solid",
+            "width": 1,
+            "color": "#000000",
+            "opacity": 1
+          },
+          "shadowCfg": {
+            "enabled": false,
+            "color": "#000000",
+            "intensity": 50
+          },
+          "parent": null
+        },
+        "mobile": {
+          "x": 112,
+          "y": 112,
+          "w": 200,
+          "h": 80,
+          "styles": {
+            "fontSize": "16px",
+            "color": "#e4e4e7",
+            "fontFamily": "system-ui, sans-serif"
+          },
+          "animation": "none",
+          "parent": null
+        }
+      },
+      "fontFilePath": "./asset/Elementary_Gothic_Bookhand.ttf"
+    },
+    {
+      "id": "text_mr39br1i",
+      "type": "text",
+      "content": "12.12.2012",
+      "layouts": {
+        "desktop": {
+          "x": 130,
+          "y": 1633,
+          "w": 519,
+          "h": 108,
+          "styles": {
+            "fontSize": "50px",
+            "color": "#38563c",
+            "fontFamily": "system-ui, sans-serif"
+          },
+          "animation": "none",
+          "borderCfg": {
+            "enabled": false,
+            "style": "solid",
+            "width": 1,
+            "color": "#000000",
+            "opacity": 1
+          },
+          "shadowCfg": {
+            "enabled": false,
+            "color": "#000000",
+            "intensity": 50
+          },
+          "parent": null
+        },
+        "mobile": {
+          "x": 136,
+          "y": 136,
+          "w": 200,
+          "h": 80,
+          "styles": {
+            "fontSize": "16px",
+            "color": "#e4e4e7",
+            "fontFamily": "system-ui, sans-serif"
+          },
+          "animation": "none",
+          "parent": null
+        }
+      },
+      "fontFilePath": "./asset/Elementary_Gothic_Bookhand.ttf"
+    },
+    {
+      "id": "container_mr39br1n",
+      "type": "container",
+      "layouts": {
+        "desktop": {
+          "x": -168,
+          "y": 1838,
+          "w": 1164,
+          "h": 295,
+          "styles": {
+            "background": "rgba(0,0,0,0)",
+            "borderRadius": "8px",
+            "opacity": 1
+          },
+          "animation": "none",
+          "children": [
+            "text_mr39br1l",
+            "text_mr39br1m",
+            "text_mr39br1j"
+          ]
+        },
+        "mobile": {
+          "x": 40,
+          "y": 40,
+          "w": 200,
+          "h": 80,
+          "styles": {
+            "background": "#1f2937",
+            "borderRadius": "8px"
+          },
+          "animation": "none",
+          "children": []
+        }
+      }
+    },
+    {
+      "id": "text_mr39br1j",
+      "type": "text",
+      "content": "With great joy, we invite you",
+      "layouts": {
+        "desktop": {
+          "x": 30,
+          "y": 1865,
+          "w": 933,
+          "h": 120,
+          "styles": {
+            "fontSize": "40px",
+            "color": "#38563c",
+            "fontFamily": "system-ui, sans-serif",
+            "opacity": -1.3
+          },
+          "animation": "none",
+          "borderCfg": {
+            "enabled": false,
+            "style": "solid",
+            "width": 1,
+            "color": "#000000",
+            "opacity": 1
+          },
+          "shadowCfg": {
+            "enabled": false,
+            "color": "#000000",
+            "intensity": 50
+          },
+          "advAnim": {
+            "enabled": true,
+            "type": "once",
+            "speed": 1.5,
+            "delay": 0,
+            "frames": [
+              {
+                "x": -12,
+                "y": 1858,
+                "w": 933,
+                "h": 120,
+                "opacity": -1.3,
+                "scale": 1
+              },
+              {
+                "x": -12,
+                "y": 1884,
+                "w": 933,
+                "h": 120,
+                "opacity": 1,
+                "scale": 1
+              }
+            ],
+            "animateOnAppear": true
+          },
+          "animScale": 1
+        },
+        "mobile": {
+          "x": 160,
+          "y": 160,
+          "w": 200,
+          "h": 80,
+          "styles": {
+            "fontSize": "16px",
+            "color": "#e4e4e7",
+            "fontFamily": "system-ui, sans-serif"
+          },
+          "animation": "none",
+          "parent": null
+        }
+      },
+      "fontFilePath": "./asset/Elementary_Gothic_Bookhand.ttf"
+    },
+    {
+      "id": "text_mr39br1m",
+      "type": "text",
+      "content": "OUR WEDDING!",
+      "layouts": {
+        "desktop": {
+          "x": 178,
+          "y": 2022,
+          "w": 933,
+          "h": 120,
+          "styles": {
+            "fontSize": "37px",
+            "color": "#38563c",
+            "fontFamily": "system-ui, sans-serif",
+            "opacity": 1.75
+          },
+          "animation": "none",
+          "borderCfg": {
+            "enabled": false,
+            "style": "solid",
+            "width": 1,
+            "color": "#000000",
+            "opacity": 1
+          },
+          "shadowCfg": {
+            "enabled": false,
+            "color": "#000000",
+            "intensity": 50
+          },
+          "advAnim": {
+            "enabled": true,
+            "type": "once",
+            "speed": 1.5,
+            "delay": 0,
+            "frames": [
+              {
+                "x": 178,
+                "y": 2022,
+                "w": 933,
+                "h": 120,
+                "opacity": -1.45,
+                "scale": 1
+              },
+              {
+                "x": 178,
+                "y": 2022,
+                "w": 933,
+                "h": 120,
+                "opacity": 1.75,
+                "scale": 1
+              }
+            ],
+            "animateOnAppear": true
+          },
+          "animScale": 1
+        },
+        "mobile": {
+          "x": 208,
+          "y": 208,
+          "w": 200,
+          "h": 80,
+          "styles": {
+            "fontSize": "16px",
+            "color": "#e4e4e7",
+            "fontFamily": "system-ui, sans-serif"
+          },
+          "animation": "none",
+          "parent": null
+        }
+      },
+      "fontFilePath": "./asset/Elementary_Gothic_Bookhand.ttf"
+    },
+    {
+      "id": "text_mr39br1l",
+      "type": "text",
+      "content": "to celebrate the beginning of our new journey —",
+      "layouts": {
+        "desktop": {
+          "x": -46,
+          "y": 1943,
+          "w": 2124,
+          "h": 74,
+          "styles": {
+            "fontSize": "35px",
+            "color": "#38563c",
+            "fontFamily": "system-ui, sans-serif",
+            "opacity": 1.05
+          },
+          "animation": "none",
+          "borderCfg": {
+            "enabled": false,
+            "style": "solid",
+            "width": 1,
+            "color": "#000000",
+            "opacity": 1
+          },
+          "shadowCfg": {
+            "enabled": false,
+            "color": "#000000",
+            "intensity": 50
+          },
+          "advAnim": {
+            "enabled": true,
+            "type": "once",
+            "speed": 1.5,
+            "delay": 0,
+            "frames": [
+              {
+                "x": -191,
+                "y": 1951,
+                "w": 1826,
+                "h": 81,
+                "opacity": -4.75,
+                "scale": 1
+              },
+              {
+                "x": -186,
+                "y": 1946,
+                "w": 2124,
+                "h": 74,
+                "opacity": 1.05,
+                "scale": 1
+              }
+            ],
+            "animateOnAppear": true
+          },
+          "animScale": 1
+        },
+        "mobile": {
+          "x": 184,
+          "y": 184,
+          "w": 200,
+          "h": 80,
+          "styles": {
+            "fontSize": "16px",
+            "color": "#e4e4e7",
+            "fontFamily": "system-ui, sans-serif"
+          },
+          "animation": "none",
+          "parent": null
+        }
+      },
+      "fontFilePath": "./asset/Elementary_Gothic_Bookhand.ttf"
+    },
+    {
+      "id": "image_mr3c9995",
+      "type": "image",
+      "src": "./asset/side.png",
+      "layouts": {
+        "desktop": {
+          "x": -595,
+          "y": 1528,
+          "w": 396,
+          "h": 445,
+          "styles": {
+            "opacity": 1
+          },
+          "animation": "none",
+          "advAnim": {
+            "enabled": true,
+            "type": "once",
+            "speed": 1.5,
+            "delay": 0,
+            "frames": [
+              {
+                "x": -595,
+                "y": 1528,
+                "w": 396,
+                "h": 445,
+                "opacity": 1,
+                "scale": 1
+              },
+              {
+                "x": -392,
+                "y": 1618,
+                "w": 396,
+                "h": 445,
+                "opacity": 1,
+                "scale": 1
+              }
+            ],
+            "animateOnAppear": true
+          },
+          "rotation": -7,
+          "animScale": 1
+        },
+        "mobile": {
+          "x": 40,
+          "y": 40,
+          "w": 200,
+          "h": 80,
+          "styles": {},
+          "animation": "none"
+        }
+      }
+    },
+    {
+      "id": "text_mr3cr5tw",
+      "type": "text",
+      "content": "It would mean the world to us to have you with us on this special day. Your presence, love, blessings, and support will make our celebration truly unforgettable.",
+      "layouts": {
+        "desktop": {
+          "x": -133,
+          "y": 2242,
+          "w": 1052,
+          "h": 87,
+          "styles": {
+            "fontSize": "31px",
+            "color": "#38563c",
+            "fontFamily": "system-ui, sans-serif",
+            "opacity": 0
+          },
+          "animation": "none",
+          "borderCfg": {
+            "enabled": false,
+            "style": "solid",
+            "width": 1,
+            "color": "#000000",
+            "opacity": 1
+          },
+          "shadowCfg": {
+            "enabled": false,
+            "color": "#000000",
+            "intensity": 50
+          },
+          "advAnim": {
+            "enabled": true,
+            "type": "once",
+            "speed": 1.5,
+            "delay": 0,
+            "frames": [
+              {
+                "x": -133,
+                "y": 2242,
+                "w": 1052,
+                "h": 87,
+                "opacity": 0,
+                "scale": 1
+              },
+              {
+                "x": -133,
+                "y": 2242,
+                "w": 1052,
+                "h": 87,
+                "opacity": 1.05,
+                "scale": 1
+              }
+            ],
+            "animateOnAppear": true
+          },
+          "animScale": 1,
+          "parent": null
+        },
+        "mobile": {
+          "x": 208,
+          "y": 208,
+          "w": 200,
+          "h": 80,
+          "styles": {
+            "fontSize": "16px",
+            "color": "#e4e4e7",
+            "fontFamily": "system-ui, sans-serif"
+          },
+          "animation": "none",
+          "parent": null
+        }
+      },
+      "fontFilePath": "./asset/Elementary_Gothic_Bookhand.ttf"
+    },
+    {
+      "id": "text_mr3cyc14",
+      "type": "text",
+      "content": "The wedding ceremony will take place on 18 July at 2:00 PM",
+      "layouts": {
+        "desktop": {
+          "x": 46,
+          "y": 2603,
+          "w": 752,
+          "h": 90,
+          "styles": {
+            "fontSize": "33px",
+            "color": "#38563c",
+            "fontFamily": "system-ui, sans-serif",
+            "opacity": 0
+          },
+          "animation": "none",
+          "borderCfg": {
+            "enabled": false,
+            "style": "solid",
+            "width": 1,
+            "color": "#000000",
+            "opacity": 1
+          },
+          "shadowCfg": {
+            "enabled": false,
+            "color": "#000000",
+            "intensity": 50
+          },
+          "advAnim": {
+            "enabled": true,
+            "type": "once",
+            "speed": 1.5,
+            "delay": 0,
+            "frames": [
+              {
+                "x": 46,
+                "y": 2603,
+                "w": 752,
+                "h": 90,
+                "opacity": 0,
+                "scale": 1
+              },
+              {
+                "x": 46,
+                "y": 2603,
+                "w": 752,
+                "h": 90,
+                "opacity": 1.05,
+                "scale": 1
+              }
+            ],
+            "animateOnAppear": true
+          },
+          "animScale": 1,
+          "parent": null,
+          "rotation": 0
+        },
+        "mobile": {
+          "x": 232,
+          "y": 232,
+          "w": 200,
+          "h": 80,
+          "styles": {
+            "fontSize": "16px",
+            "color": "#e4e4e7",
+            "fontFamily": "system-ui, sans-serif"
+          },
+          "animation": "none",
+          "parent": null
+        }
+      },
+      "fontFilePath": "./asset/Elementary_Gothic_Bookhand.ttf"
+    },
+    {
+      "id": "text_mr3cyc15",
+      "type": "text",
+      "content": "Venue: The Lake House 7 Naberezhnaya Street, Perm, Russia",
+      "layouts": {
+        "desktop": {
+          "x": 199,
+          "y": 2846,
+          "w": 436,
+          "h": 88,
+          "styles": {
+            "fontSize": "26px",
+            "color": "#38563c",
+            "fontFamily": "system-ui, sans-serif",
+            "opacity": 1
+          },
+          "animation": "none",
+          "borderCfg": {
+            "enabled": false,
+            "style": "solid",
+            "width": 1,
+            "color": "#000000",
+            "opacity": 1
+          },
+          "shadowCfg": {
+            "enabled": false,
+            "color": "#000000",
+            "intensity": 50
+          },
+          "advAnim": {
+            "enabled": true,
+            "type": "once",
+            "speed": 1.5,
+            "delay": 0,
+            "frames": [
+              {
+                "x": 199,
+                "y": 2846,
+                "w": 436,
+                "h": 88,
+                "opacity": 0,
+                "scale": 1
+              },
+              {
+                "x": 199,
+                "y": 2846,
+                "w": 436,
+                "h": 88,
+                "opacity": 1,
+                "scale": 1
+              }
+            ],
+            "animateOnAppear": true
+          },
+          "animScale": 1,
+          "parent": null,
+          "rotation": 0
+        },
+        "mobile": {
+          "x": 256,
+          "y": 256,
+          "w": 200,
+          "h": 80,
+          "styles": {
+            "fontSize": "16px",
+            "color": "#e4e4e7",
+            "fontFamily": "system-ui, sans-serif"
+          },
+          "animation": "none",
+          "parent": null
+        }
+      },
+      "fontFilePath": "./asset/Elementary_Gothic_Bookhand.ttf"
+    },
+    {
+      "id": "image_mr3d4s8z",
+      "type": "image",
+      "src": "./asset/side2.png",
+      "layouts": {
+        "desktop": {
+          "x": 993,
+          "y": 2676,
+          "w": 338,
+          "h": 330,
+          "styles": {
+            "opacity": 1
+          },
+          "animation": "none",
+          "rotation": 15,
+          "advAnim": {
+            "enabled": true,
+            "type": "once",
+            "speed": 1.5,
+            "delay": 0,
+            "frames": [
+              {
+                "x": 993,
+                "y": 2676,
+                "w": 338,
+                "h": 330,
+                "opacity": 1,
+                "scale": 1
+              },
+              {
+                "x": 795,
+                "y": 2542,
+                "w": 338,
+                "h": 330,
+                "opacity": 1,
+                "scale": 1
+              }
+            ],
+            "animateOnAppear": true
+          },
+          "animScale": 1
+        },
+        "mobile": {
+          "x": 40,
+          "y": 40,
+          "w": 200,
+          "h": 80,
+          "styles": {},
+          "animation": "none"
+        }
+      }
+    }
+  ],
+  "canvasHeight": 3410,
+  "locations": [
+    {
+      "id": "loc_mr0edof2",
+      "name": "Location 1",
+      "y": 656
+    }
+  ],
+  "bgColor": "#4e4e50"
+}
