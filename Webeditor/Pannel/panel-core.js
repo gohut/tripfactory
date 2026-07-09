@@ -57,6 +57,11 @@ function initPanel() {
         <input class="color-hex" id="color-page-bg-hex" type="text" maxlength="400" placeholder="#f0f0f5, rgba(), or gradient()" style="max-width:150px;" />
       </div>
     </div>
+    <div class="panel-header-meta" id="ph-font-row" style="gap:8px;flex-wrap:nowrap;align-items:center;margin-top:8px;">
+      <span class="ph-sub" style="flex-shrink:0;" title="Sets the .ttf/.otf font for every text-capable element at once">Base Font</span>
+      <input class="color-hex" id="ph-global-font" type="text" maxlength="300" placeholder="./asset/Poppins-Black.ttf" style="flex:1;" />
+      <button type="button" id="ph-global-font-apply" class="panel-icon-btn" title="Apply to every text element" style="flex-shrink:0;font-size:13px;">↻</button>
+    </div>
     <div id="ph-new-page-popup" style="display:none;position:absolute;right:12px;top:88px;z-index:10010;background:var(--ed-surface);border:1px solid var(--ed-border);border-radius:var(--ed-radius);padding:12px;box-shadow:0 8px 24px rgba(0,0,0,0.5);min-width:200px;">
       <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--ed-text-faint);margin-bottom:8px;">New Page Name</div>
       <input id="ph-new-page-name" type="text" class="pinput" placeholder="e.g. about" style="width:100%;margin-bottom:8px;" />
@@ -301,6 +306,7 @@ function initPanel() {
     syncHeightInput();
     // Update page background color field
     syncPageBgInput();
+    syncGlobalFontInput();
     showToast('Switched to page: ' + name);
   }
 
@@ -308,8 +314,14 @@ function initPanel() {
     const canvas = document.getElementById('canvas');
     const inp = document.getElementById('ph-canvas-height');
     if (!canvas || !inp) return;
-    // Prefer stored canvasHeight in pageData, fall back to current DOM height
-    const h = window.pageData.canvasHeight || parseInt(canvas.style.minHeight) || canvas.offsetHeight || 640;
+    const mode = window._getLayoutMode ? window._getLayoutMode() : 'desktop';
+    // Prefer stored canvasHeight/mobileCanvasHeight in pageData, fall back
+    // to current DOM height. Mobile falls back to the desktop height if it
+    // has no height of its own set yet.
+    const stored = mode === 'mobile'
+      ? (window.pageData.mobileCanvasHeight || window.pageData.canvasHeight)
+      : window.pageData.canvasHeight;
+    const h = stored || parseInt(canvas.style.minHeight) || canvas.offsetHeight || 640;
     inp.value = h;
     canvas.style.minHeight = h + 'px';
   }
@@ -351,10 +363,53 @@ function initPanel() {
     if (isValidBackground(v)) applyPageBg(v);
   });
 
+  // ── Base (global) font ───────────────────────────────────────────────────
+  // A single .ttf/.otf path that gets stamped onto every text-capable
+  // element's fontFilePath in one shot, instead of setting it one element at
+  // a time via the per-element "Font File" field in Props. Newly-added text
+  // elements pick this up automatically too (see the .add-btn handler),
+  // mirroring whatever is currently in this field — empty stays empty,
+  // filled carries the same base font forward.
+  const TEXT_CAPABLE_TYPES = ['text', 'button', 'input', 'textarea', 'checkbox', 'radio'];
+
+  function applyGlobalFont(rawPath) {
+    if (!window.pageData) return;
+    const path = (rawPath || '').trim();
+    window.pageData.globalFontPath = path;
+    (window.pageData.elements || []).forEach(el => {
+      if (TEXT_CAPABLE_TYPES.includes(el.type)) el.fontFilePath = path;
+    });
+    rerender();
+    // Keep the Props panel's own Font File field in sync if it's currently
+    // showing the element we just touched.
+    if (selectedId) {
+      const sel = getEl(selectedId);
+      const fp = document.getElementById('prop-font-path');
+      if (sel && fp) fp.value = sel.fontFilePath || '';
+    }
+  }
+
+  function syncGlobalFontInput() {
+    const inp = document.getElementById('ph-global-font');
+    if (inp) inp.value = (window.pageData && window.pageData.globalFontPath) || '';
+  }
+
+  document.getElementById('ph-global-font-apply').addEventListener('click', () => {
+    applyGlobalFont(document.getElementById('ph-global-font').value);
+    showToast('Base font applied to all text');
+  });
+  document.getElementById('ph-global-font').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      applyGlobalFont(this.value);
+      showToast('Base font applied to all text');
+    }
+  });
+
   // Init select
   buildPageSelect();
   syncHeightInput();
   syncPageBgInput();
+  syncGlobalFontInput();
 
   document.getElementById('ph-page-select').addEventListener('change', function() {
     if (this.value !== _activePage) switchToPage(this.value);
@@ -365,8 +420,14 @@ function initPanel() {
     if (!h || h < 100) return;
     const canvas = document.getElementById('canvas');
     if (canvas) canvas.style.minHeight = h + 'px';
-    // Persist into pageData so it's included when saving JSON
-    if (window.pageData) window.pageData.canvasHeight = h;
+    // Persist into pageData so it's included when saving JSON — desktop and
+    // mobile heights are tracked separately so switching modes doesn't
+    // clobber the other one.
+    if (window.pageData) {
+      const mode = window._getLayoutMode ? window._getLayoutMode() : 'desktop';
+      if (mode === 'mobile') window.pageData.mobileCanvasHeight = h;
+      else window.pageData.canvasHeight = h;
+    }
   });
 
   // + button / popup logic
@@ -500,9 +561,17 @@ function initPanel() {
     window.renderPage(window.pageData);
     buildElementList();
     updateElCount();
+    syncHeightInput();
     if (selectedId) {
       const el = getEl(selectedId);
       if (el) {
+        // Every layout-mode-specific field (x/y/w/h, border, advAnim,
+        // navigateTo, etc.) reads through the same el proxy that
+        // window._layoutMode now resolves against, so re-populating the
+        // props panel here is what actually makes the desktop/mobile toggle
+        // show (and let you edit) that mode's own values instead of leaving
+        // whatever was on-screen before the toggle.
+        showProps(el);
         attachHandles(selectedId);
         document.querySelector(`[data-id="${selectedId}"]`)?.classList.add('psel-outline');
       }
@@ -530,7 +599,11 @@ function initPanel() {
     node.style.color = color;
   }
 
-  function selectEl(id) {
+  // `switchTab` controls whether selecting the element also jumps the panel
+  // over to the Props tab. Single-clicking a row in the Elements list only
+  // highlights/selects it (switchTab: false); double-clicking a row — or
+  // selecting an element directly on the canvas — opens its props (switchTab: true).
+  function selectEl(id, { switchTab = true } = {}) {
     clearHandles();
     selectedId = id;
     buildElementList();
@@ -544,10 +617,12 @@ function initPanel() {
     showProps(el);
     attachHandles(id);
 
-    document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-    document.querySelector('.ptab[data-tab="props"]').classList.add('active');
-    document.getElementById('tab-props').classList.add('active');
+    if (switchTab) {
+      document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.querySelector('.ptab[data-tab="props"]').classList.add('active');
+      document.getElementById('tab-props').classList.add('active');
+    }
   }
 
   function deselectAll() {
@@ -567,6 +642,11 @@ function initPanel() {
     if (!node) return;
 
     node.classList.add('psel-outline');
+
+    // Locked elements stay selected/outlined but never get move/resize/
+    // rotate handles — that's the whole point of locking.
+    const lockedEl = getEl(id);
+    if (lockedEl && lockedEl.locked) return;
 
     const mh = document.createElement('div');
     mh.className = 'psel-move';
@@ -741,7 +821,21 @@ function initPanel() {
     if (node) {
       const id = node.dataset.id;
       if (selectedId !== id) selectEl(id);
-      if (!NO_BODY_DRAG_TAGS.has(e.target.tagName)) {
+      // A slider's direct children are carousel slides whose position is
+      // driven by the slider's own runtime (see main.js) — letting the
+      // normal move-drag touch them would fight that positioning until the
+      // next render. They're still selectable/editable via the props panel
+      // and the Elements list, just not draggable from the canvas.
+      const isSliderSlide = node.parentElement && node.parentElement.dataset && node.parentElement.dataset.type === 'slider';
+      const clickedEl = getEl(id);
+      const isLocked = !!(clickedEl && clickedEl.locked);
+      // Anchors/buttons never get to run their native navigation while
+      // editing — a button element's own click handler (slider nav, page
+      // nav, etc.) still runs, but a placeholder href="#" must never be
+      // allowed to jump the page to the top just because it was clicked
+      // to select it.
+      if (e.target.tagName === 'A' || e.target.closest('a')) e.preventDefault();
+      if (!isLocked && !NO_BODY_DRAG_TAGS.has(e.target.tagName) && !isSliderSlide) {
         e.preventDefault();
         startMoveDrag(id, e);
       }
@@ -755,7 +849,7 @@ function initPanel() {
 
   const TYPE_ICON = {
     container: '▢', group: '▣', text: 'T', image: '▤',
-    video: '▶', audio: '♪', button: '◉'
+    video: '▶', audio: '♪', button: '◉', slider: '⇄'
   };
 
   function getChildren(id) {
@@ -775,10 +869,33 @@ function initPanel() {
     return false;
   }
 
+  // Absolute (canvas-space) top-left of an element: its own x/y plus every
+  // ancestor's x/y, walking up the *current* mode's parent chain. Used so
+  // reparenting can compensate for the coordinate-space change instead of
+  // silently shifting the element on screen.
+  function getAbsoluteXY(id) {
+    let x = 0, y = 0;
+    let cur = getEl(id);
+    while (cur) {
+      x += cur.x || 0;
+      y += cur.y || 0;
+      cur = cur.parent ? getEl(cur.parent) : null;
+    }
+    return { x, y };
+  }
+
   function setParent(childId, newParentId, index) {
     const child = getEl(childId);
     if (!child) return;
     const oldParentId = child.parent;
+
+    // Reparenting is a structural move (drag in the element list, adding to
+    // a slider, ungrouping, etc.) — it should never relocate the element
+    // visually. x/y are stored relative to the parent, so switching parents
+    // changes the coordinate space; capture the child's absolute position
+    // before the move and re-derive its relative x/y afterwards so it stays
+    // exactly where it was on screen.
+    const oldAbs = getAbsoluteXY(childId);
 
     if (oldParentId) {
       const oldParent = getEl(oldParentId);
@@ -800,6 +917,10 @@ function initPanel() {
     } else {
       delete child.parent;
     }
+
+    const newParentAbs = newParentId ? getAbsoluteXY(newParentId) : { x: 0, y: 0 };
+    child.x = oldAbs.x - newParentAbs.x;
+    child.y = oldAbs.y - newParentAbs.y;
   }
 
   function reorderRoot(childId, index) {
@@ -869,8 +990,35 @@ function initPanel() {
         rerender();
       });
 
-      row.append(twirl, icon, id, eye, del);
-      row.addEventListener('click', ev => { ev.stopPropagation(); selectEl(el.id); });
+      // Lock toggle — a locked element stays fully selectable/editable via
+      // the Props panel, but loses its move/resize/rotate handles on the
+      // canvas so it can't be nudged or reshaped by accident. Lock state is
+      // a plain top-level field (not per-layout) since it's about
+      // protecting the element while editing, not about how it displays.
+      const lock = document.createElement('button');
+      lock.className = 'el-item-del'; // reuse same style: hover-reveal, same sizing
+      const isLocked = !!el.locked;
+      lock.textContent = isLocked ? '🔒' : '🔓';
+      lock.title = isLocked ? 'Unlock element' : 'Lock element';
+      lock.style.opacity = isLocked ? '1' : '';
+      lock.style.fontSize = '11px';
+      lock.addEventListener('click', ev => {
+        ev.stopPropagation();
+        el.locked = !el.locked;
+        if (selectedId === el.id) {
+          // Refresh the on-canvas handles immediately to reflect the new state.
+          clearHandles();
+          const node = document.querySelector(`[data-id="${el.id}"]`);
+          if (node) node.classList.add('psel-outline');
+          if (!el.locked) attachHandles(el.id);
+        }
+        buildElementList();
+        showToast(el.locked ? 'Locked' : 'Unlocked');
+      });
+
+      row.append(twirl, icon, id, lock, eye, del);
+      row.addEventListener('click', ev => { ev.stopPropagation(); selectEl(el.id, { switchTab: false }); });
+      row.addEventListener('dblclick', ev => { ev.stopPropagation(); selectEl(el.id, { switchTab: true }); });
 
       row.addEventListener('dragstart', ev => {
         dragId = el.id;
@@ -948,7 +1096,10 @@ function initPanel() {
           }
         }
         rerender();
-        selectEl(sourceId);
+        // Keep whichever tab the user is already on — dropping an element
+        // into a container is a structural action in the Elements list, not
+        // a request to jump over to Props every time.
+        selectEl(sourceId, { switchTab: false });
       });
 
       list.appendChild(row);
@@ -975,7 +1126,7 @@ function initPanel() {
       if (!sourceId) return;
       reorderRoot(sourceId);
       rerender();
-      selectEl(sourceId);
+      selectEl(sourceId, { switchTab: false });
     });
     list.appendChild(emptyZone);
   }
@@ -985,6 +1136,9 @@ function initPanel() {
     document.getElementById('no-selection').style.display = 'none';
     document.getElementById('props-body').style.display = '';
 
+    const toButtonBtn = document.getElementById('btn-to-button');
+    if (toButtonBtn) toButtonBtn.style.display = el.type === 'button' ? 'none' : '';
+
     document.getElementById('prop-id').value = el.id;
     document.getElementById('prop-content').value = el.content || '';
     document.getElementById('prop-x').value = el.x ?? 0;
@@ -993,6 +1147,17 @@ function initPanel() {
     document.getElementById('prop-h').value = el.h ?? 40;
     const rotInput = document.getElementById('prop-rotation');
     if (rotInput) rotInput.value = el.rotation || 0;
+
+    // Scale — only meaningful for elements that actually have children
+    // (groups, containers, or anything else nesting child elements). It
+    // uniformly scales the visual size of everything nested inside, while
+    // W/H above keep controlling only this element's own box.
+    const hasChildren = Array.isArray(el.children) && el.children.length > 0;
+    const rowScale = document.getElementById('row-group-scale');
+    if (rowScale) {
+      rowScale.style.display = hasChildren ? '' : 'none';
+      if (hasChildren) document.getElementById('prop-scale').value = el.scale ?? 1;
+    }
 
     const hasSrc = ['image', 'video', 'audio'].includes(el.type);
     const hasHref = el.type === 'button';
@@ -1004,7 +1169,7 @@ function initPanel() {
     document.getElementById('prop-navloc-speed-row').style.display = hasHref ? '' : 'none';
     document.getElementById('prop-content-row').style.display = (hasSrc || isSelect) ? 'none' : '';
     document.getElementById('prop-options-row').style.display = isSelect ? '' : 'none';
-    if (hasSrc) document.getElementById('prop-src').value = el.src || '';
+    if (hasSrc) document.getElementById('prop-src').value = el.src || './asset/';
     if (isSelect) document.getElementById('prop-options').value = (el.options || []).join(', ');
 
     const showTextTools = !hasSrc && !isSelect;
@@ -1033,8 +1198,9 @@ function initPanel() {
 
     const styles = el.styles || {};
 
-    const showBg = ['container', 'group', 'button', 'text', 'input', 'textarea', 'select'].includes(el.type);
+    const showBg = ['container', 'group', 'slider', 'button', 'text', 'input', 'textarea', 'select'].includes(el.type);
     document.getElementById('row-bgcolor').style.display = showBg ? '' : 'none';
+    document.getElementById('row-bg-blur').style.display = showBg ? '' : 'none';
     if (showBg) {
       const bgRaw = styles.background || styles.backgroundColor || '';
       const isGradient = bgRaw.includes('gradient');
@@ -1042,6 +1208,11 @@ function initPanel() {
       document.getElementById('color-bg').value = isGradient ? '#000000' : bgHex;
       document.getElementById('color-bg-hex').value = isGradient ? bgRaw : bgHex;
       document.getElementById('swatch-bg-preview').style.background = bgRaw || 'transparent';
+
+      // Blur (glass-morphism backdrop-filter) — parse the current px value
+      // back out of the raw CSS string so the number field reflects it.
+      const blurMatch = /blur\(\s*([\d.]+)px\s*\)/.exec(styles.backdropFilter || '');
+      document.getElementById('prop-bg-blur').value = blurMatch ? blurMatch[1] : 0;
     }
 
     const showTextCol = ['text', 'button', 'input', 'textarea', 'select', 'checkbox', 'radio'].includes(el.type);
@@ -1061,7 +1232,7 @@ function initPanel() {
     // border/box-shadow around a text node's bounding box looks wrong).
     // Shadow (box-shadow for boxy elements, text-shadow for text) is shown
     // for the same set of types plus 'text'.
-    const showBorder = ['container', 'group', 'button', 'input', 'textarea', 'select'].includes(el.type);
+    const showBorder = ['container', 'group', 'slider', 'button', 'input', 'textarea', 'select', 'image'].includes(el.type);
     const showShadow = showBorder || el.type === 'text';
     const showBorderShadowSection = showBorder || showShadow;
     document.getElementById('section-border').style.display = showBorderShadowSection ? '' : 'none';
@@ -1080,6 +1251,16 @@ function initPanel() {
       document.getElementById('color-border-hex').value = bColor;
       document.getElementById('swatch-border-preview').style.background = bColor;
       document.getElementById('prop-border-opacity').value = b.opacity ?? 1;
+    }
+
+    // Corner radius — independent of whether the border itself is enabled,
+    // since rounding the corners is a shape property, not a border one.
+    // Hidden for circular containers, since shape=circle drives radius via
+    // its own 50% override instead.
+    const isCircleContainer = el.type === 'container' && el.shape === 'circle';
+    document.getElementById('row-corner-radius').style.display = (showBorder && !isCircleContainer) ? '' : 'none';
+    if (showBorder && !isCircleContainer) {
+      document.getElementById('prop-corner-radius').value = parseInt(styles.borderRadius) || 0;
     }
 
     document.getElementById('shadow-toggle-label').textContent = el.type === 'text' ? 'Text Shadow' : 'Box Shadow';
@@ -1120,20 +1301,10 @@ function initPanel() {
       document.getElementById('prop-h').closest('.geom-cell').style.display = '';
     }
 
-    document.querySelectorAll('#anim-seg .seg-btn').forEach(b => {
-      b.classList.toggle('active', b.dataset.anim === (el.animation || 'none'));
-    });
-
-    const hasAnim = (el.animation && el.animation !== 'none');
-    document.getElementById('anim-extra-row').style.display = hasAnim ? '' : 'none';
-    if (hasAnim) {
-      document.getElementById('prop-anim-duration').value = el.animDuration ?? 0.5;
-      document.getElementById('prop-anim-loop').checked = !!el.animLoop;
-      document.getElementById('prop-anim-smooth').checked = !!el.animSmooth;
-      document.getElementById('anim-smooth-row').style.display = el.animLoop ? '' : 'none';
-    }
-
     document.getElementById('section-image-opts').style.display = el.type === 'image' ? '' : 'none';
+
+    document.getElementById('section-slider-opts').style.display = el.type === 'slider' ? '' : 'none';
+    if (el.type === 'slider') populateSliderProps(el);
 
     window._selectedAdvId = el.id;
     if (window._advAnimStop) window._advAnimStop();
@@ -1241,7 +1412,20 @@ function initPanel() {
         el.styles.textDecoration = decos.size ? Array.from(decos).join(' ') : 'none';
       }
       const node = document.querySelector(`[data-id="${selectedId}"]`);
-      if (node) Object.assign(node.style, el.styles);
+      if (node) {
+        Object.assign(node.style, el.styles);
+        // el.styles.fontFamily (the base/default family) just got re-applied
+        // above and would silently stomp a custom .ttf/.otf font — those are
+        // applied separately via _applyCustomFont and live under a generated
+        // font-family name, not el.styles.fontFamily. Re-apply it so toggling
+        // bold/italic/underline never knocks the element back to the default
+        // font. If the custom font doesn't actually have a bold/italic face,
+        // the browser will fall back to font-synthesis (or simply show no
+        // visible change) instead of losing the font entirely.
+        if (el.fontFilePath && window._applyCustomFont) {
+          window._applyCustomFont(node, el.fontFilePath);
+        }
+      }
       updateFormatButtonsActive(el);
     });
   });
@@ -1396,8 +1580,10 @@ function initPanel() {
       };
       node.addEventListener('click', node._navHandler);
     } else {
-      // Restore default href="#" so the button still exists but does nothing
-      if (node.tagName === 'A') node.href = '#';
+      // No navigation configured — make sure the button does nothing rather
+      // than falling back to a live href="#" (which used to jump the page
+      // to the top on click).
+      if (node.tagName === 'A') node.removeAttribute('href');
     }
   }
 
@@ -1443,13 +1629,14 @@ function initPanel() {
           ${fcFieldHTML('H', 'h', frame.h ?? 100, 1)}
           ${fcFieldHTML('Opacity', 'opacity', frame.opacity ?? 1, 0.05)}
           ${fcFieldHTML('Scale', 'scale', frame.scale ?? 1, 0.01)}
+          ${fcFieldHTML('Rotation', 'rotation', frame.rotation ?? 0, 1)}
         </div>`;
       return card;
     }
 
     function readFrameCard(card) {
       const num = k => { const n = parseFloat(card.querySelector(`[data-fckey="${k}"]`)?.value); return isNaN(n) ? 0 : n; };
-      return { x: num('x'), y: num('y'), w: num('w'), h: num('h'), opacity: num('opacity'), scale: num('scale') };
+      return { x: num('x'), y: num('y'), w: num('w'), h: num('h'), opacity: num('opacity'), scale: num('scale'), rotation: num('rotation') };
     }
 
     function attachCardEvents(card, getSelectedId) {
@@ -1480,6 +1667,7 @@ function initPanel() {
           const set = (k, v) => { const inp = card.querySelector(`[data-fckey="${k}"]`); if (inp) inp.value = v; };
           set('x', el.x); set('y', el.y); set('w', el.w); set('h', el.h);
           set('opacity', el.styles?.opacity ?? 1); set('scale', el.animScale ?? 1);
+          set('rotation', el.rotation ?? 0);
           card.querySelectorAll('#advanim-frame-list .frame-card, #advanim-end-frame').forEach(c => c.classList.remove('frame-active'));
           card.classList.add('frame-active');
         });
@@ -1508,6 +1696,8 @@ function initPanel() {
       if (!el.styles) el.styles = {};
       el.styles.opacity = frame.opacity;
       el.animScale = frame.scale;
+      const rot = frame.rotation ?? 0;
+      el.rotation = rot;
       const node = document.querySelector(`[data-id="${id}"]`);
       if (!node) return;
       node.style.left    = frame.x + 'px';
@@ -1515,12 +1705,14 @@ function initPanel() {
       node.style.width   = frame.w + 'px';
       node.style.height  = frame.h + 'px';
       node.style.opacity = frame.opacity;
-      if (window._applyElementTransform) window._applyElementTransform(node, parseFloat(node.dataset.rot) || 0, frame.scale);
-      else node.style.transform = frame.scale !== 1 ? `scale(${frame.scale})` : '';
+      if (window._applyElementTransform) window._applyElementTransform(node, rot, frame.scale);
+      else node.style.transform = [rot ? `rotate(${rot}deg)` : '', frame.scale !== 1 ? `scale(${frame.scale})` : ''].filter(Boolean).join(' ');
       document.getElementById('prop-x').value = frame.x;
       document.getElementById('prop-y').value = frame.y;
       document.getElementById('prop-w').value = frame.w;
       document.getElementById('prop-h').value = frame.h;
+      const rotInput = document.getElementById('prop-rotation');
+      if (rotInput) rotInput.value = rot;
     }
 
     function lerpFrame(a, b, t) {
@@ -1530,6 +1722,7 @@ function initPanel() {
         w: lerp(a.w, b.w), h: lerp(a.h, b.h),
         opacity: lerp(a.opacity ?? 1, b.opacity ?? 1),
         scale: lerp(a.scale ?? 1, b.scale ?? 1),
+        rotation: lerp(a.rotation ?? 0, b.rotation ?? 0),
       };
     }
 
@@ -1658,25 +1851,123 @@ function initPanel() {
       }
     }
 
+    // ── Preset frame generation for "Default" mode ──────────────────────────
+    // Default-mode presets (Fade/Slide/Zoom/Rotate/Bounce) are just specific
+    // 2-3 frame shapes fed into the same keyframe engine Custom mode uses
+    // (see main.js runAdvAnim/evalAdvFrames) — that's what lets both modes
+    // share one Trigger/Speed/Delay/Smooth/Appear control set with no
+    // duplication, instead of Default needing its own separate CSS-animation
+    // machinery like it used to.
+    const PRESET_DEFAULTS = {
+      fadeIn:  { type: 'once', speed: 0.5  },
+      slideUp: { type: 'once', speed: 0.55 },
+      slideIn: { type: 'once', speed: 0.5  },
+      zoomIn:  { type: 'once', speed: 0.45 },
+      rotate:  { type: 'loop', speed: 1.2  },
+      bounce:  { type: 'loop', speed: 0.6  },
+    };
+
+    function buildPresetFrames(preset, el) {
+      const base = { x: el.x, y: el.y, w: el.w, h: el.h, opacity: el.styles?.opacity ?? 1, scale: 1, rotation: el.rotation ?? 0 };
+      switch (preset) {
+        case 'fadeIn':  return [{ ...base, opacity: 0 }, { ...base }];
+        case 'slideUp': return [{ ...base, opacity: 0, y: base.y + 24 }, { ...base }];
+        case 'slideIn': return [{ ...base, opacity: 0, x: base.x - 24 }, { ...base }];
+        case 'zoomIn':  return [{ ...base, opacity: 0, scale: 0.92 }, { ...base }];
+        case 'rotate':  return [{ ...base }, { ...base, rotation: (el.rotation || 0) + 360 }];
+        case 'bounce':  return [{ ...base }, { ...base, y: base.y - 18 }, { ...base }];
+        default:        return [{ ...base }, { ...base }];
+      }
+    }
+
+    // Default mode has no "Set Animation" step — its frames are always fully
+    // derived from the chosen preset + the element's current geometry, so
+    // every shared-control change (trigger, speed, delay, smooth, appear)
+    // commits and previews immediately.
+    function applyDefaultAnim(el) {
+      if (!el.advAnim) el.advAnim = {};
+      const adv = el.advAnim;
+      adv.mode   = 'default';
+      adv.preset = adv.preset || 'fadeIn';
+      adv.frames = buildPresetFrames(adv.preset, el);
+      adv.type   = document.querySelector('.advanim-type-btn.active')?.dataset.advtype || adv.type || 'loop';
+      adv.speed  = parseFloat(document.getElementById('advanim-speed')?.value) || adv.speed || 1.5;
+      adv.delay  = parseFloat(document.getElementById('advanim-delay')?.value) || 0;
+      adv.smooth = document.getElementById('advanim-smooth-toggle')?.checked || false;
+      adv.animateOnAppear = document.getElementById('advanim-appear-toggle')?.checked || false;
+      const triggerButtonId = document.getElementById('advanim-trigger-btn')?.value || '';
+      const hoverElementId  = document.getElementById('advanim-hover-el')?.value || '';
+      if (adv.type === 'trigger' && triggerButtonId) adv.triggerButtonId = triggerButtonId;
+      if (adv.type === 'hover' && hoverElementId) adv.hoverElementId = hoverElementId;
+
+      if (adv.enabled && window._runAdvAnim) window._runAdvAnim(el);
+    }
+
+    // Only live-applies while Default mode is active — Custom mode still
+    // commits its (frame-editing) changes via the "Set Animation" button.
+    function liveApplyIfDefault() {
+      const mode = document.getElementById('anim-mode-select')?.value || 'default';
+      if (mode !== 'default') return;
+      const el = getEl(window._selectedAdvId);
+      if (el) applyDefaultAnim(el);
+    }
+
+    // Builds just the frame-list/playhead cards — used by Custom mode only.
+    function buildFrameListUI(el) {
+      const adv = el.advAnim || {};
+      const frames = adv.frames?.length >= 2 ? adv.frames : [
+        { x: el.x, y: el.y, w: el.w, h: el.h, opacity: el.styles?.opacity ?? 1, scale: 1, rotation: el.rotation ?? 0 },
+        { x: el.x, y: el.y + 20, w: el.w, h: el.h, opacity: 1, scale: 1, rotation: el.rotation ?? 0 },
+      ];
+
+      const frameList = document.getElementById('advanim-frame-list');
+      frameList.innerHTML = '';
+      document.getElementById('advanim-end-frame')?.remove();
+
+      const startCard = buildFrameCard(frames[0], 'start', 0);
+      frameList.appendChild(startCard);
+      attachCardEvents(startCard, () => document.querySelector('[data-id].psel-outline')?.dataset.id || window._selectedAdvId);
+
+      frames.slice(1, -1).forEach((f, i) => {
+        const c = buildFrameCard(f, 'mid', i + 1);
+        frameList.appendChild(c);
+        attachCardEvents(c, () => document.querySelector('[data-id].psel-outline')?.dataset.id || window._selectedAdvId);
+      });
+
+      const endCard = buildFrameCard(frames[frames.length - 1], 'end', frames.length - 1);
+      endCard.id = 'advanim-end-frame';
+      frameList.appendChild(endCard);
+      attachCardEvents(endCard, () => document.querySelector('[data-id].psel-outline')?.dataset.id || window._selectedAdvId);
+    }
+
+    // Populates the whole unified Animate section: the Enabled toggle,
+    // Default-vs-Custom fields, and the Trigger/Speed/Delay/Smooth/Appear
+    // controls shared by both modes — defined once here, not duplicated
+    // per-mode.
     function buildAdvAnimUI(el) {
       const adv = el.advAnim || {};
       const enabled = !!adv.enabled;
-      const type    = adv.type    || 'loop';
-      const speed   = adv.speed   ?? 1.5;
-      const delay   = adv.delay   ?? 0;
-      const frames  = adv.frames?.length >= 2 ? adv.frames : [
-        { x: el.x, y: el.y, w: el.w, h: el.h, opacity: el.styles?.opacity ?? 1, scale: 1 },
-        { x: el.x, y: el.y + 20, w: el.w, h: el.h, opacity: 1, scale: 1 },
-      ];
+      document.getElementById('anim-enabled-toggle').checked = enabled;
+      document.getElementById('anim-config').style.display = enabled ? '' : 'none';
+      if (!enabled) return;
 
-      const toggleBtn = document.getElementById('advanim-toggle');
-      const body      = document.getElementById('advanim-body');
-      toggleBtn.textContent = enabled ? 'ON' : 'OFF';
-      toggleBtn.classList.toggle('on', enabled);
-      body.classList.toggle('visible', enabled);
+      const mode = adv.mode || 'default';
+      document.getElementById('anim-mode-select').value = mode;
+      document.getElementById('anim-default-fields').style.display = mode === 'default' ? '' : 'none';
+      document.getElementById('anim-custom-fields').style.display = mode === 'custom' ? '' : 'none';
 
-      document.getElementById('advanim-speed').value = speed;
-      document.getElementById('advanim-delay').value = delay;
+      if (mode === 'default') {
+        const preset = adv.preset || 'fadeIn';
+        document.querySelectorAll('#anim-seg .seg-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.anim === preset);
+        });
+      } else {
+        buildFrameListUI(el);
+      }
+
+      const type = adv.type || 'loop';
+      document.getElementById('advanim-speed').value = adv.speed ?? 1.5;
+      document.getElementById('advanim-delay').value = adv.delay ?? 0;
 
       document.querySelectorAll('.advanim-type-btn').forEach(b => {
         b.classList.toggle('active', b.dataset.advtype === type);
@@ -1704,66 +1995,120 @@ function initPanel() {
       // Animate When Appeared toggle
       const appearToggle = document.getElementById('advanim-appear-toggle');
       if (appearToggle) appearToggle.checked = !!adv.animateOnAppear;
-
-      const frameList = document.getElementById('advanim-frame-list');
-      frameList.innerHTML = '';
-      document.getElementById('advanim-end-frame')?.remove();
-
-      const startCard = buildFrameCard(frames[0], 'start', 0);
-      frameList.appendChild(startCard);
-      attachCardEvents(startCard, () => document.querySelector('[data-id].psel-outline')?.dataset.id || window._selectedAdvId);
-
-      frames.slice(1, -1).forEach((f, i) => {
-        const c = buildFrameCard(f, 'mid', i + 1);
-        frameList.appendChild(c);
-        attachCardEvents(c, () => document.querySelector('[data-id].psel-outline')?.dataset.id || window._selectedAdvId);
-      });
-
-      const endCard = buildFrameCard(frames[frames.length - 1], 'end', frames.length - 1);
-      endCard.id = 'advanim-end-frame';
-      frameList.appendChild(endCard);
-      attachCardEvents(endCard, () => document.querySelector('[data-id].psel-outline')?.dataset.id || window._selectedAdvId);
     }
 
     function readAdvAnimData(el) {
-      const toggleBtn = document.getElementById('advanim-toggle');
-      const enabled = toggleBtn?.classList.contains('on') ?? false;
-      const type  = document.querySelector('.advanim-type-btn.active')?.dataset.advtype || 'loop';
-      const speed = parseFloat(document.getElementById('advanim-speed')?.value) || 1.5;
-      const delay = parseFloat(document.getElementById('advanim-delay')?.value) || 0;
-      const frameList = document.getElementById('advanim-frame-list');
-      const endCard   = document.getElementById('advanim-end-frame');
-      if (!frameList || !endCard) return null;
-      const startCards = frameList.querySelectorAll('.frame-card.fc-start');
-      const midCards   = frameList.querySelectorAll('.frame-card.fc-mid');
-      const frames = [];
-      startCards.forEach(c => frames.push(readFrameCard(c)));
-      midCards.forEach(c => frames.push(readFrameCard(c)));
-      frames.push(readFrameCard(endCard));
+      const enabled = document.getElementById('anim-enabled-toggle')?.checked ?? false;
+      const mode    = document.getElementById('anim-mode-select')?.value || 'default';
+      const type    = document.querySelector('.advanim-type-btn.active')?.dataset.advtype || 'loop';
+      const speed   = parseFloat(document.getElementById('advanim-speed')?.value) || 1.5;
+      const delay   = parseFloat(document.getElementById('advanim-delay')?.value) || 0;
+
+      let frames, preset;
+      if (mode === 'default') {
+        preset = document.querySelector('#anim-seg .seg-btn.active')?.dataset.anim || 'fadeIn';
+        frames = buildPresetFrames(preset, el);
+      } else {
+        const frameList = document.getElementById('advanim-frame-list');
+        const endCard   = document.getElementById('advanim-end-frame');
+        if (!frameList || !endCard) return null;
+        const startCards = frameList.querySelectorAll('.frame-card.fc-start');
+        const midCards   = frameList.querySelectorAll('.frame-card.fc-mid');
+        frames = [];
+        startCards.forEach(c => frames.push(readFrameCard(c)));
+        midCards.forEach(c => frames.push(readFrameCard(c)));
+        frames.push(readFrameCard(endCard));
+      }
+
       const triggerButtonId = document.getElementById('advanim-trigger-btn')?.value || '';
       const hoverElementId  = document.getElementById('advanim-hover-el')?.value || '';
       const animateOnAppear = document.getElementById('advanim-appear-toggle')?.checked || false;
       const smooth = document.getElementById('advanim-smooth-toggle')?.checked || false;
-      const result = { enabled, type, speed, delay, frames, animateOnAppear };
+      const result = { enabled, mode, frames, type, speed, delay, animateOnAppear };
+      if (mode === 'default') result.preset = preset;
       if (type === 'trigger' && triggerButtonId) result.triggerButtonId = triggerButtonId;
       if (type === 'hover' && hoverElementId) result.hoverElementId = hoverElementId;
       if (type === 'loop') result.smooth = smooth;
       return result;
     }
 
-    const toggleBtn = document.getElementById('advanim-toggle');
-    toggleBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      const on = toggleBtn.classList.toggle('on');
-      toggleBtn.textContent = on ? 'ON' : 'OFF';
-      document.getElementById('advanim-body').classList.toggle('visible', on);
-      if (!on) stopAdvPlay();
-      const selId = window._selectedAdvId;
-      const el = getEl(selId);
-      if (el) {
-        if (!el.advAnim) el.advAnim = {};
-        el.advAnim.enabled = on;
+    document.getElementById('anim-enabled-toggle').addEventListener('change', function() {
+      const el = getEl(window._selectedAdvId); if (!el) return;
+      const on = this.checked;
+      if (!el.advAnim) el.advAnim = {};
+      el.advAnim.enabled = on;
+      document.getElementById('anim-config').style.display = on ? '' : 'none';
+      if (!on) {
+        stopAdvPlay();
+        if (window._runAdvAnim) window._runAdvAnim(el); // enabled=false makes this cancel any running loop/once/scroll state
+        return;
       }
+      // First time this element gets an animation — seed sensible defaults
+      // instead of leaving mode/trigger/speed blank.
+      if (!el.advAnim.mode) el.advAnim.mode = 'default';
+      if (el.advAnim.mode === 'default') {
+        el.advAnim.preset = el.advAnim.preset || 'fadeIn';
+        if (!el.advAnim.type) {
+          const d = PRESET_DEFAULTS[el.advAnim.preset] || { type: 'once', speed: 0.5 };
+          el.advAnim.type  = d.type;
+          el.advAnim.speed = el.advAnim.speed ?? d.speed;
+        }
+        buildAdvAnimUI(el);
+        applyDefaultAnim(el);
+      } else {
+        buildAdvAnimUI(el);
+        if (el.advAnim.frames?.length >= 2 && window._runAdvAnim) window._runAdvAnim(el);
+      }
+    });
+
+    document.getElementById('anim-mode-select').addEventListener('change', function() {
+      const el = getEl(window._selectedAdvId); if (!el) return;
+      if (!el.advAnim) el.advAnim = {};
+      el.advAnim.mode = this.value;
+      document.getElementById('anim-default-fields').style.display = this.value === 'default' ? '' : 'none';
+      document.getElementById('anim-custom-fields').style.display = this.value === 'custom' ? '' : 'none';
+      if (this.value === 'default') {
+        el.advAnim.preset = el.advAnim.preset || 'fadeIn';
+        document.querySelectorAll('#anim-seg .seg-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.anim === el.advAnim.preset);
+        });
+        applyDefaultAnim(el);
+      } else {
+        // Seed the custom frame builder from whatever frames are already
+        // active (e.g. the preset's frames) so switching to Custom gives the
+        // user a starting point to edit instead of an empty animation.
+        if (!el.advAnim.frames || el.advAnim.frames.length < 2) {
+          el.advAnim.frames = buildPresetFrames(el.advAnim.preset || 'fadeIn', el);
+        }
+        buildFrameListUI(el);
+      }
+    });
+
+    document.querySelectorAll('#anim-seg .seg-btn').forEach(b => {
+      b.addEventListener('click', () => {
+        const el = getEl(window._selectedAdvId); if (!el) return;
+        document.querySelectorAll('#anim-seg .seg-btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        if (!el.advAnim) el.advAnim = {};
+        const isFreshAnim = !el.advAnim.type; // no trigger config yet for this element
+        el.advAnim.mode   = 'default';
+        el.advAnim.preset = b.dataset.anim;
+        if (isFreshAnim) {
+          const d = PRESET_DEFAULTS[b.dataset.anim] || { type: 'once', speed: 0.5 };
+          el.advAnim.type  = d.type;
+          el.advAnim.speed = d.speed;
+          document.querySelectorAll('.advanim-type-btn').forEach(x => x.classList.toggle('active', x.dataset.advtype === d.type));
+          document.getElementById('advanim-speed').value = d.speed;
+          document.getElementById('advanim-smooth-row').style.display = d.type === 'loop' ? '' : 'none';
+        }
+        // Picking a preset implies wanting to see it — turn the section on if it wasn't already.
+        if (!el.advAnim.enabled) {
+          el.advAnim.enabled = true;
+          document.getElementById('anim-enabled-toggle').checked = true;
+          document.getElementById('anim-config').style.display = '';
+        }
+        applyDefaultAnim(el);
+      });
     });
 
     document.querySelectorAll('.advanim-type-btn').forEach(b => {
@@ -1779,8 +2124,16 @@ function initPanel() {
         updateAdvSpeedDelayLabels(b.dataset.advtype);
         if (isTrigger) populateAdvTriggerButtons();
         if (isHover) populateAdvHoverElements();
+        liveApplyIfDefault();
       });
     });
+
+    document.getElementById('advanim-smooth-toggle').addEventListener('change', liveApplyIfDefault);
+    document.getElementById('advanim-appear-toggle').addEventListener('change', liveApplyIfDefault);
+    document.getElementById('advanim-speed').addEventListener('input', liveApplyIfDefault);
+    document.getElementById('advanim-delay').addEventListener('input', liveApplyIfDefault);
+    document.getElementById('advanim-trigger-btn').addEventListener('change', liveApplyIfDefault);
+    document.getElementById('advanim-hover-el').addEventListener('change', liveApplyIfDefault);
 
     function populateAdvTriggerButtons() {
       const sel = document.getElementById('advanim-trigger-btn');
@@ -1812,7 +2165,7 @@ function initPanel() {
       e.stopPropagation();
       const selId = window._selectedAdvId;
       const el = getEl(selId);
-      const frame = el ? { x: el.x, y: el.y, w: el.w, h: el.h, opacity: el.styles?.opacity ?? 1, scale: 1 } : { x: 0, y: 0, w: 100, h: 100, opacity: 1, scale: 1 };
+      const frame = el ? { x: el.x, y: el.y, w: el.w, h: el.h, opacity: el.styles?.opacity ?? 1, scale: 1, rotation: el.rotation ?? 0 } : { x: 0, y: 0, w: 100, h: 100, opacity: 1, scale: 1, rotation: 0 };
       const frameList = document.getElementById('advanim-frame-list');
       const endCard   = document.getElementById('advanim-end-frame');
       const midCount  = frameList.querySelectorAll('.fc-mid').length + 1;
@@ -1895,7 +2248,16 @@ function initPanel() {
 
   function patchNodeShape(id, shape) {
     const node = document.querySelector(`[data-id="${id}"]`);
-    if (node) node.style.borderRadius = shape === 'circle' ? '50%' : '';
+    if (!node) return;
+    if (shape === 'circle') {
+      node.style.borderRadius = '50%';
+    } else {
+      // Restore whatever manual corner radius the user had set instead of
+      // just clearing it — otherwise switching circle -> square would
+      // silently discard a custom border-radius value.
+      const el = getEl(id);
+      node.style.borderRadius = (el && el.styles && el.styles.borderRadius) || '';
+    }
   }
 
   document.getElementById('prop-shape').addEventListener('change', function() {
@@ -1903,6 +2265,7 @@ function initPanel() {
     el.shape = this.value;
     const isCircle = this.value === 'circle';
     document.getElementById('row-container-radius').style.display = isCircle ? '' : 'none';
+    document.getElementById('row-corner-radius').style.display = isCircle ? 'none' : '';
     document.getElementById('prop-w').closest('.geom-cell').style.display = isCircle ? 'none' : '';
     document.getElementById('prop-h').closest('.geom-cell').style.display = isCircle ? 'none' : '';
 
@@ -1926,44 +2289,16 @@ function initPanel() {
     document.getElementById('prop-h').value = el.h;
   });
 
-  function applyAnimToNode(node, el) {
-    const animMap = { fadeIn: 'anim-fadeIn', slideUp: 'anim-slideUp', slideIn: 'anim-slideIn', zoomIn: 'anim-zoomIn' };
-    node.classList.remove('anim-fadeIn', 'anim-slideUp', 'anim-slideIn', 'anim-zoomIn');
-    const cls = animMap[el.animation];
-    if (!cls) return;
-    const dur = el.animDuration ?? 0.5;
-    const loop = !!el.animLoop;
-    const smooth = !!el.animSmooth;
-    node.style.animationDuration = dur + 's';
-    node.style.animationIterationCount = loop ? 'infinite' : '1';
-    // "Smooth" plays the animation forward then in reverse on alternating
-    // iterations, so a looped animation never snaps back to its start frame —
-    // it just glides back the way it came.
-    node.style.animationDirection = (loop && smooth) ? 'alternate' : 'normal';
-    void node.offsetWidth;
-    node.classList.add(cls);
-  }
-
-  document.getElementById('prop-anim-duration').addEventListener('input', function() {
+  // Manual corner-radius control, in the Border toggler section — lets the
+  // user round the corners of boxes/buttons directly instead of only being
+  // able to do it via the container's circle-shape shortcut.
+  document.getElementById('prop-corner-radius').addEventListener('input', function() {
     const el = getEl(selectedId); if (!el) return;
-    el.animDuration = parseFloat(this.value) || 0.5;
+    if (!el.styles) el.styles = {};
+    const r = Math.max(0, parseFloat(this.value) || 0);
+    el.styles.borderRadius = r + 'px';
     const node = document.querySelector(`[data-id="${selectedId}"]`);
-    if (node) applyAnimToNode(node, el);
-  });
-
-  document.getElementById('prop-anim-loop').addEventListener('change', function() {
-    const el = getEl(selectedId); if (!el) return;
-    el.animLoop = this.checked;
-    document.getElementById('anim-smooth-row').style.display = this.checked ? '' : 'none';
-    const node = document.querySelector(`[data-id="${selectedId}"]`);
-    if (node) applyAnimToNode(node, el);
-  });
-
-  document.getElementById('prop-anim-smooth').addEventListener('change', function() {
-    const el = getEl(selectedId); if (!el) return;
-    el.animSmooth = this.checked;
-    const node = document.querySelector(`[data-id="${selectedId}"]`);
-    if (node) applyAnimToNode(node, el);
+    if (node) node.style.borderRadius = r + 'px';
   });
 
   document.getElementById('prop-object-fit').addEventListener('change', function() {
@@ -2051,6 +2386,254 @@ function initPanel() {
     }
   };
 
+  // ── Slider / Carousel props ─────────────────────────────────────────────
+  function defaultSliderCfg() {
+    return { carouselType: 'horizontal', duration: 3, gap: 0, autoScroll: true, loop: false, dots: false, buttonNav: false, leftBtnId: '', rightBtnId: '', autoHide: false, groupCarousel: false };
+  }
+
+  function renderSliderSlideBox(el) {
+    const box = document.getElementById('slider-slide-box');
+    if (!box) return;
+    const ids = Array.isArray(el.children) ? el.children : [];
+    box.innerHTML = '';
+    if (!ids.length) {
+      const empty = document.createElement('div');
+      empty.className = 'slider-slide-empty';
+      empty.textContent = 'No components chosen yet';
+      box.appendChild(empty);
+      return;
+    }
+    ids.forEach(cid => {
+      const child = getEl(cid);
+      const chip = document.createElement('div');
+      chip.className = 'slider-slide-chip';
+      const label = document.createElement('span');
+      label.className = 'slider-slide-chip-label';
+      label.textContent = (TYPE_ICON[child?.type] || '▢') + ' ' + cid;
+      const rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'slider-slide-chip-rm';
+      rm.textContent = '×';
+      rm.title = 'Remove from slider';
+      rm.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        setParent(cid, null);
+        rerender();
+        const freshEl = getEl(el.id);
+        if (freshEl) { renderSliderSlideBox(freshEl); showToast('Removed from slider'); }
+      });
+      chip.append(label, rm);
+      box.appendChild(chip);
+    });
+  }
+
+  function populateSliderButtonSelects(el) {
+    const cfg = el.sliderCfg || defaultSliderCfg();
+    const buttons = (window.pageData.elements || []).filter(e => e.type === 'button');
+    const opts = '<option value="">-- select --</option>' +
+      buttons.map(b => `<option value="${b.id}">${b.id}${b.content ? ' (' + b.content + ')' : ''}</option>`).join('');
+    const leftSel = document.getElementById('prop-slider-leftbtn');
+    const rightSel = document.getElementById('prop-slider-rightbtn');
+    leftSel.innerHTML = opts;
+    rightSel.innerHTML = opts;
+    leftSel.value = cfg.leftBtnId || '';
+    rightSel.value = cfg.rightBtnId || '';
+  }
+
+  function populateSliderProps(el) {
+    const cfg = el.sliderCfg || (el.sliderCfg = defaultSliderCfg());
+    renderSliderSlideBox(el);
+    document.getElementById('prop-slider-type').value = cfg.carouselType || 'horizontal';
+    document.getElementById('prop-slider-groupcarousel').checked = !!cfg.groupCarousel;
+    document.getElementById('prop-slider-duration').value = cfg.duration ?? 3;
+    document.getElementById('prop-slider-gap').value = cfg.gap ?? 0;
+    document.getElementById('prop-slider-autoscroll').checked = cfg.autoScroll !== false;
+    document.getElementById('prop-slider-loop').checked = !!cfg.loop;
+    document.getElementById('prop-slider-dots').checked = !!cfg.dots;
+    document.getElementById('prop-slider-btnnav').checked = !!cfg.buttonNav;
+    document.getElementById('slider-btnnav-fields').style.display = cfg.buttonNav ? '' : 'none';
+    document.getElementById('prop-slider-autohide').checked = !!cfg.autoHide;
+    populateSliderButtonSelects(el);
+  }
+
+  function reapplySlider(el) {
+    // Live-refresh the canvas preview after a slider config change, without
+    // a full rerender() (which would also rebuild the element list / handles).
+    if (window._setupSlider) {
+      const node = document.querySelector(`[data-id="${el.id}"]`);
+      window._setupSlider(el, node);
+    }
+  }
+
+  document.getElementById('prop-slider-type').addEventListener('change', function() {
+    const el = getEl(selectedId); if (!el || el.type !== 'slider') return;
+    (el.sliderCfg || (el.sliderCfg = defaultSliderCfg())).carouselType = this.value;
+    reapplySlider(el);
+  });
+
+  document.getElementById('prop-slider-groupcarousel').addEventListener('change', function() {
+    const el = getEl(selectedId); if (!el || el.type !== 'slider') return;
+    (el.sliderCfg || (el.sliderCfg = defaultSliderCfg())).groupCarousel = this.checked;
+    reapplySlider(el);
+  });
+
+  document.getElementById('prop-slider-autoscroll').addEventListener('change', function() {
+    const el = getEl(selectedId); if (!el || el.type !== 'slider') return;
+    (el.sliderCfg || (el.sliderCfg = defaultSliderCfg())).autoScroll = this.checked;
+    reapplySlider(el);
+  });
+
+  document.getElementById('prop-slider-duration').addEventListener('input', function() {
+    const el = getEl(selectedId); if (!el || el.type !== 'slider') return;
+    (el.sliderCfg || (el.sliderCfg = defaultSliderCfg())).duration = Math.max(0.5, parseFloat(this.value) || 3);
+    reapplySlider(el);
+  });
+
+  document.getElementById('prop-slider-gap').addEventListener('input', function() {
+    const el = getEl(selectedId); if (!el || el.type !== 'slider') return;
+    (el.sliderCfg || (el.sliderCfg = defaultSliderCfg())).gap = Math.max(0, parseFloat(this.value) || 0);
+    reapplySlider(el);
+  });
+
+  document.getElementById('prop-slider-loop').addEventListener('change', function() {
+    const el = getEl(selectedId); if (!el || el.type !== 'slider') return;
+    (el.sliderCfg || (el.sliderCfg = defaultSliderCfg())).loop = this.checked;
+    reapplySlider(el);
+  });
+
+  document.getElementById('prop-slider-dots').addEventListener('change', function() {
+    const el = getEl(selectedId); if (!el || el.type !== 'slider') return;
+    (el.sliderCfg || (el.sliderCfg = defaultSliderCfg())).dots = this.checked;
+    reapplySlider(el);
+  });
+
+  document.getElementById('prop-slider-btnnav').addEventListener('change', function() {
+    const el = getEl(selectedId); if (!el || el.type !== 'slider') return;
+    const cfg = el.sliderCfg || (el.sliderCfg = defaultSliderCfg());
+    cfg.buttonNav = this.checked;
+    document.getElementById('slider-btnnav-fields').style.display = this.checked ? '' : 'none';
+    if (this.checked) populateSliderButtonSelects(el);
+    reapplySlider(el);
+  });
+
+  document.getElementById('prop-slider-leftbtn').addEventListener('change', function() {
+    const el = getEl(selectedId); if (!el || el.type !== 'slider') return;
+    (el.sliderCfg || (el.sliderCfg = defaultSliderCfg())).leftBtnId = this.value;
+    reapplySlider(el);
+  });
+
+  document.getElementById('prop-slider-rightbtn').addEventListener('change', function() {
+    const el = getEl(selectedId); if (!el || el.type !== 'slider') return;
+    (el.sliderCfg || (el.sliderCfg = defaultSliderCfg())).rightBtnId = this.value;
+    reapplySlider(el);
+  });
+
+  document.getElementById('prop-slider-autohide').addEventListener('change', function() {
+    const el = getEl(selectedId); if (!el || el.type !== 'slider') return;
+    (el.sliderCfg || (el.sliderCfg = defaultSliderCfg())).autoHide = this.checked;
+    reapplySlider(el);
+  });
+
+  // ── "Choose Components" popup ───────────────────────────────────────────
+  // Lists every element on the canvas except the slider itself and its own
+  // descendants (so a slider can never be nested inside itself). Ticking a
+  // row and confirming reparents that element (single component or a whole
+  // group, children and all) into the slider using the same setParent()
+  // reparenting logic the element-list drag-and-drop already relies on —
+  // unticking / confirming moves it back out to the root.
+  const sliderPopup = document.getElementById('slider-picker-popup');
+  let _pickerTargetSliderId = null;
+
+  function openSliderPicker(sliderId) {
+    _pickerTargetSliderId = sliderId;
+    const slider = getEl(sliderId);
+    const list = document.getElementById('slider-picker-list');
+    list.innerHTML = '';
+    const current = new Set(Array.isArray(slider.children) ? slider.children : []);
+
+    // Only offer top-level-selectable items: elements with no parent, or
+    // already a direct child of this slider. (Picking a component that
+    // lives inside some other group would silently rip it out of that
+    // group, which isn't what "choose existing canvas components" implies.)
+    // Anything that's an *ancestor* of this slider is excluded too, since
+    // making it a slide would nest the slider inside itself.
+    const rows = (window.pageData.elements || []).filter(e =>
+      e.id !== sliderId &&
+      (!e.parent || e.parent === sliderId) &&
+      !isDescendant(e.id, sliderId)
+    );
+
+    if (!rows.length) {
+      const empty = document.createElement('div');
+      empty.className = 'slider-slide-empty';
+      empty.textContent = 'No available components — add some to the canvas first.';
+      list.appendChild(empty);
+    }
+
+    rows.forEach(e => {
+      const row = document.createElement('label');
+      row.className = 'slider-pick-row';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = current.has(e.id);
+      cb.dataset.id = e.id;
+      const txt = document.createElement('span');
+      txt.textContent = (TYPE_ICON[e.type] || '▢') + ' ' + e.id + (e.content ? ' — ' + String(e.content).slice(0, 24) : '');
+      row.append(cb, txt);
+      list.appendChild(row);
+    });
+
+    sliderPopup.style.display = 'flex';
+  }
+
+  function closeSliderPicker() {
+    sliderPopup.style.display = 'none';
+    _pickerTargetSliderId = null;
+  }
+
+  const chooseBtn = document.getElementById('btn-choose-components');
+  if (chooseBtn) {
+    chooseBtn.addEventListener('click', () => {
+      const el = getEl(selectedId);
+      if (!el || el.type !== 'slider') return;
+      openSliderPicker(el.id);
+    });
+  }
+
+  const pickerCancelBtn = document.getElementById('slider-picker-cancel');
+  if (pickerCancelBtn) pickerCancelBtn.addEventListener('click', closeSliderPicker);
+
+  if (sliderPopup) {
+    sliderPopup.addEventListener('mousedown', (ev) => {
+      if (ev.target === sliderPopup) closeSliderPicker();
+    });
+  }
+
+  const pickerConfirmBtn = document.getElementById('slider-picker-confirm');
+  if (pickerConfirmBtn) {
+    pickerConfirmBtn.addEventListener('click', () => {
+      const sliderId = _pickerTargetSliderId;
+      if (!sliderId) return closeSliderPicker();
+      const slider = getEl(sliderId);
+      if (!slider) return closeSliderPicker();
+
+      const checked = Array.from(document.querySelectorAll('#slider-picker-list input[type="checkbox"]'));
+      checked.forEach(cb => {
+        const id = cb.dataset.id;
+        if (cb.checked) {
+          setParent(id, sliderId);
+        } else if (getEl(id)?.parent === sliderId) {
+          setParent(id, null);
+        }
+      });
+
+      closeSliderPicker();
+      rerender();
+      selectEl(sliderId);
+      showToast('Slides updated');
+    });
+  }
+
   document.getElementById('prop-x').addEventListener('input', function() {
     const el = getEl(selectedId); if (!el) return;
     el.x = parseInt(this.value) || 0;
@@ -2082,6 +2665,20 @@ function initPanel() {
     }
   });
 
+  // Group/container Scale — resizes only the visual size of this element's
+  // children (via a scaled wrapper main.js inserts between it and them),
+  // never this element's own x/y/w/h and never any child's own x/y/w/h.
+  // A full rerender is needed (rather than a light DOM patch) since scale
+  // changes which wrapper each child lives in.
+  const scaleField = document.getElementById('prop-scale');
+  if (scaleField) scaleField.addEventListener('input', function() {
+    const el = getEl(selectedId); if (!el) return;
+    let v = parseFloat(this.value);
+    if (!isFinite(v) || v <= 0) v = 1;
+    el.scale = v;
+    rerender();
+  });
+
   function applyBgColor(value) {
     const el = getEl(selectedId); if (!el) return;
     if (!el.styles) el.styles = {};
@@ -2100,6 +2697,29 @@ function initPanel() {
   document.getElementById('color-bg-hex').addEventListener('change', function() {
     const v = this.value.trim();
     if (isValidBackground(v)) applyBgColor(v);
+  });
+
+  // Blur — glass-morphism backdrop-filter. 0 (or blank) removes it entirely
+  // so elements that never had it keep rendering exactly as before.
+  function patchNodeBlur(id, px) {
+    const node = document.querySelector(`[data-id="${id}"]`);
+    if (!node) return;
+    const val = px > 0 ? `blur(${px}px)` : '';
+    node.style.backdropFilter = val;
+    node.style.WebkitBackdropFilter = val;
+  }
+  document.getElementById('prop-bg-blur').addEventListener('input', function() {
+    const el = getEl(selectedId); if (!el) return;
+    const px = Math.max(0, parseFloat(this.value) || 0);
+    if (!el.styles) el.styles = {};
+    if (px > 0) {
+      el.styles.backdropFilter = `blur(${px}px)`;
+      el.styles.WebkitBackdropFilter = `blur(${px}px)`;
+    } else {
+      el.styles.backdropFilter = undefined;
+      el.styles.WebkitBackdropFilter = undefined;
+    }
+    patchNodeBlur(selectedId, px);
   });
 
   function applyTextColor(value) {
@@ -2227,44 +2847,50 @@ function initPanel() {
     }
   });
 
-  document.querySelectorAll('#anim-seg .seg-btn').forEach(b => {
-    b.addEventListener('click', () => {
-      const el = getEl(selectedId); if (!el) return;
-      el.animation = b.dataset.anim;
-      document.querySelectorAll('#anim-seg .seg-btn').forEach(x => x.classList.remove('active'));
-      b.classList.add('active');
-      const hasAnim = b.dataset.anim !== 'none';
-      document.getElementById('anim-extra-row').style.display = hasAnim ? '' : 'none';
-      if (hasAnim) {
-        document.getElementById('prop-anim-duration').value = el.animDuration ?? 0.5;
-        document.getElementById('prop-anim-loop').checked = !!el.animLoop;
-        document.getElementById('prop-anim-smooth').checked = !!el.animSmooth;
-        document.getElementById('anim-smooth-row').style.display = el.animLoop ? '' : 'none';
-      }
-      const node = document.querySelector(`[data-id="${selectedId}"]`);
-      if (node) {
-        if (hasAnim) {
-          applyAnimToNode(node, el);
-        } else {
-          node.classList.remove('anim-fadeIn', 'anim-slideUp', 'anim-slideIn', 'anim-zoomIn');
-          node.style.animationDuration = '';
-          node.style.animationIterationCount = '';
-        }
-      }
-    });
-  });
+  // New elements should appear wherever the user is currently looking on
+  // the canvas (i.e. within the visible viewport), not always up at the
+  // very top of the page. We pick a point a little inset from the
+  // top-left of the current viewport, then convert that viewport point
+  // into canvas-local coordinates (accounting for page scroll and any
+  // scale transform — e.g. the mobile preview scaling — applied to
+  // #canvas) so el.x/el.y land in the right spot regardless of how far
+  // down the page the user has scrolled.
+  function getSpawnPosition() {
+    const inset = 40;
+    const canvasEl = document.getElementById('canvas');
+    if (!canvasEl) return { x: inset, y: inset };
+    const rect = canvasEl.getBoundingClientRect();
+    const scale = (rect.width && canvasEl.offsetWidth) ? (rect.width / canvasEl.offsetWidth) : 1;
+    const x = Math.max(20, Math.round((inset - rect.left) / (scale || 1)));
+    const y = Math.max(20, Math.round((inset - rect.top) / (scale || 1)));
+    return { x, y };
+  }
 
   document.querySelectorAll('.add-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const type = btn.dataset.add;
       const id = genId(type);
-      const el = { id, type, x: 40, y: 40, w: 200, h: 80, styles: {}, animation: 'none' };
-      if (type === 'text') { el.content = 'New text'; el.styles = { fontSize: '16px', color: '#e4e4e7', fontFamily: 'system-ui, sans-serif' }; }
-      if (type === 'button') { el.content = 'Button'; el.href = '#'; el.styles = { background: '#4f46e5', color: '#fff', borderRadius: '6px', fontSize: '14px', fontFamily: 'system-ui, sans-serif' }; }
-      if (type === 'image') { el.src = ''; }
-      if (type === 'video') { el.src = ''; }
-      if (type === 'audio') { el.src = ''; }
+      const { x: spawnX, y: spawnY } = getSpawnPosition();
+      const el = { id, type, x: spawnX, y: spawnY, w: 200, h: 80, styles: {}, animation: 'none' };
+      if (type === 'text') {
+        el.content = 'New text';
+        el.styles = { fontSize: '16px', color: '#e4e4e7', fontFamily: 'system-ui, sans-serif' };
+        // Inherit whatever Base Font is currently set — empty stays empty,
+        // filled carries the same custom font forward onto the new element.
+        el.fontFilePath = window.pageData.globalFontPath || '';
+      }
+      if (type === 'button') { el.content = 'Button'; el.href = ''; el.styles = { background: '#4f46e5', color: '#fff', borderRadius: '6px', fontSize: '14px', fontFamily: 'system-ui, sans-serif' }; }
+      if (type === 'image') { el.src = './asset/'; }
+      if (type === 'video') { el.src = './asset/'; }
+      if (type === 'audio') { el.src = './asset/'; }
       if (['container', 'group'].includes(type)) { el.children = []; el.styles = { background: '#1f2937', borderRadius: '8px' }; }
+      if (type === 'slider') {
+        el.w = 320; el.h = 220;
+        el.children = [];
+        el.styles = { background: '#1f2937', borderRadius: '8px' };
+        el.borderCfg = { enabled: true, style: 'dashed', width: 1, color: '#6b7280', opacity: 1 };
+        el.sliderCfg = { carouselType: 'horizontal', duration: 3, gap: 0, autoScroll: true, loop: false, dots: false, buttonNav: false, leftBtnId: '', rightBtnId: '', autoHide: false, groupCarousel: false };
+      }
       if (type === 'input') {
         el.content = 'Placeholder text';
         el.h = 40;
@@ -2304,22 +2930,39 @@ function initPanel() {
   document.getElementById('btn-to-button').addEventListener('click', () => {
     const el = getEl(selectedId); if (!el) return;
     el.type = 'button';
-    el.href = el.href || '#';
-    el.content = el.content || 'Button';
+    el.href = el.href || '';
+    // Converting only adds button behavior (clickable, Navigate To, etc.) —
+    // content/state/position are left exactly as they were, so no default
+    // "Button" label gets stamped onto elements (e.g. containers) that had
+    // no text of their own.
     rerender();
-    showToast('Converted to button');
+    // rerender() only rebuilds the canvas + element list — it doesn't touch
+    // the currently-open Properties panel, so without this the panel kept
+    // showing the old element type's fields and the button-only controls
+    // (Navigate To page/location, Href, etc.) never appeared after
+    // converting. Re-show the props for the (now button-typed) element so
+    // those fields show up immediately.
+    showProps(el);
+    showToast('Converted to button — see Navigate To below');
   });
 
   document.getElementById('btn-group-sel').addEventListener('click', () => {
     if (!selectedId) return showToast('Select an element first');
     const el = getEl(selectedId); if (!el) return;
     const gid = genId('group');
+    // The group box is created at exactly the element's current x/y/w/h,
+    // and the element's own x/y are reset to 0,0 (its position *inside*
+    // the group). Since the group sits at the same place the element used
+    // to be, and the element now sits flush with the group's top-left
+    // corner, the element's on-canvas position doesn't move at all —
+    // grouping should never reposition anything automatically; only an
+    // explicit, manual edit (dragging, or the X/Y fields) should.
     const grpFlat = {
-      id: gid, type: 'group', x: el.x, y: el.y, w: el.w + 40, h: el.h + 40,
+      id: gid, type: 'group', x: el.x, y: el.y, w: el.w, h: el.h,
       styles: { border: '1px dashed #374151', borderRadius: '6px' },
       animation: 'none', children: [selectedId], parent: el.parent
     };
-    el.parent = gid; el.x = 20; el.y = 20;
+    el.parent = gid; el.x = 0; el.y = 0;
     const grp = window._wrapNewElement ? window._wrapNewElement(grpFlat) : grpFlat;
     window.pageData.elements.push(grp);
     rerender(); selectEl(gid); showToast('Wrapped in group');
@@ -2349,36 +2992,76 @@ function initPanel() {
   function copySelected() {
     const el = getEl(selectedId);
     if (!el) return;
-    _clipboardEl = JSON.parse(JSON.stringify(el));
-    showToast('Copied');
+    // A group/container's own flat data only *references* its children by
+    // id — the actual child elements are separate entries in
+    // window.pageData.elements. Copying just the selected element therefore
+    // used to copy an empty shell. Walk the (current mode's) child tree and
+    // capture every descendant alongside it, so pasting reproduces the
+    // whole group, not just the container.
+    const subtree = [];
+    (function collect(id) {
+      const e = getEl(id);
+      if (!e) return;
+      subtree.push(JSON.parse(JSON.stringify(e)));
+      getChildren(id).forEach(child => collect(child.id));
+    })(selectedId);
+    _clipboardEl = subtree;
+    showToast(subtree.length > 1 ? 'Copied group' : 'Copied');
   }
 
   function pasteClipboard() {
-    if (!_clipboardEl) return showToast('Nothing to paste');
-    const clone = JSON.parse(JSON.stringify(_clipboardEl));
-    const newId = genId(clone.type);
-    clone.id = newId;
+    if (!_clipboardEl || !_clipboardEl.length) return showToast('Nothing to paste');
+    const originals = JSON.parse(JSON.stringify(_clipboardEl));
+    const rootOldId = originals[0].id;
 
-    // Paste as a top-level element offset from the original — detaching from
-    // any old parent avoids dangling child references (the copy doesn't
-    // exist in the original parent's children list, and any children of a
-    // copied container still belong to the original, not the clone).
-    if (clone.layouts) {
+    // Fresh ids for every element in the subtree up front, so parent/child
+    // references between the copied elements can be remapped consistently.
+    const idMap = {};
+    originals.forEach(o => { idMap[o.id] = genId(o.type); });
+
+    const clones = originals.map(o => {
+      const clone = JSON.parse(JSON.stringify(o));
+      clone.id = idMap[o.id];
+      if (clone.layouts) {
+        ['desktop', 'mobile'].forEach(mode => {
+          const L = clone.layouts[mode];
+          if (!L) return;
+          // Point at the *new* parent/children ids so the pasted subtree's
+          // internal structure mirrors the original instead of dangling
+          // references to the elements that were actually copied, not the
+          // originals still sitting in the tree.
+          if (L.parent) L.parent = idMap[L.parent] || null;
+          if (Array.isArray(L.children)) {
+            L.children = L.children.map(c => idMap[c]).filter(Boolean);
+          }
+        });
+      }
+      return clone;
+    });
+
+    // Detach the copied root from wherever it used to live, and nudge it so
+    // the paste doesn't sit exactly on top of the original — descendants
+    // keep their relative x/y untouched since they stay nested inside the
+    // (also cloned) root.
+    const rootClone = clones.find(c => c.id === idMap[rootOldId]);
+    if (rootClone && rootClone.layouts) {
       ['desktop', 'mobile'].forEach(mode => {
-        const L = clone.layouts[mode];
+        const L = rootClone.layouts[mode];
         if (!L) return;
         L.x = (L.x || 0) + 24;
         L.y = (L.y || 0) + 24;
         L.parent = null;
-        if (Array.isArray(L.children)) L.children = [];
       });
     }
 
-    const wrapped = window._wrapNewElement ? window._wrapNewElement(clone) : clone;
-    window.pageData.elements.push(wrapped);
+    clones.forEach(clone => {
+      const wrapped = window._wrapNewElement ? window._wrapNewElement(clone) : clone;
+      window.pageData.elements.push(wrapped);
+    });
+
     rerender();
-    selectEl(newId);
-    showToast('Pasted');
+    selectEl(idMap[rootOldId]);
+    showToast(clones.length > 1 ? 'Pasted group' : 'Pasted');
   }
 
   document.addEventListener('keydown', (e) => {
@@ -2453,6 +3136,22 @@ function initPanel() {
   // Uses the browser's native EyeDropper API (Chrome/Edge). Where it isn't
   // supported, the button stays visible but explains itself on click rather
   // than disappearing, since support is expanding browser to browser.
+  //
+  // The browser only ever allows ONE EyeDropper session at a time. The guard
+  // against overlapping calls used to live *inside* attachEyedropper, so each
+  // of the 5 buttons (bg, text, border, shadow, page-bg) got its own private
+  // `activeController` — that only stopped the *same* button from being
+  // clicked twice. Clicking a *different* field's eyedropper while one was
+  // still picking fired a second, overlapping EyeDropper.open() call; the
+  // browser rejects/ignores it, but the first session's promise is left with
+  // nothing to resolve it, so its native picking cursor/overlay stays active
+  // and swallows every click on the page indefinitely — which is exactly
+  // what "the entire browser freezes after using the color picker" looks
+  // like, with no obvious way out short of hitting Escape. Sharing one guard
+  // across all buttons means starting a new pick always cancels whichever
+  // one is already in flight first, so only one can ever be open.
+  let activeEyedrop = null; // { controller, reset }
+
   function attachEyedropper(hexInputId, applyFn) {
     const hexInput = document.getElementById(hexInputId);
     if (!hexInput || hexInput.parentElement.querySelector('.eyedrop-btn')) return;
@@ -2464,17 +3163,40 @@ function initPanel() {
     btn.setAttribute('aria-label', 'Pick a color from the page');
     btn.innerHTML = '💧';
 
+    const reset = () => {
+      btn.innerHTML = '💧';
+      btn.title = 'Pick a color from the page';
+    };
+
     btn.addEventListener('click', async (e) => {
       e.preventDefault();
       if (!window.EyeDropper) {
         showToast('Eyedropper isn\u2019t supported in this browser');
         return;
       }
+
+      // Something is already picking (this button or any other) — cancel it
+      // first rather than letting a second session overlap it.
+      if (activeEyedrop) {
+        const wasThisButton = activeEyedrop.reset === reset;
+        activeEyedrop.controller.abort();
+        activeEyedrop.reset();
+        activeEyedrop = null;
+        if (wasThisButton) return; // same button: this click was just "cancel"
+      }
+
+      const controller = new AbortController();
+      activeEyedrop = { controller, reset };
+      btn.innerHTML = '⏹';
+      btn.title = 'Cancel color pick';
       try {
-        const result = await new window.EyeDropper().open();
+        const result = await new window.EyeDropper().open({ signal: controller.signal });
         if (result && result.sRGBHex) applyFn(result.sRGBHex);
       } catch (err) {
-        // AbortError = user cancelled the pick — nothing to do.
+        // AbortError = user cancelled the pick (Escape or a button) — nothing to do.
+      } finally {
+        reset();
+        if (activeEyedrop && activeEyedrop.controller === controller) activeEyedrop = null;
       }
     });
 

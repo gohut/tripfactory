@@ -8,6 +8,15 @@
 // panel.js waits for this to be set (non-null/undefined) before initializing.
 window.pageData = undefined;
 
+// ─── PANEL LOADER — DELETE THIS ENTIRE BLOCK TO DETACH THE EDITOR PANEL ─────
+// Everything between these two markers is self-contained: select and delete
+// the whole block (including the markers) whenever you want main.js to run
+// with zero editor panel — the renderer works fully standalone without it.
+import('./Pannel/panel-core.js').catch(err => {
+  console.error('[main.js] Failed to load editor panel:', err);
+});
+// ─── END PANEL LOADER ────────────────────────────────────────────────────────
+
 // ─── CSS: animations & base canvas styles ───────────────────────────────────
 const styleTag = document.createElement('style');
 styleTag.textContent = `
@@ -79,12 +88,27 @@ styleTag.textContent = `
     from { opacity: 0; transform: scale(0.92); }
     to   { opacity: 1; transform: scale(1); }
   }
+  @keyframes rotateLoop {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  @keyframes bounceLoop {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-18px); }
+  }
 
   /* ── Animation utility classes ── */
   .anim-fadeIn  { animation: fadeIn  0.5s ease both; }
   .anim-slideUp { animation: slideUp 0.55s ease both; }
   .anim-slideIn { animation: slideIn 0.5s ease both; }
   .anim-zoomIn  { animation: zoomIn  0.45s ease both; }
+  /* Rotate/Bounce are continuous animations — smooth, looping motion driven
+     entirely by CSS so they stay buttery even under heavy page load (no
+     per-frame JS involved). Their default iteration-count is set to
+     infinite in JS (see animClass/createElement below) unless the user
+     explicitly turns Loop off. */
+  .anim-rotate  { animation: rotateLoop  1.2s linear      both; }
+  .anim-bounce  { animation: bounceLoop  0.6s ease-in-out both; }
 
   /* ── Element base ── */
   .page-element {
@@ -101,6 +125,12 @@ styleTag.textContent = `
     overflow: hidden;
   }
 
+  /* ── Slider / carousel ── clip slides to the box; slides themselves are
+     absolutely positioned and animated in JS (see the slider runtime below). */
+  .page-element[data-type="slider"] {
+    overflow: hidden;
+  }
+
   /* ── Video mute/unmute toggle ── */
   .video-mute-toggle {
     transition: background 0.15s, transform 0.15s;
@@ -110,7 +140,13 @@ styleTag.textContent = `
     transform: scale(1.08);
   }
 
-  /* ── Button reset ── */
+  /* ── Button reset ──────────────────────────────────────────────────────
+     Applies to both freshly-added buttons and elements (e.g. containers)
+     converted to a button. Only adds clickable/button characteristics —
+     no border/background/font of its own is introduced here, so an
+     element's existing look (and its children's positions) stay exactly
+     as they were before conversion; el.styles still fully controls the
+     visible background/border/etc. */
   .page-element[data-type="button"] {
     display: flex;
     align-items: center;
@@ -118,6 +154,14 @@ styleTag.textContent = `
     text-decoration: none;
     overflow: visible;
     transition: opacity 0.15s, transform 0.15s;
+    border: none;
+    outline: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
   }
   .page-element[data-type="button"]:hover {
     opacity: 0.88;
@@ -177,7 +221,8 @@ document.head.appendChild(styleTag);
 // el.parent, el.children, el.animation, el.advAnim, el.positionFixed, el.hidden
 // transparently read/write whichever layout is currently active, so existing
 // code throughout main.js and panel.js needs no further changes.
-const LAYOUT_KEYS = ['x', 'y', 'w', 'h', 'rotation', 'styles', 'animation', 'animDuration', 'animLoop', 'animScale', 'advAnim', 'parent', 'children', 'positionFixed', 'hidden', 'borderCfg', 'shadowCfg'];
+const LAYOUT_KEYS = ['x', 'y', 'w', 'h', 'rotation', 'scale', 'styles', 'animation', 'animDuration', 'animLoop', 'animScale', 'advAnim', 'parent', 'children', 'positionFixed', 'hidden', 'borderCfg', 'shadowCfg', 'navigateTo', 'navigateLocationId', 'navigateSpeed'];
+window._LAYOUT_KEYS = LAYOUT_KEYS;
 const MOBILE_BREAKPOINT     = 480; // px — real-visitor viewport width that switches to mobile layout
 window.MOBILE_CANVAS_WIDTH  = 390; // px — width of the mobile canvas/frame
 
@@ -219,7 +264,24 @@ function computeLayoutMode() {
 // from the "Add" buttons) into { id, type, ...sharedFields, layouts:{desktop,mobile} }.
 // Idempotent — already-migrated elements pass through untouched.
 function migrateElement(raw) {
-  if (raw.layouts && raw.layouts.desktop && raw.layouts.mobile) return raw;
+  if (raw.layouts && raw.layouts.desktop && raw.layouts.mobile) {
+    // Already split into desktop/mobile once before — but LAYOUT_KEYS can
+    // grow over time (a field that used to be shared/core becomes
+    // per-mode, e.g. button navigation). Any such key still sitting at the
+    // top level from before it was added to LAYOUT_KEYS would otherwise be
+    // invisible now (the Proxy below only ever looks inside
+    // target.layouts[mode] for these keys) — fold it into both modes here,
+    // seeded with the same value it always had, so nothing resets to
+    // blank/default the first time an older save loads under the new key
+    // list. From then on desktop/mobile can diverge independently.
+    LAYOUT_KEYS.forEach(k => {
+      if (!Object.prototype.hasOwnProperty.call(raw, k)) return;
+      if (!(k in raw.layouts.desktop)) raw.layouts.desktop[k] = raw[k];
+      if (!(k in raw.layouts.mobile))  raw.layouts.mobile[k]  = JSON.parse(JSON.stringify(raw[k]));
+      delete raw[k];
+    });
+    return raw;
+  }
   const core = {};
   const layout = {};
   Object.keys(raw).forEach(k => {
@@ -289,9 +351,22 @@ window._setLayoutMode = function(mode) {
 window._getLayoutMode = function() { return window._layoutMode || computeLayoutMode(); };
 
 function animClass(name) {
-  const map = { fadeIn: 'anim-fadeIn', slideUp: 'anim-slideUp', slideIn: 'anim-slideIn', zoomIn: 'anim-zoomIn' };
+  const map = {
+    fadeIn: 'anim-fadeIn', slideUp: 'anim-slideUp', slideIn: 'anim-slideIn', zoomIn: 'anim-zoomIn',
+    rotate: 'anim-rotate', bounce: 'anim-bounce'
+  };
   return map[name] || '';
 }
+
+// Rotate/Bounce are continuous, ambient animations — unlike the "on load"
+// basic animations (fade/slide/zoom), they're meant to keep going forever
+// by default, so Loop starts pre-enabled for them unless the user has
+// explicitly saved an animLoop value (including explicitly turning it off).
+function effectiveAnimLoop(el) {
+  if (el.animLoop !== undefined) return !!el.animLoop;
+  return el.animation === 'rotate' || el.animation === 'bounce';
+}
+window._effectiveAnimLoop = effectiveAnimLoop;
 
 // ─── Custom font-file (.ttf) support ────────────────────────────────────────
 // Each distinct font path gets its own @font-face rule (injected once) and a
@@ -345,6 +420,35 @@ function applyGeometry(node, el) {
   node.style.width  = el.w + 'px';
   node.style.height = el.h + 'px';
   applyElementTransform(node, el.rotation);
+}
+
+// ─── Group/container "Scale" (visually scales children, not the box) ───────
+// A group/container's own W/H fields only ever resize the box itself — they
+// never touch its children's x/y/w/h, which is why dragging a group's resize
+// handle used to leave everything inside it exactly the same size. `scale`
+// is a separate, optional per-element number (default 1) that uniformly
+// scales the *visual size* of everything nested directly inside it, without
+// ever rewriting any child's own x/y/w/h. It works by inserting an
+// in-between wrapper div (only when scale !== 1) that sits at the parent's
+// unscaled 0,0..100%,100% box and carries the actual `transform: scale()` —
+// children are appended into that wrapper instead of straight into the
+// parent, so their own coordinates stay untouched and are just rendered
+// bigger/smaller as a group, anchored to the parent's top-left corner.
+function appendIntoParent(parentNode, childNode, parentEl) {
+  const scale = parentEl.scale;
+  if (scale === undefined || scale === null || scale === 1 || !isFinite(scale) || scale <= 0) {
+    parentNode.appendChild(childNode);
+    return;
+  }
+  let wrapper = parentNode.querySelector(':scope > .scale-wrapper');
+  if (!wrapper) {
+    wrapper = document.createElement('div');
+    wrapper.className = 'scale-wrapper';
+    wrapper.style.cssText = 'position:absolute;left:0;top:0;right:0;bottom:0;transform-origin:0 0;pointer-events:auto;';
+    parentNode.appendChild(wrapper);
+  }
+  wrapper.style.transform = `scale(${scale})`;
+  wrapper.appendChild(childNode);
 }
 
 function applyStyles(node, styles = {}) {
@@ -519,7 +623,7 @@ function createElement(el) {
       break;
     }
     case 'button': {
-      if (el.href) {
+      if (el.href && el.href !== '#') {
         node = document.createElement('a');
         node.href = el.href;
         if (el.target) node.target = el.target;
@@ -529,7 +633,34 @@ function createElement(el) {
           try { node.addEventListener('click', new Function(el.onClick)); } catch(e) {}
         }
       }
-      node.textContent = el.content || 'Button';
+      // Only ever show el.content itself — never a hardcoded fallback.
+      // Brand-new buttons get 'Button' stamped into el.content once, up
+      // front, by the Add-button flow; an element converted to a button
+      // (e.g. a container) keeps whatever content it already had (often
+      // none), so no stray label appears alongside/behind its children.
+      //
+      // An element that used to be an image/video (el.src still set) has
+      // no children of its own — its picture lived entirely in the
+      // type-specific 'image'/'video' render branch, which a plain
+      // <button>/<a> never runs. Without this, converting it to a button
+      // silently dropped the picture and left an empty box. Re-create that
+      // picture here so the visual survives the conversion; button
+      // behavior (click/navigate) still applies to the whole element.
+      if (!(el.children && el.children.length)) {
+        if (el.src) {
+          const img = document.createElement('img');
+          img.src = el.src;
+          img.alt = el.alt || '';
+          img.style.objectFit = el.objectFit || 'cover';
+          img.style.width = '100%';
+          img.style.height = '100%';
+          img.style.display = 'block';
+          img.style.pointerEvents = 'none';
+          node.appendChild(img);
+        } else if (el.content) {
+          node.textContent = el.content;
+        }
+      }
       break;
     }
     case 'input': {
@@ -605,12 +736,13 @@ function createElement(el) {
 
   const cls = animClass(el.animation);
   if (cls) {
+    const loop = effectiveAnimLoop(el);
     node.style.animationDuration = (el.animDuration ?? 0.5) + 's';
-    node.style.animationIterationCount = el.animLoop ? 'infinite' : '1';
+    node.style.animationIterationCount = loop ? 'infinite' : '1';
     // "Smooth" plays forward then reverse on alternating iterations, so a
     // looped animation glides back the way it came instead of snapping to
     // its start frame every cycle.
-    node.style.animationDirection = (el.animLoop && el.animSmooth) ? 'alternate' : 'normal';
+    node.style.animationDirection = (loop && el.animSmooth) ? 'alternate' : 'normal';
     node.classList.add(cls);
   }
 
@@ -627,7 +759,7 @@ function createElement(el) {
     node.style.width  = f0.w + 'px';
     node.style.height = f0.h + 'px';
     node.style.opacity = f0.opacity ?? 1;
-    applyElementTransform(node, el.rotation, f0.scale ?? 1);
+    applyElementTransform(node, f0.rotation ?? el.rotation ?? 0, f0.scale ?? 1);
   }
 
   return node;
@@ -648,8 +780,9 @@ function evalAdvFrames(frames, t) {
     y: lerpVal(a.y, b.y, tSeg),
     w: lerpVal(a.w, b.w, tSeg),
     h: lerpVal(a.h, b.h, tSeg),
-    opacity: lerpVal(a.opacity ?? 1, b.opacity ?? 1, tSeg),
-    scale:   lerpVal(a.scale   ?? 1, b.scale   ?? 1, tSeg),
+    opacity:  lerpVal(a.opacity ?? 1, b.opacity ?? 1, tSeg),
+    scale:    lerpVal(a.scale   ?? 1, b.scale   ?? 1, tSeg),
+    rotation: lerpVal(a.rotation ?? 0, b.rotation ?? 0, tSeg),
   };
 }
 
@@ -659,7 +792,11 @@ function applyAdvFrame(node, frame) {
   node.style.width   = frame.w + 'px';
   node.style.height  = frame.h + 'px';
   node.style.opacity = frame.opacity;
-  applyElementTransform(node, parseFloat(node.dataset.rot) || 0, frame.scale);
+  // Prefer the frame's own rotation value (keyframed rotation). Fall back to
+  // whatever rotation is already stashed on the node for older animations
+  // saved before frames carried a rotation field.
+  const rot = frame.rotation !== undefined ? frame.rotation : (parseFloat(node.dataset.rot) || 0);
+  applyElementTransform(node, rot, frame.scale);
 }
 
 // Global scroll state tracker for scroll-driven animations
@@ -1109,6 +1246,211 @@ function updateMobileScale() {
 }
 window._updateMobileScale = updateMobileScale;
 
+// ─── Slider / Carousel runtime ──────────────────────────────────────────────
+// A "slider" element renders like a normal container, but the children the
+// editor's "Choose Components" popup assigns to it (el.children — single
+// components or whole groups) are treated as full-bleed slides instead of
+// freely positioned content: only one is shown at a time. el.sliderCfg
+// drives orientation, autoplay, dots, and optional prev/next buttons, which
+// are ordinary button elements that already exist elsewhere on the canvas
+// and are simply wired up here by id.
+const _sliderIdx = {};      // slider id -> current slide index (persists across re-renders)
+const _sliderTimers = {};   // slider id -> autoplay interval id
+
+function _sliderChildIds(el) {
+  return Array.isArray(el.children) ? el.children : [];
+}
+
+function _sliderLayoutSlides(el, node, idx) {
+  const cfg = el.sliderCfg || {};
+  const vertical = cfg.carouselType === 'vertical';
+  const gap = Number(cfg.gap) || 0;
+  const ids = _sliderChildIds(el);
+
+  // "Group Carousel" (off by default): when ON, a slide keeps its own
+  // authored x/y/w/h (e.g. a grouped container's own width/height) instead
+  // of being stretched full-bleed to the slider box. When OFF, behaves
+  // exactly like before (each slide forced to 100% width/height, left/top
+  // reset to 0) — this is the original, long-working default and stays
+  // untouched so existing sliders keep rendering the same.
+  if (!cfg.groupCarousel) {
+    ids.forEach((cid, i) => {
+      const slide = node.querySelector(`:scope > [data-id="${cid}"]`);
+      if (!slide) return;
+      slide.style.position = 'absolute';
+      slide.style.width = '100%';
+      slide.style.height = '100%';
+      slide.style.transition = 'left 0.45s ease, top 0.45s ease';
+      const step = i - idx;
+      const offset = step * 100;
+      const offsetPos = gap ? `calc(${offset}% + ${step * gap}px)` : offset + '%';
+      if (vertical) {
+        slide.style.left = '0';
+        slide.style.top = offsetPos;
+      } else {
+        slide.style.top = '0';
+        slide.style.left = offsetPos;
+      }
+    });
+    return;
+  }
+
+  // Paging distance is the slider box's own size — NOT the slide's size —
+  // so slides page past exactly one slider-width/height per step regardless
+  // of their own authored dimensions.
+  const containerSize = vertical ? node.clientHeight : node.clientWidth;
+  ids.forEach((cid, i) => {
+    const slide = node.querySelector(`:scope > [data-id="${cid}"]`);
+    if (!slide) return;
+
+    // Stash the slide's own authored left/top (from applyGeometry, i.e. its
+    // real x/y in the layout) exactly once, so re-renders don't keep adding
+    // the paging offset on top of an already-offset value. Width/height are
+    // deliberately left untouched here — a group keeps its own dimensions.
+    if (slide.dataset.sliderOrigLeft === undefined) {
+      slide.dataset.sliderOrigLeft = parseFloat(slide.style.left) || 0;
+    }
+    if (slide.dataset.sliderOrigTop === undefined) {
+      slide.dataset.sliderOrigTop = parseFloat(slide.style.top) || 0;
+    }
+    const origLeft = parseFloat(slide.dataset.sliderOrigLeft);
+    const origTop  = parseFloat(slide.dataset.sliderOrigTop);
+
+    slide.style.position = 'absolute';
+    slide.style.transition = 'left 0.45s ease, top 0.45s ease';
+
+    const step = i - idx;
+    const offsetPx = step * (containerSize + gap);
+    if (vertical) {
+      slide.style.left = origLeft + 'px';
+      slide.style.top  = (origTop + offsetPx) + 'px';
+    } else {
+      slide.style.top  = origTop + 'px';
+      slide.style.left = (origLeft + offsetPx) + 'px';
+    }
+  });
+}
+
+function _sliderBuildDots(el, node, idx, goTo) {
+  const cfg = el.sliderCfg || {};
+  let dotsWrap = node.querySelector(':scope > .slider-dots');
+  if (!cfg.dots) { if (dotsWrap) dotsWrap.remove(); return; }
+  const ids = _sliderChildIds(el);
+  if (!dotsWrap) {
+    dotsWrap = document.createElement('div');
+    dotsWrap.className = 'slider-dots';
+    dotsWrap.style.cssText = [
+      'position:absolute', 'left:50%', 'bottom:10px', 'transform:translateX(-50%)',
+      'display:flex', 'gap:6px', 'z-index:20',
+    ].join(';');
+    node.appendChild(dotsWrap);
+  }
+  dotsWrap.innerHTML = '';
+  ids.forEach((_, i) => {
+    const dot = document.createElement('span');
+    dot.style.cssText = [
+      'width:7px', 'height:7px', 'border-radius:50%', 'cursor:pointer',
+      `background:${i === idx ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.4)'}`,
+      'box-shadow:0 0 0 1px rgba(0,0,0,0.25)', 'transition:background 0.2s',
+    ].join(';');
+    dot.addEventListener('click', (ev) => { ev.stopPropagation(); goTo(i); });
+    dotsWrap.appendChild(dot);
+  });
+}
+
+// Existing (non-slider-owned) button elements can be assigned as prev/next
+// triggers. "Appear when needed" (cfg.autoHide) hides whichever end button
+// no longer applies — first slide hides "prev", last slide hides "next" —
+// unless looping is on, in which case both stay visible forever.
+function _sliderWireButtons(el, idx, count) {
+  const cfg = el.sliderCfg || {};
+  const leftBtn  = cfg.leftBtnId  ? document.querySelector(`[data-id="${cfg.leftBtnId}"]`)  : null;
+  const rightBtn = cfg.rightBtnId ? document.querySelector(`[data-id="${cfg.rightBtnId}"]`) : null;
+
+  if (!cfg.buttonNav) {
+    if (leftBtn) { leftBtn.style.display = ''; leftBtn.style.pointerEvents = ''; }
+    if (rightBtn) { rightBtn.style.display = ''; rightBtn.style.pointerEvents = ''; }
+    return;
+  }
+
+  const loop = !!cfg.loop;
+  if (leftBtn) {
+    const hide = cfg.autoHide && !loop && idx === 0;
+    leftBtn.style.display = hide ? 'none' : '';
+    leftBtn.style.pointerEvents = hide ? 'none' : '';
+    if (!leftBtn._sliderBoundId || leftBtn._sliderBoundId !== el.id) {
+      leftBtn._sliderBoundId = el.id;
+      leftBtn.addEventListener('click', (ev) => { ev.preventDefault(); sliderPrev(el.id); });
+    }
+  }
+  if (rightBtn) {
+    const hide = cfg.autoHide && !loop && idx === count - 1;
+    rightBtn.style.display = hide ? 'none' : '';
+    rightBtn.style.pointerEvents = hide ? 'none' : '';
+    if (!rightBtn._sliderBoundId || rightBtn._sliderBoundId !== el.id) {
+      rightBtn._sliderBoundId = el.id;
+      rightBtn.addEventListener('click', (ev) => { ev.preventDefault(); sliderNext(el.id); });
+    }
+  }
+}
+
+function _sliderApply(id, idx) {
+  const el = (window.pageData?.elements || []).find(e => e.id === id);
+  const node = document.querySelector(`[data-id="${id}"]`);
+  if (!el || !node || el.type !== 'slider') return;
+  const ids = _sliderChildIds(el);
+  if (!ids.length) return;
+  const n = ids.length;
+  const clamped = ((idx % n) + n) % n;
+  _sliderIdx[id] = clamped;
+  _sliderLayoutSlides(el, node, clamped);
+  _sliderBuildDots(el, node, clamped, (i) => _sliderApply(id, i));
+  _sliderWireButtons(el, clamped, n);
+}
+
+function sliderNext(id) {
+  const el = (window.pageData?.elements || []).find(e => e.id === id);
+  if (!el) return;
+  const ids = _sliderChildIds(el);
+  if (!ids.length) return;
+  const cfg = el.sliderCfg || {};
+  const cur = _sliderIdx[id] ?? 0;
+  if (!cfg.loop && cur >= ids.length - 1) return;
+  _sliderApply(id, cur + 1);
+}
+function sliderPrev(id) {
+  const el = (window.pageData?.elements || []).find(e => e.id === id);
+  if (!el) return;
+  const ids = _sliderChildIds(el);
+  if (!ids.length) return;
+  const cfg = el.sliderCfg || {};
+  const cur = _sliderIdx[id] ?? 0;
+  if (!cfg.loop && cur <= 0) return;
+  _sliderApply(id, cur - 1);
+}
+window._sliderGoTo = (id, i) => _sliderApply(id, i);
+window._sliderNext = sliderNext;
+window._sliderPrev = sliderPrev;
+
+// Called once per render pass (from renderPage, below) for every slider
+// element — positions the current slide, (re)builds dots, wires buttons,
+// and (re)starts the autoplay timer if looping is on.
+function setupSlider(el, node) {
+  if (!node) return;
+  const cfg = el.sliderCfg || {};
+  const ids = _sliderChildIds(el);
+  if (_sliderTimers[el.id]) { clearInterval(_sliderTimers[el.id]); delete _sliderTimers[el.id]; }
+  if (!ids.length) return;
+  const startIdx = Math.min(_sliderIdx[el.id] ?? 0, ids.length - 1);
+  _sliderApply(el.id, startIdx);
+
+  if (cfg.autoScroll !== false && ids.length > 1) {
+    const ms = Math.max(0.5, cfg.duration ?? 3) * 1000;
+    _sliderTimers[el.id] = setInterval(() => sliderNext(el.id), ms);
+  }
+}
+window._setupSlider = setupSlider;
+
 window.renderPage = function(jsonData) {
   ensureDualLayouts(jsonData);
   window.pageData = jsonData;
@@ -1119,14 +1461,24 @@ window.renderPage = function(jsonData) {
   _scrollAnimElements.clear();
   _scrollVideoElements.clear();
 
+  Object.values(_sliderTimers).forEach(t => clearInterval(t));
+  Object.keys(_sliderTimers).forEach(k => delete _sliderTimers[k]);
+
   const canvas = document.getElementById('canvas');
   canvas.innerHTML = '';
   canvas.classList.toggle('mode-mobile', window._layoutMode === 'mobile');
 
   if (jsonData.pageName) document.title = jsonData.pageName;
 
-  // Restore canvas height from JSON
-  if (jsonData.canvasHeight) canvas.style.minHeight = jsonData.canvasHeight + 'px';
+  // Restore canvas height from JSON. Desktop and mobile are sized
+  // independently (mobileCanvasHeight vs canvasHeight) since a mobile
+  // layout is authored separately and rarely needs the same page length
+  // as desktop — falls back to canvasHeight if no mobile-specific height
+  // has been set yet.
+  const activeCanvasHeight = (window._layoutMode === 'mobile')
+    ? (jsonData.mobileCanvasHeight || jsonData.canvasHeight)
+    : jsonData.canvasHeight;
+  if (activeCanvasHeight) canvas.style.minHeight = activeCanvasHeight + 'px';
 
   // Restore page background color from JSON (falls back to the CSS default)
   document.body.style.background = jsonData.bgColor || '#f0f0f5';
@@ -1151,7 +1503,7 @@ window.renderPage = function(jsonData) {
     if (el.positionFixed) node.style.position = 'fixed';
     const parentEl = el.parent && byId[el.parent];
     if (parentEl && nodeById[el.parent]) {
-      nodeById[el.parent].appendChild(node);
+      appendIntoParent(nodeById[el.parent], node, parentEl);
     } else {
       canvas.appendChild(node);
     }
@@ -1195,6 +1547,11 @@ window.renderPage = function(jsonData) {
   });
 
   if (window._applyAllVideoTriggers) window._applyAllVideoTriggers();
+
+  // Sliders must be set up after every element has been appended into the
+  // DOM (their slides are other elements in this same pass), so this runs
+  // last, right before the mobile-frame overlay is restored below.
+  elements.forEach(el => { if (el.type === 'slider') setupSlider(el, nodeById[el.id]); });
 
   // The mobile-frame dashed overlay (if the editor's mobile preview is on)
   // was just wiped along with everything else in #canvas above — put it
@@ -1273,7 +1630,3 @@ function getPageFile() {
     }
   }
 })();
-
-import('./Pannel/panel-core.js').catch(err => {
-  console.error('[main.js] Failed to load editor panel:', err);
-});

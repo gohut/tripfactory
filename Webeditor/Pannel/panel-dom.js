@@ -102,6 +102,11 @@ export function injectPanelDOM() {
                 <div class="geom-cell"><label>H</label><input type="number" id="prop-h" /></div>
                 <div class="geom-cell"><label>Rotate&#176;</label><input type="number" id="prop-rotation" step="1" value="0" /></div>
               </div>
+              <div class="prow" id="row-group-scale" style="display:none">
+                <span class="plabel">Scale</span>
+                <input class="pinput" id="prop-scale" type="number" min="0.1" max="5" step="0.05" value="1" style="width:70px;flex:none;text-align:right" />
+                <span style="font-size:10px;color:var(--ed-text-faint);flex-shrink:0">&#215; (scales contents only, not the box)</span>
+              </div>
             </div>
           </div>
           <div class="psection" id="section-colors">
@@ -119,6 +124,11 @@ export function injectPanelDOM() {
                   </div>
                   <input class="color-hex" id="color-bg-hex" type="text" maxlength="400" placeholder="#000, rgba(), or linear-gradient()" />
                 </div>
+              </div>
+              <div class="prow" id="row-bg-blur">
+                <span class="plabel">Blur</span>
+                <input class="pinput" id="prop-bg-blur" type="number" min="0" max="100" step="1" value="0" style="width:70px;flex:none;text-align:right" />
+                <span style="font-size:10px;color:var(--ed-text-faint);flex-shrink:0">px (glass/frosted effect)</span>
               </div>
               <div class="prow" id="row-textcolor">
                 <span class="plabel">Text</span>
@@ -155,6 +165,11 @@ export function injectPanelDOM() {
                   <input type="checkbox" id="prop-border-enabled" />
                   <span class="toggle-track"></span>
                 </label>
+              </div>
+              <div class="prow" id="row-corner-radius">
+                <span class="plabel">Corner Radius</span>
+                <input class="pinput" id="prop-corner-radius" type="number" min="0" max="500" step="1" style="width:70px;flex:none;text-align:right" />
+                <span style="font-size:10px;color:var(--ed-text-faint);flex-shrink:0">px</span>
               </div>
               <div id="border-fields" style="display:none">
                 <div class="prow">
@@ -245,85 +260,39 @@ export function injectPanelDOM() {
               <span class="psection-head-arrow">▼</span>
             </div>
             <div class="psection-body">
-              <div class="prow" style="align-items:flex-start">
-                <div class="seg-control" id="anim-seg">
-                  <button class="seg-btn" data-anim="none">Off</button>
-                  <button class="seg-btn" data-anim="fadeIn">Fade</button>
-                  <button class="seg-btn" data-anim="slideUp">↑</button>
-                  <button class="seg-btn" data-anim="slideIn">→</button>
-                  <button class="seg-btn" data-anim="zoomIn">Zoom</button>
-                </div>
-              </div>
-              <div class="prow" id="anim-extra-row" style="display:none">
-                <span class="plabel">Duration</span>
-                <input class="pinput" id="prop-anim-duration" type="number" min="0.1" max="30" step="0.1" style="width:70px;flex:none;text-align:right" />
-                <span style="font-size:10px;color:var(--ed-text-faint);flex-shrink:0">s</span>
-                <span style="flex:1"></span>
-                <span class="ptoggle-label" style="width:auto;flex:none">Loop</span>
-                <label class="toggle-switch" style="margin-left:6px">
-                  <input type="checkbox" id="prop-anim-loop" />
-                  <span class="toggle-track"></span>
-                </label>
-              </div>
-              <div class="ptoggle-row" id="anim-smooth-row" style="display:none;padding:0 0 2px">
-                <span class="ptoggle-label" title="Plays the animation forward then in reverse, so a looping animation never snaps back to its start frame">Smooth</span>
+              <div class="ptoggle-row" id="row-anim-enabled">
+                <span class="ptoggle-label">Enabled</span>
                 <label class="toggle-switch">
-                  <input type="checkbox" id="prop-anim-smooth" />
+                  <input type="checkbox" id="anim-enabled-toggle" />
                   <span class="toggle-track"></span>
                 </label>
               </div>
-            </div>
-              <div class="advanim-section" id="section-advanim">
-                <div class="advanim-header" id="advanim-header">
-                  <span class="advanim-title">&#9660; Advanced Animation</span>
-                  <button class="advanim-toggle-btn" id="advanim-toggle">OFF</button>
+
+              <div id="anim-config" style="display:none">
+                <div class="prow">
+                  <span class="plabel">Animation Type</span>
+                  <select class="pselect" id="anim-mode-select">
+                    <option value="default">Default</option>
+                    <option value="custom">Custom</option>
+                  </select>
                 </div>
-                <div class="advanim-body" id="advanim-body">
-                  <div class="advanim-row">
-                    <span class="advanim-label">Type</span>
-                    <div class="advanim-type-group" id="advanim-type-group">
-                      <button class="advanim-type-btn active" data-advtype="loop">Loop</button>
-                      <button class="advanim-type-btn" data-advtype="once">Once</button>
-                      <button class="advanim-type-btn" data-advtype="trigger">On Click</button>
-                      <button class="advanim-type-btn" data-advtype="scroll">On Scroll</button>
-                      <button class="advanim-type-btn" data-advtype="hover">On Hover</button>
+
+                <!-- Default mode: basic preset picker (fade, slide, zoom, rotate, bounce) -->
+                <div id="anim-default-fields">
+                  <div class="prow" style="align-items:flex-start">
+                    <div class="seg-control" id="anim-seg">
+                      <button class="seg-btn" data-anim="fadeIn">Fade</button>
+                      <button class="seg-btn" data-anim="slideUp">↑</button>
+                      <button class="seg-btn" data-anim="slideIn">→</button>
+                      <button class="seg-btn" data-anim="zoomIn">Zoom</button>
+                      <button class="seg-btn" data-anim="rotate" title="Rotate — spins continuously">↻</button>
+                      <button class="seg-btn" data-anim="bounce" title="Bounce — bobs up and down continuously">⇅</button>
                     </div>
                   </div>
-                  <div class="ptoggle-row" style="padding:0 0 2px" id="advanim-smooth-row">
-                    <span class="ptoggle-label" style="color:var(--ed-text-faint);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700" title="Loops the animation forward then in reverse so it never jumps back to the start frame">Smooth Loop</span>
-                    <label class="toggle-switch">
-                      <input type="checkbox" id="advanim-smooth-toggle" />
-                      <span class="toggle-track"></span>
-                    </label>
-                  </div>
-                  <div class="ptoggle-row" style="padding:0 0 2px" id="advanim-appear-row">
-                    <span class="ptoggle-label" style="color:var(--ed-text-faint);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700">Animate When Appeared</span>
-                    <label class="toggle-switch">
-                      <input type="checkbox" id="advanim-appear-toggle" />
-                      <span class="toggle-track"></span>
-                    </label>
-                  </div>
-                  <div class="advanim-row" id="advanim-trigger-row" style="display:none">
-                    <span class="advanim-label">Button</span>
-                    <select class="pselect" id="advanim-trigger-btn">
-                      <option value="">&#8212; select &#8212;</option>
-                    </select>
-                  </div>
-                  <div class="advanim-row" id="advanim-hover-row" style="display:none">
-                    <span class="advanim-label">Hover Over</span>
-                    <select class="pselect" id="advanim-hover-el">
-                      <option value="">This element — itself</option>
-                    </select>
-                  </div>
-                  <div class="advanim-row">
-                    <span class="advanim-label" id="advanim-speed-label">Speed</span>
-                    <input class="pinput" id="advanim-speed" type="number" min="0.1" max="60" step="0.1" value="1.5" style="width:70px;flex:none;text-align:right" />
-                    <span style="font-size:10px;color:var(--ed-text-faint);flex-shrink:0" id="advanim-speed-unit">s/cycle</span>
-                    <span style="flex:1"></span>
-                    <span class="advanim-label" id="advanim-delay-label" style="width:auto;flex:none">Delay</span>
-                    <input class="pinput" id="advanim-delay" type="number" min="0" max="60" step="0.1" value="0" style="width:52px;flex:none;text-align:right;margin-left:6px" />
-                    <span style="font-size:10px;color:var(--ed-text-faint);flex-shrink:0" id="advanim-delay-unit">s</span>
-                  </div>
+                </div>
+
+                <!-- Custom mode: manual keyframe builder -->
+                <div id="anim-custom-fields" style="display:none">
                   <div class="advanim-playhead">
                     <button class="advanim-play-btn" id="advanim-play-btn">&#9654;</button>
                     <input type="range" id="advanim-scrub" min="0" max="1" step="0.001" value="0" />
@@ -333,7 +302,55 @@ export function injectPanelDOM() {
                   <button class="fc-add-mid" id="advanim-add-mid">+ Add Mid Frame</button>
                   <button class="advanim-set-btn" id="advanim-set-btn">&#9889; Set Animation</button>
                 </div>
+
+                <!-- Shared by both Default and Custom — defined once, no repetition -->
+                <div class="advanim-row">
+                  <span class="advanim-label">Trigger</span>
+                  <div class="advanim-type-group" id="advanim-type-group">
+                    <button class="advanim-type-btn active" data-advtype="loop">Loop</button>
+                    <button class="advanim-type-btn" data-advtype="once">Once</button>
+                    <button class="advanim-type-btn" data-advtype="trigger">On Click</button>
+                    <button class="advanim-type-btn" data-advtype="scroll">On Scroll</button>
+                    <button class="advanim-type-btn" data-advtype="hover">On Hover</button>
+                  </div>
+                </div>
+                <div class="ptoggle-row" style="padding:0 0 2px" id="advanim-smooth-row">
+                  <span class="ptoggle-label" style="color:var(--ed-text-faint);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700" title="Loops the animation forward then in reverse so it never jumps back to the start frame">Smooth Loop</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="advanim-smooth-toggle" />
+                    <span class="toggle-track"></span>
+                  </label>
+                </div>
+                <div class="ptoggle-row" style="padding:0 0 2px" id="advanim-appear-row">
+                  <span class="ptoggle-label" style="color:var(--ed-text-faint);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700">Animate When Appeared</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="advanim-appear-toggle" />
+                    <span class="toggle-track"></span>
+                  </label>
+                </div>
+                <div class="advanim-row" id="advanim-trigger-row" style="display:none">
+                  <span class="advanim-label">Button</span>
+                  <select class="pselect" id="advanim-trigger-btn">
+                    <option value="">&#8212; select &#8212;</option>
+                  </select>
+                </div>
+                <div class="advanim-row" id="advanim-hover-row" style="display:none">
+                  <span class="advanim-label">Hover Over</span>
+                  <select class="pselect" id="advanim-hover-el">
+                    <option value="">This element — itself</option>
+                  </select>
+                </div>
+                <div class="advanim-row">
+                  <span class="advanim-label" id="advanim-speed-label">Speed</span>
+                  <input class="pinput" id="advanim-speed" type="number" min="0.1" max="60" step="0.1" value="1.5" style="width:70px;flex:none;text-align:right" />
+                  <span style="font-size:10px;color:var(--ed-text-faint);flex-shrink:0" id="advanim-speed-unit">s/cycle</span>
+                  <span style="flex:1"></span>
+                  <span class="advanim-label" id="advanim-delay-label" style="width:auto;flex:none">Delay</span>
+                  <input class="pinput" id="advanim-delay" type="number" min="0" max="60" step="0.1" value="0" style="width:52px;flex:none;text-align:right;margin-left:6px" />
+                  <span style="font-size:10px;color:var(--ed-text-faint);flex-shrink:0" id="advanim-delay-unit">s</span>
+                </div>
               </div>
+            </div>
           </div>
           <div class="psection media-opts-section" id="section-image-opts" style="display:none">
             <div class="psection-head">
@@ -392,6 +409,92 @@ export function injectPanelDOM() {
               </div>
             </div>
           </div>
+          <div class="psection media-opts-section" id="section-slider-opts" style="display:none">
+            <div class="psection-head">
+              <span class="psection-head-label">Slider Options</span>
+              <span class="psection-head-arrow">▼</span>
+            </div>
+            <div class="psection-body">
+              <div class="prow" style="flex-direction:column;align-items:stretch;gap:6px">
+                <span class="plabel" style="width:auto">Slide Components</span>
+                <div id="slider-slide-box" class="slider-slide-box"></div>
+                <button type="button" class="paction muted" id="btn-choose-components" style="margin:0">Choose Components</button>
+              </div>
+              <div class="prow">
+                <span class="plabel">Carousel Type</span>
+                <select class="pselect" id="prop-slider-type">
+                  <option value="horizontal">Horizontal</option>
+                  <option value="vertical">Vertical</option>
+                </select>
+              </div>
+              <div class="ptoggle-row">
+                <span class="ptoggle-label">Group Carousel</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="prop-slider-groupcarousel" />
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+              <div class="ptoggle-row">
+                <span class="ptoggle-label">Auto Scroll</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="prop-slider-autoscroll" checked />
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+              <div class="prow">
+                <span class="plabel">Slide Duration</span>
+                <input class="pinput" id="prop-slider-duration" type="number" min="0.5" step="0.5" value="3" style="width:70px;flex:none;text-align:right" />
+                <span style="font-size:10px;color:var(--ed-text-faint);flex-shrink:0">s</span>
+              </div>
+              <div class="prow">
+                <span class="plabel">Gap</span>
+                <input class="pinput" id="prop-slider-gap" type="number" min="0" step="1" value="0" style="width:70px;flex:none;text-align:right" />
+                <span style="font-size:10px;color:var(--ed-text-faint);flex-shrink:0">px</span>
+              </div>
+              <div class="ptoggle-row">
+                <span class="ptoggle-label">Loop</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="prop-slider-loop" />
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+              <div class="ptoggle-row">
+                <span class="ptoggle-label">Three Dots</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="prop-slider-dots" />
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+              <div class="ptoggle-row">
+                <span class="ptoggle-label">Slide by Button</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="prop-slider-btnnav" />
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+              <div id="slider-btnnav-fields" style="display:none">
+                <div class="prow">
+                  <span class="plabel">Left Button</span>
+                  <select class="pselect" id="prop-slider-leftbtn">
+                    <option value="">-- select --</option>
+                  </select>
+                </div>
+                <div class="prow">
+                  <span class="plabel">Right Button</span>
+                  <select class="pselect" id="prop-slider-rightbtn">
+                    <option value="">-- select --</option>
+                  </select>
+                </div>
+                <div class="ptoggle-row">
+                  <span class="ptoggle-label">Appear When Needed</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="prop-slider-autohide" />
+                    <span class="toggle-track"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="psection">
             <div class="psection-head">
               <span class="psection-head-label">Actions</span>
@@ -423,6 +526,16 @@ export function injectPanelDOM() {
         </div>
         <div class="psection">
           <div class="psection-head" style="cursor:default">
+            <span class="psection-head-label">Slider</span>
+          </div>
+          <div class="psection-body">
+            <div class="add-grid">
+              <button class="add-btn" data-add="slider">Slider</button>
+            </div>
+          </div>
+        </div>
+        <div class="psection">
+          <div class="psection-head" style="cursor:default">
             <span class="psection-head-label">Form Elements</span>
           </div>
           <div class="psection-body">
@@ -448,6 +561,21 @@ export function injectPanelDOM() {
   const toast = document.createElement('div');
   toast.id = 'panel-toast';
   document.body.appendChild(toast);
+
+  // ── Slider "Choose Components" popup ────────────────────────────────────
+  const sliderPopup = document.createElement('div');
+  sliderPopup.id = 'slider-picker-popup';
+  sliderPopup.innerHTML = `
+    <div class="slider-picker-card">
+      <div class="slider-picker-title">Choose Slide Components</div>
+      <div class="slider-picker-list" id="slider-picker-list"></div>
+      <div class="slider-picker-actions">
+        <button type="button" class="paction save" id="slider-picker-confirm" style="flex:1;margin:0;min-height:28px;padding:6px 8px;">Confirm</button>
+        <button type="button" class="paction muted" id="slider-picker-cancel" style="flex:1;margin:0;min-height:28px;padding:6px 8px;">Cancel</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(sliderPopup);
 }
 
 export function showToast(msg, ms = 2600) {
@@ -460,15 +588,31 @@ export function showToast(msg, ms = 2600) {
 let _idc = Date.now();
 export function genId(type) { return `${type}_${(++_idc).toString(36)}`; }
 
+// Normalizes any CSS color string to a #rrggbb hex value.
+//
+// This used to create a throwaway <div>, append it to <body>, read back
+// getComputedStyle(), then remove it — which forces a synchronous layout
+// of the whole document on every single call. Native <input type="color">
+// pickers (and the eyedropper) fire an 'input' event on *every* pointer
+// move while dragging the hue/saturation area — dozens of events per
+// second — and each one round-tripped through applyBgColor()/toHex(),
+// so every drag hammered the page with a full forced reflow per frame.
+// On a canvas with a non-trivial number of elements, that reflow storm is
+// exactly what froze the tab. A detached 1x1 canvas context normalizes
+// colors via its fillStyle setter/getter with zero DOM/layout involvement,
+// so it's effectively free no matter how fast 'input' fires.
+let _hexCtx = null;
 export function toHex(color) {
   if (!color) return '#000000';
   if (/^#[0-9a-f]{6}$/i.test(color)) return color.toLowerCase();
-  const d = document.createElement('div');
-  d.style.color = color;
-  document.body.appendChild(d);
-  const cs = getComputedStyle(d).color;
-  document.body.removeChild(d);
-  const m = cs.match(/\d+/g);
+  if (!_hexCtx) _hexCtx = document.createElement('canvas').getContext('2d');
+  _hexCtx.fillStyle = '#000000'; // reset so an invalid/unparsable color falls back predictably
+  try { _hexCtx.fillStyle = color; } catch (e) { return '#000000'; }
+  const normalized = _hexCtx.fillStyle;
+  const hexMatch = normalized.match(/^#([0-9a-f]{6})$/i);
+  if (hexMatch) return '#' + hexMatch[1].toLowerCase();
+  // Some engines normalize to rgb()/rgba() instead of hex (e.g. named colors) — handle that too.
+  const m = normalized.match(/\d+/g);
   if (!m || m.length < 3) return '#000000';
   return '#' + m.slice(0, 3).map(n => (+n).toString(16).padStart(2, '0')).join('');
 }

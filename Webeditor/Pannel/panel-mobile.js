@@ -3,6 +3,8 @@
 // Call: setupMobileMode(deps) where deps = { rerender }
 // Returns: { applyMobileMode, getMobileMode }
 
+import { showToast } from './panel-dom.js';
+
 export function setupMobileMode({ rerender }) {
   const MOBILE_W = window.MOBILE_CANVAS_WIDTH || 390;
   let _mobileMode = false;
@@ -111,6 +113,43 @@ export function setupMobileMode({ rerender }) {
   // the first one.
   window._reapplyMobileFrame = ensureOverlayInCanvas;
 
+  // ─── Copy Desktop state into Mobile, on demand ──────────────────────────
+  // By default, a newly-added element's mobile layout is just a one-time
+  // clone of whatever its desktop layout was at the moment it was created
+  // (see migrateElement in main.js) — it never automatically re-syncs after
+  // that. So any desktop-side redesigning done afterwards (moving things,
+  // resizing, regrouping) never reaches mobile, and mobile keeps showing
+  // that original "just spawned" state instead of the current desktop one.
+  // That's expected — mobile is meant to be laid out independently — but it
+  // means starting a mobile pass from scratch is the only option today.
+  // This gives an explicit, opt-in way to instead start mobile from
+  // *today's* desktop state: for every element, copy its current desktop
+  // x/y/w/h/rotation/scale/styles/etc. over its mobile ones. Whether the
+  // parent/child (grouping) structure is included is the caller's choice —
+  // it's the one part of "desktop state" that reshapes the element tree
+  // itself rather than just how things look, so it's kept as a separate,
+  // opt-in flag rather than always bundled in.
+  // Per-mode visibility (`hidden`, the eye toggle) is deliberately never
+  // copied — that's meant to differ between desktop/mobile by design.
+  function syncFromDesktop(includeGrouping) {
+    const keys = (window._LAYOUT_KEYS || []).filter(k => {
+      if (k === 'hidden') return false;
+      if (!includeGrouping && (k === 'parent' || k === 'children')) return false;
+      return true;
+    });
+    const els = (window.pageData && window.pageData.elements) || [];
+    els.forEach(el => {
+      if (!el.layouts || !el.layouts.desktop || !el.layouts.mobile) return;
+      keys.forEach(k => {
+        if (k in el.layouts.desktop) {
+          el.layouts.mobile[k] = JSON.parse(JSON.stringify(el.layouts.desktop[k]));
+        }
+      });
+    });
+    rerender();
+    showToast(includeGrouping ? 'Copied desktop layout + grouping to mobile' : 'Copied desktop layout to mobile');
+  }
+
   function applyMobileMode(active) {
     _mobileMode = active;
     const btn = document.getElementById('panel-mobile-btn');
@@ -127,7 +166,8 @@ export function setupMobileMode({ rerender }) {
         btn.title = 'Exit mobile view (currently editing mobile layout)';
       }
 
-      // Add a thin banner under the panel header so there's a constant reminder
+      // Add a thin banner under the panel header so there's a constant reminder,
+      // plus two buttons to pull the current desktop state into mobile on demand.
       let banner = document.getElementById('mobile-mode-banner');
       if (!banner) {
         banner = document.createElement('div');
@@ -138,13 +178,58 @@ export function setupMobileMode({ rerender }) {
           'color:rgba(99,217,255,0.9)',
           'font-size:9px',
           'font-weight:700',
-          'letter-spacing:0.12em',
+          'letter-spacing:0.05em',
           'text-align:center',
-          'padding:5px 0',
+          'padding:5px 8px',
           'text-transform:uppercase',
           'flex-shrink:0',
+          'display:flex',
+          'flex-wrap:wrap',
+          'align-items:center',
+          'justify-content:center',
+          'gap:6px',
         ].join(';');
-        banner.textContent = '📱 Mobile Layout — changes only affect mobile';
+
+        const label = document.createElement('span');
+        label.textContent = '📱 Mobile Layout';
+        banner.appendChild(label);
+
+        const btnStyle = [
+          'background:rgba(99,217,255,0.12)',
+          'border:1px solid rgba(99,217,255,0.4)',
+          'border-radius:10px',
+          'color:rgba(99,217,255,0.95)',
+          'font-size:9px',
+          'font-weight:700',
+          'letter-spacing:0.05em',
+          'text-transform:none',
+          'padding:3px 8px',
+          'cursor:pointer',
+        ].join(';');
+
+        const btnLayout = document.createElement('button');
+        btnLayout.type = 'button';
+        btnLayout.style.cssText = btnStyle;
+        btnLayout.textContent = 'Copy Desktop → Mobile';
+        btnLayout.title = 'Start mobile from the current desktop layout (position/size/style) — leaves grouping as-is';
+        btnLayout.addEventListener('click', () => {
+          if (confirm('Overwrite the mobile layout (position, size, style, etc.) with the current desktop layout? This does not change grouping.')) {
+            syncFromDesktop(false);
+          }
+        });
+
+        const btnLayoutGroup = document.createElement('button');
+        btnLayoutGroup.type = 'button';
+        btnLayoutGroup.style.cssText = btnStyle;
+        btnLayoutGroup.textContent = 'Copy Desktop → Mobile (+ Grouping)';
+        btnLayoutGroup.title = 'Start mobile from the current desktop layout AND grouping structure';
+        btnLayoutGroup.addEventListener('click', () => {
+          if (confirm('Overwrite the mobile layout AND grouping structure with the current desktop state? Any mobile-only grouping will be lost.')) {
+            syncFromDesktop(true);
+          }
+        });
+
+        banner.append(btnLayout, btnLayoutGroup);
         const panelEl = document.getElementById('editor-panel');
         const body = document.getElementById('panel-body');
         if (panelEl && body) panelEl.insertBefore(banner, body);

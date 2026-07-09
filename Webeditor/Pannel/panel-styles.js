@@ -619,7 +619,7 @@ export function injectStyles() {
       align-items: center !important;
       justify-content: center !important;
       cursor: grab !important;
-      z-index: 10000 !important;
+      z-index: 500 !important;
       font-size: 9px !important;
       color: #fff !important;
       line-height: 1 !important;
@@ -638,7 +638,7 @@ export function injectStyles() {
       align-items: center !important;
       justify-content: center !important;
       cursor: nwse-resize !important;
-      z-index: 10000 !important;
+      z-index: 500 !important;
       font-size: 9px !important;
       color: #fff !important;
       line-height: 1 !important;
@@ -658,7 +658,7 @@ export function injectStyles() {
       align-items: center !important;
       justify-content: center !important;
       cursor: grab !important;
-      z-index: 10000 !important;
+      z-index: 500 !important;
       font-size: 10px !important;
       color: #fff !important;
       line-height: 1 !important;
@@ -1050,6 +1050,107 @@ export function injectStyles() {
 
     @media (max-width: 720px) {
       :root { --ed-panel-width: min(calc(100vw - 24px), 360px); }
+    }
+
+    /* ── Slider / Carousel props ──────────────────────────────────────────── */
+    .slider-slide-box {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-height: 32px;
+      background: var(--ed-bg);
+      border: 1px dashed var(--ed-border);
+      border-radius: var(--ed-radius-sm);
+      padding: 6px;
+    }
+    .slider-slide-empty {
+      font-size: 10px;
+      color: var(--ed-text-faint);
+      padding: 4px 2px;
+      text-align: center;
+    }
+    .slider-slide-chip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      background: var(--ed-surface);
+      border: 1px solid var(--ed-border);
+      border-radius: var(--ed-radius-sm);
+      padding: 4px 6px;
+    }
+    .slider-slide-chip-label {
+      font-size: 10px;
+      color: var(--ed-text-dim);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .slider-slide-chip-rm {
+      background: none;
+      border: none;
+      color: var(--ed-text-faint);
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 1;
+      padding: 0 2px;
+      flex-shrink: 0;
+    }
+    .slider-slide-chip-rm:hover { color: #ff6b6b; }
+
+    #slider-picker-popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 10020;
+      background: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+    }
+    .slider-picker-card {
+      background: var(--ed-surface);
+      border: 1px solid var(--ed-border);
+      border-radius: var(--ed-radius);
+      padding: 16px;
+      width: 300px;
+      max-height: 70vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+    }
+    .slider-picker-title {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ed-text-faint);
+      margin-bottom: 10px;
+    }
+    .slider-picker-list {
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 12px;
+      min-height: 40px;
+    }
+    .slider-pick-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--ed-text-dim);
+      padding: 5px 6px;
+      border-radius: var(--ed-radius-sm);
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .slider-pick-row:hover { background: var(--ed-surface-hover); }
+    .slider-pick-row input { flex-shrink: 0; cursor: pointer; }
+    .slider-picker-actions {
+      display: flex;
+      gap: 6px;
     }
   `;
   document.head.appendChild(s);
