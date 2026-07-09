@@ -1,0 +1,519 @@
+{
+  "pageName": "home",
+  "texts": {
+    "hero_heading_line1": "Jump Beyond ",
+    "hero_heading_line2": "Imagination",
+    "hero_subtext": "TripFactory — the first travel company dedicated exclusively to organizing educational and experiential tours for school students, college students, and corporate teams.  Transform your journey into a memorable experience with a trusted travel partner.",
+    "hero_photo_card_1_label": "Mysore Palace",
+    "hero_photo_card_2_label": "Banglore Wonderela",
+    "hero_photo_card_3_label": "Athirapally Waterfalls",
+    "about_intro_paragraph": "TripFactory — the first travel company dedicated exclusively to organizing educational and experiential tours for school students, college students, and corporate teams.  Transform your journey into a memorable experience with a trusted travel partner.",
+    "about_secondary_paragraph": "Our well-planned itineraries and unwavering commitment to safety ensure that every trip is both educational and memorable — tailored specifically to the needs of students and professionals.",
+    "about_badge_label": "About Us",
+    "about_heading_line1": "Travel Far,",
+    "about_heading_line2": "Discover Who You Are",
+    "packages_section_label": "What are we",
+    "packages_badge_label": "Available Packages",
+    "packages_heading": "Offering?",
+    "packages_intro_text": "Everything you need for a seamless, enriching journey — planned end-to-end.",
+    "package_1_title": "Student Friendly Pack",
+    "package_1_combo_1": "· Munnar + Thekkady",
+    "package_1_combo_2": "· Vagamon + Thekkady",
+    "package_1_combo_3": "· Kochi + Alleppey",
+    "package_1_combo_4": "· Athirappilly + Kochi",
+    "package_1_combo_5": "· Wayanad + Kozhikode",
+    "package_1_location": "Kerala",
+    "package_1_combo_count": "+5 Combo",
+    "package_2_title": "Hill Station & Adventure Pack",
+    "package_2_combo_1": "· Munnar + Thekkady",
+    "package_2_combo_2": "· Wayanad + Kannur",
+    "package_2_combo_3": "· Munnar + Idukki",
+    "package_2_combo_4": "· Wayanad + Mysuru",
+    "package_2_combo_5": "· Wayanad + Kozhikode",
+    "package_2_location": "Kerala",
+    "package_2_combo_count": "+5 Combo",
+    "package_3_title": "Nature & Waterfalls Pack",
+    "package_3_combo_1": "· Athirappilly + Kochi",
+    "package_3_combo_2": "· Athirappilly + Vagamon",
+    "package_3_combo_3": "· Athirappilly + Munnar",
+    "package_3_combo_4": "· Wayanad + Athirappilly",
+    "package_3_combo_5": "· Munnar + Valparai",
+    "package_3_location": "Kerala",
+    "fleet_badge_label": " Our Fleet",
+    "fleet_heading_line1": "Travel in Comfort,",
+    "fleet_heading_line2": "Arrive in Style",
+    "fleet_description": "From spacious sleeper coaches to nimble mini-buses, our well-maintained fleet is built for group journeys of every size. Each vehicle is regularly serviced and driven by verified, experienced drivers who know the routes as well as they know safety.",
+    "fleet_description_2": "Whether it's a 40-student college trip or a 200-strong corporate off-site, we match you with the right vehicle — comfortable seating, ample luggage space, and a smooth ride from start to finish.",
+    "fleet_bottom_badge_label": "Our Fleet",
+    "testimonials_badge_label": "Testimonials",
+    "testimonials_heading_line1": "What Our",
+    "testimonials_heading": "Clients Say!",
+    "testimonials_intro_text": "Trusted by Schools, Colleges & Corporates",
+    "testimonial_1_initial": "K",
+    "testimonial_1_name": "Mukund M",
+    "testimonial_1_role": "VTV Institution,Trichy",
+    "testimonial_1_quote": "\"Liked the Trip very much that, we planned to visit the same place next year also\"",
+    "testimonial_2_initial": "K",
+    "testimonial_2_name": "Keerthi M",
+    "testimonial_2_role": "VTV Institution,Trichy",
+    "testimonial_2_quote": "\"Liked the Trip very much that, we planned to visit the same place next year also\"",
+    "testimonial_3_initial": "K",
+    "testimonial_3_name": "Keerthi M",
+    "testimonial_3_role": "VTV Institution,Trichy",
+    "testimonial_3_quote": "\"Liked the Trip very much that, we planned to visit the same place next year also\"",
+    "gallery_tagline": "This is what 'unforgettable' looks like.",
+    "offerings_badge_label": "Our Offerings",
+    "offerings_heading_line1": "Your Complete",
+    "offerings_heading_line2": "Travel Partner",
+    "offerings_description": "Planning, bookings, support, and experiences—all under one roof.",
+    "offering_hotels_title": "Premium Hotels",
+    "offering_hotels_subtitle": "Comfort meets convenience always",
+    "offering_food_title": "Hygienic Food",
+    "offering_food_subtitle": "Clean meals, happy travels",
+    "offering_transport_title": " Safe Transport",
+    "offering_transport_subtitle": " Secure rides, smooth journeys",
+    "offering_coordinators_title": " Tour Coordinators",
+    "offering_coordinators_subtitle": "Guided by trusted experts",
+    "offering_women_guide_title": " Women Tour Guide",
+    "offering_women_guide_subtitle": "Comfort for every girl",
+    "offering_student_pricing_title": "Student Pricing",
+    "offering_student_pricing_subtitle": "Affordable trips, great value",
+    "offering_24x7_support_title": " 24×7 Assistance",
+    "offering_24x7_support_subtitle": "Always here, anytime",
+    "offering_custom_itinerary_title": "Custom Itineraries",
+    "offering_custom_itinerary_subtitle": "Plans made just right",
+    "cta_heading_line1": "Ready for Your",
+    "cta_heading_line2": " Next Adventure?",
+    "cta_badge_label": "Let's Connect",
+    "cta_intro_text": "Tell us where you want to go, and we'll handle the rest.",
+    "contact_address": "Murugan street, TVS Nagar Koundampalayam Rd, TVS Nagar, Coimbatore - 641030",
+    "contact_website_text": "@tripfactory.co.in",
+    "contact_email_text": "info@tripfactory.co.in",
+    "contact_footer_phone": "+91 85310 20303",
+    "contact_footer_email": "info@tripfactory.co.in",
+    "contact_footer_website": "@tripfactory.co.in",
+    "mobile_contact_us_heading": "Contact Us",
+    "enquiry_name_label": "Name",
+    "enquiry_destination_label": "Destination",
+    "enquiry_combo_label": "Choose The Combo",
+    "enquiry_date_label": "Date To Start",
+    "enquiry_members_label": "No. Of Members",
+    "enquiry_message_label": "Message",
+    "enquiry_phone_text": "+91 85310 20303",
+    "enquiry_whatsapp_text": "Continue on WhatsApp with your details ready",
+    "footer_tagline": "Your trusted partner for educational and experiential tours.",
+    "footer_rapid_links_heading": "Rapid Links ",
+    "footer_packages_link": "Packages",
+    "footer_about_us_link": "About Us",
+    "footer_enquiry_link": "Enquiry",
+    "footer_testimonials_link": "Bus",
+    "footer_legal_heading": "Legal",
+    "footer_terms_link": "Terms and Conditions",
+    "footer_privacy_link": "Privacy Policy",
+    "footer_legal_extra_1": "Refund Policy",
+    "footer_legal_extra_2": "Cancellation Policy",
+    "footer_copyright": "© 2026 Trip Factory. All rights reserved.",
+    "footer_contact_link": "Contact"
+  },
+  "images": {
+    "nav_logo_image": {
+      "src": "/asset/logo.png",
+      "alt": ""
+    },
+    "hero_background_image": {
+      "src": "/asset/1.png",
+      "alt": ""
+    },
+    "hero_photo_card_1": {
+      "src": "/asset/frame.png",
+      "alt": ""
+    },
+    "hero_photo_card_1_image": {
+      "src": "/asset/bp2.jpg",
+      "alt": ""
+    },
+    "hero_photo_card_2": {
+      "src": "/asset/frame.png",
+      "alt": ""
+    },
+    "hero_photo_card_2_image": {
+      "src": "/asset/bp1.jpg",
+      "alt": ""
+    },
+    "hero_photo_card_3": {
+      "src": "/asset/frame.png",
+      "alt": ""
+    },
+    "hero_photo_card_3_image": {
+      "src": "/asset/bp3.jpg",
+      "alt": ""
+    },
+    "decorative_image_1": {
+      "src": "/asset/5.png",
+      "alt": ""
+    },
+    "decorative_image_2": {
+      "src": "/asset/2.png",
+      "alt": ""
+    },
+    "about_background_image": {
+      "src": "/asset/6.png",
+      "alt": ""
+    },
+    "package_1_image": {
+      "src": "/asset/pkgimg.webp",
+      "alt": ""
+    },
+    "package_1_location_icon": {
+      "src": "/icons/location-pin.svg",
+      "alt": "Location icon"
+    },
+    "package_2_image": {
+      "src": "/asset/pkgimg2.jpg",
+      "alt": ""
+    },
+    "package_2_location_icon": {
+      "src": "/icons/location-pin.svg",
+      "alt": "Location icon"
+    },
+    "package_3_image": {
+      "src": "/asset/pkgimg3.jpg",
+      "alt": ""
+    },
+    "package_3_location_icon": {
+      "src": "/icons/location-pin.svg",
+      "alt": "Location icon"
+    },
+    "fleet_bus_photo_1": {
+      "src": "/busc/b1.jpeg",
+      "alt": ""
+    },
+    "fleet_bus_photo_2": {
+      "src": "/busc/b2.jpeg",
+      "alt": ""
+    },
+    "fleet_bus_photo_3": {
+      "src": "/busc/b3.jpeg",
+      "alt": ""
+    },
+    "fleet_bus_photo_4": {
+      "src": "/busc/b4.jpeg",
+      "alt": ""
+    },
+    "fleet_bus_photo_5": {
+      "src": "/busc/b5.jpeg",
+      "alt": ""
+    },
+    "fleet_bus_photo_6": {
+      "src": "/busc/b6.jpeg",
+      "alt": ""
+    },
+    "fleet_bus_photo_7": {
+      "src": "/busc/c1.jpeg",
+      "alt": ""
+    },
+    "fleet_bus_photo_8": {
+      "src": "/busc/c2.jpeg",
+      "alt": ""
+    },
+    "fleet_bus_photo_9": {
+      "src": "/busc/c4.jpeg",
+      "alt": ""
+    },
+    "fleet_bus_photo_10": {
+      "src": "/busc/d1.jpeg",
+      "alt": ""
+    },
+    "fleet_bus_photo_11": {
+      "src": "/busc/d2.jpeg",
+      "alt": ""
+    },
+    "fleet_bus_photo_12": {
+      "src": "/busc/d3.jpeg",
+      "alt": ""
+    },
+    "fleet_bus_photo_13": {
+      "src": "/busc/d4.jpeg",
+      "alt": ""
+    },
+    "fleet_bus_photo_14": {
+      "src": "/busc/a1.jpeg",
+      "alt": ""
+    },
+    "fleet_bus_photo_15": {
+      "src": "/busc/a2.jpeg",
+      "alt": ""
+    },
+    "fleet_bus_photo_16": {
+      "src": "/busc/a3.jpeg",
+      "alt": ""
+    },
+    "decorative_image_3": {
+      "src": "/asset/bg6.png",
+      "alt": ""
+    },
+    "testimonial_1_quote_icon_open": {
+      "src": "/asset/quto1.png",
+      "alt": ""
+    },
+    "testimonial_1_quote_icon_close": {
+      "src": "/asset/quto2.png",
+      "alt": ""
+    },
+    "testimonial_2_quote_icon_open": {
+      "src": "/asset/quto1.png",
+      "alt": ""
+    },
+    "testimonial_2_quote_icon_close": {
+      "src": "/asset/quto2.png",
+      "alt": ""
+    },
+    "testimonial_3_quote_icon_open": {
+      "src": "/asset/quto1.png",
+      "alt": ""
+    },
+    "testimonial_3_quote_icon_close": {
+      "src": "/asset/quto2.png",
+      "alt": ""
+    },
+    "decorative_image_4": {
+      "src": "/asset/bg7.png",
+      "alt": ""
+    },
+    "contact_location_icon": {
+      "src": "/icons/location-pin.svg",
+      "alt": "Location icon"
+    },
+    "contact_website_icon": {
+      "src": "/icons/globe.svg",
+      "alt": "Website icon"
+    },
+    "enquiry_phone_icon": {
+      "src": "/icons/phone.svg",
+      "alt": "Phone icon"
+    },
+    "contact_email_icon": {
+      "src": "/icons/mail.svg",
+      "alt": "Mail icon"
+    },
+    "enquiry_whatsapp_icon": {
+      "src": "/asset/ic8.png",
+      "alt": ""
+    },
+    "footer_logo_image": {
+      "src": "/asset/logo.png",
+      "alt": ""
+    },
+    "decorative_image_5": {
+      "src": "/asset/bg5.png",
+      "alt": ""
+    },
+    "marquee_logo_1": {
+      "src": "/asset/cl2.png",
+      "alt": ""
+    },
+    "marquee_logo_2": {
+      "src": "/asset/cl2.png",
+      "alt": ""
+    },
+    "decorative_image_6": {
+      "src": "/asset/bg5.png",
+      "alt": ""
+    },
+    "gallery_polaroid_frame": {
+      "src": "/asset/frm.png",
+      "alt": ""
+    },
+    "gallery_photo_1": {
+      "src": "/grpic/im1.jpeg",
+      "alt": ""
+    },
+    "gallery_photo_2": {
+      "src": "/grpic/im2.jpeg",
+      "alt": ""
+    },
+    "gallery_photo_3": {
+      "src": "/grpic/im3.jpeg",
+      "alt": ""
+    },
+    "gallery_photo_4": {
+      "src": "/grpic/im4.jpeg",
+      "alt": ""
+    },
+    "gallery_photo_5": {
+      "src": "/grpic/im5.jpeg",
+      "alt": ""
+    },
+    "gallery_photo_6": {
+      "src": "/grpic/im6.jpeg",
+      "alt": ""
+    },
+    "gallery_photo_7": {
+      "src": "/grpic/im7.jpeg",
+      "alt": ""
+    },
+    "gallery_photo_8": {
+      "src": "/grpic/im8.jpeg",
+      "alt": ""
+    },
+    "gallery_photo_9": {
+      "src": "/grpic/im9.jpeg",
+      "alt": ""
+    },
+    "gallery_photo_10": {
+      "src": "/grpic/im10.jpeg",
+      "alt": ""
+    },
+    "offering_hotels_icon": {
+      "src": "/icons/hotel.svg",
+      "alt": "Hotel icon"
+    },
+    "offering_food_icon": {
+      "src": "/icons/food.svg",
+      "alt": "Food icon"
+    },
+    "offering_transport_icon": {
+      "src": "/icons/transport.svg",
+      "alt": "Transport icon"
+    },
+    "offering_coordinators_icon": {
+      "src": "/icons/coordinator.svg",
+      "alt": "Tour coordinator icon"
+    },
+    "offering_women_guide_icon": {
+      "src": "/icons/woman-guide.svg",
+      "alt": "Women tour guide icon"
+    },
+    "offering_student_pricing_icon": {
+      "src": "/icons/pricing.svg",
+      "alt": "Student pricing icon"
+    },
+    "offering_24x7_support_icon": {
+      "src": "/icons/support-247.svg",
+      "alt": "24/7 assistance icon"
+    },
+    "offering_custom_itinerary_icon": {
+      "src": "/icons/itinerary.svg",
+      "alt": "Custom itinerary icon"
+    },
+    "contact_footer_phone_icon": {
+      "src": "/icons/phone.svg",
+      "alt": "Phone icon"
+    },
+    "contact_footer_email_icon": {
+      "src": "/icons/mail.svg",
+      "alt": "Mail icon"
+    },
+    "contact_footer_website_icon": {
+      "src": "/icons/globe.svg",
+      "alt": "Website icon"
+    },
+    "mobile_decorative_icon": {
+      "src": "/asset/ic9.png",
+      "alt": ""
+    }
+  },
+  "buttons": {
+    "nav_about_us_link": {
+      "label": "About Us",
+      "href": "",
+      "target": ""
+    },
+    "nav_enquiry_link": {
+      "label": "Enquiry",
+      "href": "",
+      "target": ""
+    },
+    "nav_packages_link": {
+      "label": "Packages",
+      "href": "",
+      "target": ""
+    },
+    "nav_bus_link": {
+      "label": "Bus",
+      "href": "",
+      "target": ""
+    },
+    "hero_plan_trip_button": {
+      "label": "Plan Your Trip",
+      "href": "#",
+      "target": ""
+    },
+    "hero_contact_us_button": {
+      "label": "Contact Us",
+      "href": "#",
+      "target": ""
+    },
+    "package_1_enquire_button": {
+      "label": "Enquire",
+      "href": "#",
+      "target": ""
+    },
+    "package_2_enquire_button": {
+      "label": "Enquire",
+      "href": "#",
+      "target": ""
+    },
+    "package_3_enquire_button": {
+      "label": "Enquire",
+      "href": "#",
+      "target": ""
+    },
+    "packages_see_more_button": {
+      "label": "See More",
+      "href": "#",
+      "target": "",
+      "icon": "/icons/arrow-right-minimal.svg",
+      "iconAlt": "Right arrow",
+      "iconPosition": "right"
+    },
+    "fleet_slider_next_button": {
+      "label": "",
+      "href": "#",
+      "target": "",
+      "icon": "/icons/arrow-right-creative.svg",
+      "iconAlt": "Next slide"
+    },
+    "fleet_slider_prev_button": {
+      "label": "",
+      "href": "#",
+      "target": "",
+      "icon": "/icons/arrow-left-creative.svg",
+      "iconAlt": "Previous slide"
+    },
+    "enquiry_send_button": {
+      "label": "Send",
+      "href": "",
+      "target": ""
+    }
+  },
+  "fields": {
+    "enquiry_name_input": {
+      "placeholder": "Name"
+    },
+    "enquiry_destination_select": {
+      "options": [
+        "None",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ]
+    },
+    "enquiry_combo_select": {
+      "options": [
+        "Option 1",
+        "Option 2",
+        "Option 3"
+      ]
+    },
+    "enquiry_date_input": {
+      "placeholder": "Date of Interest"
+    },
+    "enquiry_members_input": {
+      "placeholder": "Eg: 17"
+    },
+    "enquiry_message_textarea": {
+      "placeholder": "Eg: is the trip charge includes the hotel's cost too??"
+    }
+  }
+}

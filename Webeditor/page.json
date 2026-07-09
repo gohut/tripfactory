@@ -1110,8 +1110,8 @@
       "type": "container",
       "layouts": {
         "desktop": {
-          "x": -368,
-          "y": 5192,
+          "x": -362,
+          "y": 5194,
           "w": 1546,
           "h": 296,
           "styles": {
@@ -3716,7 +3716,7 @@
     {
       "id": "rightBtn",
       "type": "button",
-      "content": "->",
+      "content": "",
       "href": "#",
       "layouts": {
         "desktop": {
@@ -3844,12 +3844,15 @@
         }
       },
       "fontFilePath": "./asset/Syne-Medium.ttf",
-      "animSmooth": true
+      "animSmooth": true,
+      "src": "./asset/icons/arrow-right-creative.svg",
+      "alt": "Next slide",
+      "objectFit": "contain"
     },
     {
       "id": "leftBtn",
       "type": "button",
-      "content": "<-",
+      "content": "",
       "href": "#",
       "layouts": {
         "desktop": {
@@ -3977,7 +3980,10 @@
         }
       },
       "fontFilePath": "./asset/Syne-Medium.ttf",
-      "animSmooth": true
+      "animSmooth": true,
+      "src": "./asset/icons/arrow-left-creative.svg",
+      "alt": "Previous slide",
+      "objectFit": "contain"
     },
     {
       "id": "container_mrboyqlv",
@@ -4028,7 +4034,7 @@
     {
       "id": "image_mrboyqlu",
       "type": "image",
-      "src": "./asset/ic1.png",
+      "src": "./asset/icons/hotel.svg",
       "layouts": {
         "desktop": {
           "x": 11,
@@ -4048,7 +4054,9 @@
           "animation": "none",
           "parent": "container_mrboyqlt"
         }
-      }
+      },
+      "alt": "Hotel icon",
+      "objectFit": "contain"
     },
     {
       "id": "text_mr4pnrti",
@@ -6215,7 +6223,7 @@
                 "h": 39,
                 "opacity": 0,
                 "scale": 1,
-                "rotation": 41
+                "rotation": 0
               },
               {
                 "x": -338,
@@ -6224,7 +6232,7 @@
                 "h": 39,
                 "opacity": 1,
                 "scale": 1,
-                "rotation": 41
+                "rotation": 0
               }
             ],
             "animateOnAppear": true,
@@ -6232,7 +6240,7 @@
             "mode": "default",
             "preset": "slideIn"
           },
-          "rotation": 41,
+          "rotation": 0,
           "positionFixed": false,
           "shadowCfg": {
             "enabled": false,
@@ -6663,7 +6671,7 @@
     {
       "id": "button_mr9iulk6",
       "type": "button",
-      "content": "See More   ->",
+      "content": "See More   ?",
       "href": "#",
       "layouts": {
         "desktop": {
@@ -8072,7 +8080,7 @@
     {
       "id": "image_mraxrtcz",
       "type": "image",
-      "src": "./asset/ic1.png",
+      "src": "./asset/icons/location-pin.svg",
       "layouts": {
         "desktop": {
           "x": 18,
@@ -8092,7 +8100,9 @@
           "animation": "none",
           "parent": "container_mrax5i7q"
         }
-      }
+      },
+      "alt": "Location icon",
+      "objectFit": "contain"
     },
     {
       "id": "text_mr9aaqy8",
@@ -8921,8 +8931,8 @@
         "desktop": {
           "x": 16,
           "y": -2,
-          "w": 495,
-          "h": 258,
+          "w": 414,
+          "h": 68,
           "styles": {
             "fontSize": "62px",
             "color": "#000000",
@@ -8932,7 +8942,34 @@
           "animation": "slideUp",
           "animDuration": 1,
           "advAnim": {
-            "enabled": true
+            "enabled": true,
+            "mode": "default",
+            "frames": [
+              {
+                "x": 16,
+                "y": -2,
+                "w": 414,
+                "h": 68,
+                "opacity": 0,
+                "scale": 1,
+                "rotation": 0
+              },
+              {
+                "x": 16,
+                "y": -2,
+                "w": 414,
+                "h": 68,
+                "opacity": 1,
+                "scale": 1,
+                "rotation": 0
+              }
+            ],
+            "type": "loop",
+            "speed": 1.5,
+            "delay": 0,
+            "animateOnAppear": false,
+            "preset": "fadeIn",
+            "smooth": false
           },
           "parent": "Hero_Section"
         },
@@ -8964,9 +9001,9 @@
       "layouts": {
         "desktop": {
           "x": 423,
-          "y": -4,
-          "w": 495,
-          "h": 258,
+          "y": -3,
+          "w": 408,
+          "h": 67,
           "styles": {
             "fontSize": "62px",
             "color": "#ff6600",
@@ -10705,7 +10742,7 @@
     {
       "id": "image_mr9h7du2",
       "type": "image",
-      "src": "./asset/ic1.png",
+      "src": "./asset/icons/location-pin.svg",
       "layouts": {
         "desktop": {
           "x": 2,
@@ -10729,7 +10766,9 @@
           "animation": "none",
           "parent": "container_mr9h7du0"
         }
-      }
+      },
+      "alt": "Location icon",
+      "objectFit": "contain"
     },
     {
       "id": "container_mr9h7du3",
@@ -11898,7 +11937,7 @@
     {
       "id": "image_mr9i3aqf",
       "type": "image",
-      "src": "./asset/ic1.png",
+      "src": "./asset/icons/location-pin.svg",
       "layouts": {
         "desktop": {
           "x": 2,
@@ -11922,7 +11961,9 @@
           "animation": "none",
           "parent": "container_mr9i3aqd"
         }
-      }
+      },
+      "alt": "Location icon",
+      "objectFit": "contain"
     },
     {
       "id": "container_mr9i3aqg",
@@ -13081,7 +13122,7 @@
     {
       "id": "image_mr9i3aqz",
       "type": "image",
-      "src": "./asset/ic1.png",
+      "src": "./asset/icons/location-pin.svg",
       "layouts": {
         "desktop": {
           "x": 2,
@@ -13105,7 +13146,9 @@
           "animation": "none",
           "parent": "container_mr9i3aqx"
         }
-      }
+      },
+      "alt": "Location icon",
+      "objectFit": "contain"
     },
     {
       "id": "text_mr9ik21x",
@@ -16123,7 +16166,7 @@
           "h": 20,
           "styles": {
             "fontSize": "15px",
-            "color": "#bdbdbd",
+            "color": "#5c5c5c",
             "fontFamily": "system-ui, sans-serif",
             "fontWeight": "400"
           },
@@ -17480,7 +17523,7 @@
     {
       "id": "image_mrb0t6c7",
       "type": "image",
-      "src": "./asset/ic5.png",
+      "src": "./asset/icons/globe.svg",
       "layouts": {
         "desktop": {
           "x": -6,
@@ -17500,12 +17543,14 @@
           "animation": "none",
           "parent": "container_mrax5i7t"
         }
-      }
+      },
+      "alt": "Website icon",
+      "objectFit": "contain"
     },
     {
       "id": "image_mrb0t6c8",
       "type": "image",
-      "src": "./asset/ic4.png",
+      "src": "./asset/icons/phone.svg",
       "layouts": {
         "desktop": {
           "x": -3,
@@ -17525,12 +17570,14 @@
           "animation": "none",
           "parent": "container_mraxrtcx"
         }
-      }
+      },
+      "alt": "Phone icon",
+      "objectFit": "contain"
     },
     {
       "id": "image_mrb0t6c9",
       "type": "image",
-      "src": "./asset/ic7.png",
+      "src": "./asset/icons/mail.svg",
       "layouts": {
         "desktop": {
           "x": 8,
@@ -17610,7 +17657,9 @@
           },
           "parent": "container_mraxrtcv"
         }
-      }
+      },
+      "alt": "Mail icon",
+      "objectFit": "contain"
     },
     {
       "id": "text_mrb0ygew",
@@ -18790,7 +18839,7 @@
     {
       "id": "image_mrboyqm1",
       "type": "image",
-      "src": "./asset/ic1.png",
+      "src": "./asset/icons/food.svg",
       "layouts": {
         "desktop": {
           "x": 11,
@@ -18810,7 +18859,9 @@
           "animation": "none",
           "parent": "container_mrboyqlz"
         }
-      }
+      },
+      "alt": "Food icon",
+      "objectFit": "contain"
     },
     {
       "id": "text_mrboyqm2",
@@ -18953,7 +19004,7 @@
     {
       "id": "image_mrboyqm6",
       "type": "image",
-      "src": "./asset/ic1.png",
+      "src": "./asset/icons/transport.svg",
       "layouts": {
         "desktop": {
           "x": 11,
@@ -18973,7 +19024,9 @@
           "animation": "none",
           "parent": "container_mrboyqm4"
         }
-      }
+      },
+      "alt": "Transport icon",
+      "objectFit": "contain"
     },
     {
       "id": "text_mrboyqm7",
@@ -19116,7 +19169,7 @@
     {
       "id": "image_mrboyqmb",
       "type": "image",
-      "src": "./asset/ic1.png",
+      "src": "./asset/icons/coordinator.svg",
       "layouts": {
         "desktop": {
           "x": 11,
@@ -19136,7 +19189,9 @@
           "animation": "none",
           "parent": "container_mrboyqm9"
         }
-      }
+      },
+      "alt": "Tour coordinator icon",
+      "objectFit": "contain"
     },
     {
       "id": "text_mrboyqmc",
@@ -19267,7 +19322,7 @@
     {
       "id": "image_mrbq03j0",
       "type": "image",
-      "src": "./asset/ic4.png",
+      "src": "./asset/icons/phone.svg",
       "layouts": {
         "desktop": {
           "x": -3,
@@ -19287,7 +19342,9 @@
           "animation": "none",
           "parent": "container_mrbq03iy"
         }
-      }
+      },
+      "alt": "Phone icon",
+      "objectFit": "contain"
     },
     {
       "id": "text_mrbq03j2",
@@ -19326,7 +19383,7 @@
     {
       "id": "image_mrbq03j3",
       "type": "image",
-      "src": "./asset/ic7.png",
+      "src": "./asset/icons/mail.svg",
       "layouts": {
         "desktop": {
           "x": 8,
@@ -19406,7 +19463,9 @@
           },
           "parent": "container_mrbq03j1"
         }
-      }
+      },
+      "alt": "Mail icon",
+      "objectFit": "contain"
     },
     {
       "id": "text_mrbq5l5o",
@@ -19445,7 +19504,7 @@
     {
       "id": "image_mrbq5l5p",
       "type": "image",
-      "src": "./asset/ic5.png",
+      "src": "./asset/icons/globe.svg",
       "layouts": {
         "desktop": {
           "x": -6,
@@ -19465,7 +19524,9 @@
           "animation": "none",
           "parent": "container_mrbq5l5n"
         }
-      }
+      },
+      "alt": "Website icon",
+      "objectFit": "contain"
     },
     {
       "id": "container_mrbw694t",
@@ -19516,7 +19577,7 @@
     {
       "id": "image_mrbw694u",
       "type": "image",
-      "src": "./asset/ic1.png",
+      "src": "./asset/icons/woman-guide.svg",
       "layouts": {
         "desktop": {
           "x": 11,
@@ -19536,7 +19597,9 @@
           "animation": "none",
           "parent": "container_mrbw694s"
         }
-      }
+      },
+      "alt": "Women tour guide icon",
+      "objectFit": "contain"
     },
     {
       "id": "text_mrbw694v",
@@ -19679,7 +19742,7 @@
     {
       "id": "image_mrbw694z",
       "type": "image",
-      "src": "./asset/ic1.png",
+      "src": "./asset/icons/pricing.svg",
       "layouts": {
         "desktop": {
           "x": 11,
@@ -19699,7 +19762,9 @@
           "animation": "none",
           "parent": "container_mrbw694x"
         }
-      }
+      },
+      "alt": "Student pricing icon",
+      "objectFit": "contain"
     },
     {
       "id": "text_mrbw6950",
@@ -19842,7 +19907,7 @@
     {
       "id": "image_mrbw6954",
       "type": "image",
-      "src": "./asset/ic1.png",
+      "src": "./asset/icons/support-247.svg",
       "layouts": {
         "desktop": {
           "x": 11,
@@ -19862,7 +19927,9 @@
           "animation": "none",
           "parent": "container_mrbw6952"
         }
-      }
+      },
+      "alt": "24/7 assistance icon",
+      "objectFit": "contain"
     },
     {
       "id": "text_mrbw6955",
@@ -20065,7 +20132,7 @@
     {
       "id": "image_mrbw6959",
       "type": "image",
-      "src": "./asset/ic1.png",
+      "src": "./asset/icons/itinerary.svg",
       "layouts": {
         "desktop": {
           "x": 11,
@@ -20085,7 +20152,9 @@
           "animation": "none",
           "parent": "container_mrbw6957"
         }
-      }
+      },
+      "alt": "Custom itinerary icon",
+      "objectFit": "contain"
     },
     {
       "id": "text_mrbw695a",
