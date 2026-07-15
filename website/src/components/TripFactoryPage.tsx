@@ -6,21 +6,82 @@ import {
   isValidElement,
   useCallback,
   useEffect,
+  useMemo,
+  useRef,
   useState,
   type CSSProperties,
-  type MouseEvent,
+  type ChangeEvent,
   type ReactElement,
-  type ReactNode,
 } from "react";
-import Image from "next/image";
-import pageContent from "@/content/page.json";
-import type { PageContent } from "@/types/page-content";
+import { useSearchParams } from "next/navigation";
+import { PackageCard, PACKAGE_CARDS, type PackageDuration, type PackageEnquirySelection } from "@/components/cards/PackageCard";
+import { TestimonialDeck } from "@/components/cards/TestimonialCard";
+import { OfferingCard, PRIMARY_OFFERING_CARDS, SECONDARY_OFFERING_CARDS } from "@/components/cards/OfferingCard";
+import { SiteFooter } from "@/components/SiteFooter";
+import { SiteNavbar } from "@/components/SiteNavbar";
+import {
+  BoxElement,
+  ButtonElement,
+  ImageElement,
+  TextElement,
+  content,
+  scaledChildren,
+  type ButtonAction,
+  type ElementProps,
+  type Mode,
+} from "@/components/cards/shared-elements";
+import tourPackagesContent from "@/content/tour-packages.json";
+import tripFactoryAnimationsJson from "@/content/trip-factory-animations.json";
 
-type Mode = "desktop" | "mobile";
 type SliderIndexes = Record<string, number>;
-type ButtonAction = (id: string, mode: Mode, event: MouseEvent<HTMLElement>) => boolean;
-type ElementProps = { id: string; className: string; children?: ReactNode; style?: CSSProperties; scaleClassName?: string };
-type PageTreeProps = { buttonAction: ButtonAction; sliderIndexes: SliderIndexes };
+type TourPackageLookupSource = {
+  collections: Array<{
+    cards: Array<{
+      id: string;
+      state: string;
+      title: string;
+      duration?: PackageDuration;
+      combos: string[];
+    }>;
+  }>;
+};
+type TourPackageEntry = {
+  packageId: string;
+  destination: string;
+  title: string;
+  duration?: PackageDuration;
+  combos: string[];
+};
+type TourPackageIndex = {
+  entries: TourPackageEntry[];
+  byId: Map<string, TourPackageEntry>;
+  bySelection: Map<string, TourPackageEntry>;
+  destinations: string[];
+  combosByDestination: Record<string, string[]>;
+};
+type EnquiryFormState = {
+  name: string;
+  destination: string;
+  combo: string;
+  date: string;
+  members: string;
+  message: string;
+  destinationOptions: string[];
+  comboOptions: string[];
+  onNameChange: (value: string) => void;
+  onDestinationChange: (value: string) => void;
+  onComboChange: (value: string) => void;
+  onDateChange: (value: string) => void;
+  onMembersChange: (value: string) => void;
+  onMessageChange: (value: string) => void;
+};
+type PageTreeProps = {
+  buttonAction: ButtonAction;
+  sliderIndexes: SliderIndexes;
+  enquiryForm: EnquiryFormState;
+  packageDurationText: string;
+  onPackageEnquire: (selection: PackageEnquirySelection) => void;
+};
 type AnimationFrameSpec = { x: number; y: number; w: number; h: number; opacity: number; scale: number; rotation: number };
 type AdvancedAnimationSpec = {
   type: string;
@@ -35,3851 +96,150 @@ type AdvancedAnimationSpec = {
 };
 
 
-const content = pageContent as PageContent;
-const MOBILE_CANVAS_WIDTH = 390;
-const MOBILE_CANVAS_HEIGHT = 7118;
-const SLIDERS = {
-  "slider_mrad23lg": {
-    "duration": 3,
-    "loop": true,
-    "autoScroll": true,
-    "vertical": false,
-    "gap": 0,
-    "counts": {
-      "desktop": 16,
-      "mobile": 16
-    }
-  },
-  "slider_mrbma3g2": {
-    "duration": 3,
-    "loop": true,
-    "autoScroll": true,
-    "vertical": false,
-    "gap": 0,
-    "counts": {
-      "desktop": 10,
-      "mobile": 10
-    }
-  }
-} as const;
-const BUTTON_ACTIONS = {
-  "desktop": {
-    "fleet_slider_next_button": {
-      "slider": "slider_mrad23lg",
-      "direction": "next"
-    },
-    "fleet_slider_prev_button": {
-      "slider": "slider_mrad23lg",
-      "direction": "previous"
-    },
-    "nav_about_us_link": {
-      "locationId": "loc_mrcddcfx",
-      "target": "main"
-    },
-    "nav_enquiry_link": {
-      "locationId": "loc_mrcd1in9"
-    },
-    "nav_packages_link": {
-      "locationId": "loc_mrcd0ve0",
-      "target": "main"
-    },
-    "nav_bus_link": {
-      "locationId": "loc_mrcdf778",
-      "target": "main"
-    },
-    "hero_plan_trip_button": {
-      "locationId": "loc_mrcd2xkz",
-      "target": "main"
-    },
-    "hero_contact_us_button": {
-      "locationId": "loc_mrcd39tj",
-      "target": "main"
-    }
-  },
-  "mobile": {
-    "fleet_slider_next_button": {
-      "slider": "slider_mrad23lg",
-      "direction": "next"
-    },
-    "fleet_slider_prev_button": {
-      "slider": "slider_mrad23lg",
-      "direction": "previous"
-    },
-    "nav_about_us_link": {
-      "locationId": "loc_mrcddcfx",
-      "target": "main"
-    },
-    "nav_enquiry_link": {
-      "locationId": "loc_mrcd1in9"
-    },
-    "nav_packages_link": {
-      "locationId": "loc_mrcd0ve0",
-      "target": "main"
-    },
-    "nav_bus_link": {
-      "locationId": "loc_mrcdf778",
-      "target": "main"
-    },
-    "hero_plan_trip_button": {
-      "locationId": "loc_mrcd2xkz",
-      "target": "main"
-    },
-    "hero_contact_us_button": {
-      "locationId": "loc_mrcd39tj",
-      "target": "main"
+const TOUR_PACKAGE_INDEX: TourPackageIndex = (() => {
+  const destinationLookup = new Map<string, Set<string>>();
+  const byId = new Map<string, TourPackageEntry>();
+  const bySelection = new Map<string, TourPackageEntry>();
+  const entries: TourPackageEntry[] = [];
+  const source = tourPackagesContent as TourPackageLookupSource;
+
+  for (const collection of source.collections) {
+    for (const card of collection.cards) {
+      const entry: TourPackageEntry = {
+        packageId: card.id,
+        destination: card.state,
+        title: card.title,
+        duration: card.duration,
+        combos: card.combos,
+      };
+
+      entries.push(entry);
+      byId.set(entry.packageId, entry);
+
+      for (const combo of card.combos) {
+        const destinationCombos = destinationLookup.get(card.state) ?? new Set<string>();
+        destinationCombos.add(combo);
+        destinationLookup.set(card.state, destinationCombos);
+
+        const selectionKey = `${card.state}||${combo}`;
+        if (!bySelection.has(selectionKey)) bySelection.set(selectionKey, entry);
+      }
     }
   }
-} as const;
-const LOCATIONS = {
-  "loc_mr0edof2": 656,
-  "loc_mrcd0ve0": 1350,
-  "loc_mrcd1in9": 3539,
-  "loc_mrcd2xkz": 1350,
-  "loc_mrcd39tj": 3539,
-  "loc_mrcddcfx": 663,
-  "loc_mrcdf778": 2112
-} as const;
-const LEGAL_FOOTER_LINKS = {
-  "footer_terms_link": "/legal#terms-and-conditions",
-  "footer_privacy_link": "/legal#privacy-policy",
-  "footer_legal_extra_1": "/legal#refund-policy",
-  "footer_legal_extra_2": "/legal#cancellation-policy",
-} as const;
-const ADVANCED_ANIMATIONS: Record<Mode, Record<string, AdvancedAnimationSpec>> = {
-  "desktop": {
-    "decorative_image_1": {
-      "type": "scroll",
-      "speed": 1,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 1160,
-          "y": 915,
-          "w": 476,
-          "h": 789,
-          "opacity": 0.4,
-          "scale": 1,
-          "rotation": 42
-        },
-        {
-          "x": 846,
-          "y": 1046,
-          "w": 476,
-          "h": 789,
-          "opacity": 0.4,
-          "scale": 1,
-          "rotation": -24
-        }
-      ]
-    },
-    "decorative_image_2": {
-      "type": "scroll",
-      "speed": 1,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 452,
-          "y": 2425,
-          "w": 569,
-          "h": 399,
-          "opacity": 0,
-          "scale": 0.92,
-          "rotation": 0
-        },
-        {
-          "x": 452,
-          "y": 2425,
-          "w": 569,
-          "h": 399,
-          "opacity": 0.35,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "decorative_image_4": {
-      "type": "once",
-      "speed": 1,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -405,
-          "y": 3929,
-          "w": 1588,
-          "h": 804,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": -405,
-          "y": 3632,
-          "w": 1588,
-          "h": 804,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "decorative_image_5": {
-      "type": "once",
-      "speed": 1,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -380,
-          "y": 4632,
-          "w": 1537,
-          "h": 562,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": -380,
-          "y": 4632,
-          "w": 1537,
-          "h": 562,
-          "opacity": 0.5,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "marquee_logo_1": {
-      "type": "loop",
-      "speed": 60,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": true,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -427,
-          "y": 4638,
-          "w": 331,
-          "h": 135,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 866,
-          "y": 4638,
-          "w": 331,
-          "h": 135,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "marquee_logo_2": {
-      "type": "loop",
-      "speed": 60,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": true,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 850,
-          "y": 4512,
-          "w": 331,
-          "h": 135,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": -377,
-          "y": 4509,
-          "w": 331,
-          "h": 135,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "gallery_polaroid_frame": {
-      "type": "once",
-      "speed": 1,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 22,
-          "y": 4575,
-          "w": 745,
-          "h": 576,
-          "opacity": 0,
-          "scale": 0.92,
-          "rotation": 0
-        },
-        {
-          "x": 22,
-          "y": 4575,
-          "w": 745,
-          "h": 576,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrboyqlt": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -284,
-          "y": 4565,
-          "w": 249,
-          "h": 79,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": -260,
-          "y": 4565,
-          "w": 249,
-          "h": 79,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrboyqlz": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -286,
-          "y": 4680,
-          "w": 249,
-          "h": 79,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": -262,
-          "y": 4680,
-          "w": 249,
-          "h": 79,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrboyqm4": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -286,
-          "y": 4795,
-          "w": 249,
-          "h": 79,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": -262,
-          "y": 4795,
-          "w": 249,
-          "h": 79,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrboyqm9": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -286,
-          "y": 4910,
-          "w": 249,
-          "h": 79,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": -262,
-          "y": 4910,
-          "w": 249,
-          "h": 79,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrbma3fj": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": false,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 335,
-          "y": 4453,
-          "w": 177,
-          "h": 25,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 335,
-          "y": 4429,
-          "w": 177,
-          "h": 25,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrbw694s": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 783,
-          "y": 4566,
-          "w": 249,
-          "h": 79,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 807,
-          "y": 4566,
-          "w": 249,
-          "h": 79,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrbw694x": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 784,
-          "y": 4680,
-          "w": 249,
-          "h": 79,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 808,
-          "y": 4680,
-          "w": 249,
-          "h": 79,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrbw6952": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 803,
-          "y": 4790,
-          "w": 249,
-          "h": 79,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 803,
-          "y": 4790,
-          "w": 249,
-          "h": 79,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrbw6957": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 776,
-          "y": 4908,
-          "w": 249,
-          "h": 79,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 800,
-          "y": 4908,
-          "w": 249,
-          "h": 79,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "gallery_tagline": {
-      "type": "once",
-      "speed": 1,
-      "delay": 0.5,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 141,
-          "y": 5001,
-          "w": 531,
-          "h": 116,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 141,
-          "y": 5001,
-          "w": 531,
-          "h": 116,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrarstno": {
-      "type": "once",
-      "speed": 0.3,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 132,
-          "y": 140,
-          "w": 384,
-          "h": 227,
-          "opacity": 0,
-          "scale": 0.92,
-          "rotation": 0
-        },
-        {
-          "x": 132,
-          "y": 140,
-          "w": 384,
-          "h": 227,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrax5i7o": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 70,
-          "y": 149,
-          "w": 611,
-          "h": 526,
-          "opacity": 0,
-          "scale": 0.92,
-          "rotation": 0
-        },
-        {
-          "x": 70,
-          "y": 149,
-          "w": 611,
-          "h": 526,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "Testimonial_Form": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 729,
-          "y": 151,
-          "w": 616,
-          "h": 467,
-          "opacity": 0,
-          "scale": 0.92,
-          "rotation": 0
-        },
-        {
-          "x": 729,
-          "y": 151,
-          "w": 616,
-          "h": 467,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "footer_logo_image": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": false,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 10,
-          "y": -2,
-          "w": 224,
-          "h": 100,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 34,
-          "y": -2,
-          "w": 224,
-          "h": 100,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "footer_tagline": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -9,
-          "y": 65,
-          "w": 275,
-          "h": 41,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 15,
-          "y": 65,
-          "w": 275,
-          "h": 41,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "group_mr7fkzds": {
-      "type": "hover",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": false,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 822,
-          "y": -36,
-          "w": 550,
-          "h": 443,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 822,
-          "y": -55,
-          "w": 550,
-          "h": 443,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "about_intro_paragraph": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 20,
-          "y": 83,
-          "w": 638,
-          "h": 47,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 44,
-          "y": 83,
-          "w": 638,
-          "h": 47,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "about_secondary_paragraph": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 22,
-          "y": 222,
-          "w": 638,
-          "h": 47,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 46,
-          "y": 222,
-          "w": 638,
-          "h": 47,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "about_background_image": {
-      "type": "once",
-      "speed": 1,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -1405,
-          "y": -66,
-          "w": 913,
-          "h": 473,
-          "opacity": 0.3,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": -878,
-          "y": -66,
-          "w": 913,
-          "h": 473,
-          "opacity": 0.3,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mr9ik21w": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 13,
-          "y": 10,
-          "w": 129,
-          "h": 28,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 13,
-          "y": -14,
-          "w": 129,
-          "h": 28,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "packages_see_more_button": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 1.5,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 565,
-          "y": 751,
-          "w": 302,
-          "h": 50,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 565,
-          "y": 727,
-          "w": 302,
-          "h": 50,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mraxrtcx": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 1,
-          "y": 510,
-          "w": 161,
-          "h": 34,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 1,
-          "y": 486,
-          "w": 161,
-          "h": 34,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrax5i7t": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": false,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 1153,
-          "y": 660,
-          "w": 195,
-          "h": 33,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 1153,
-          "y": 636,
-          "w": 195,
-          "h": 33,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mraxrtcv": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 905,
-          "y": 661,
-          "w": 232,
-          "h": 32,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 905,
-          "y": 637,
-          "w": 232,
-          "h": 32,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "packages_intro_text": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 41,
-          "y": 66,
-          "w": 821,
-          "h": 33,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 65,
-          "y": 66,
-          "w": 821,
-          "h": 33,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_PKG_Card": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 0,
-          "y": 0,
-          "w": 384,
-          "h": 552,
-          "opacity": 0,
-          "scale": 0.92,
-          "rotation": 0
-        },
-        {
-          "x": 0,
-          "y": 0,
-          "w": 384,
-          "h": 552,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mr9i3apy": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0.5,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 432,
-          "y": 0,
-          "w": 384,
-          "h": 552,
-          "opacity": 0,
-          "scale": 0.92,
-          "rotation": 0
-        },
-        {
-          "x": 432,
-          "y": 0,
-          "w": 384,
-          "h": 552,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mr9i3aqi": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 1,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 856,
-          "y": 0,
-          "w": 384,
-          "h": 552,
-          "opacity": 0,
-          "scale": 0.92,
-          "rotation": 0
-        },
-        {
-          "x": 856,
-          "y": 0,
-          "w": 384,
-          "h": 552,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "hero_photo_card_1": {
-      "type": "once",
-      "speed": 1.5,
-      "delay": 0,
-      "animateOnAppear": false,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 64,
-          "y": 49,
-          "w": 303,
-          "h": 346,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 4
-        },
-        {
-          "x": 64,
-          "y": 49,
-          "w": 303,
-          "h": 346,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 4
-        }
-      ]
-    },
-    "hero_photo_card_2": {
-      "type": "once",
-      "speed": 1.5,
-      "delay": 1.5,
-      "animateOnAppear": false,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 275,
-          "y": 152,
-          "w": 303,
-          "h": 346,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 4
-        },
-        {
-          "x": 275,
-          "y": 152,
-          "w": 303,
-          "h": 346,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 4
-        }
-      ]
-    },
-    "hero_photo_card_3": {
-      "type": "once",
-      "speed": 1.5,
-      "delay": 3,
-      "animateOnAppear": false,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 187,
-          "y": -65,
-          "w": 303,
-          "h": 346,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 4
-        },
-        {
-          "x": 187,
-          "y": -65,
-          "w": 303,
-          "h": 346,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 4
-        }
-      ]
-    },
-    "hero_heading_line1": {
-      "type": "loop",
-      "speed": 1.5,
-      "delay": 0,
-      "animateOnAppear": false,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 16,
-          "y": -2,
-          "w": 414,
-          "h": 68,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 16,
-          "y": -2,
-          "w": 414,
-          "h": 68,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "about_heading_line1": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 20,
-          "y": 43,
-          "w": 495,
-          "h": 258,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 20,
-          "y": 19,
-          "w": 495,
-          "h": 258,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "about_heading_line2": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 232,
-          "y": 44,
-          "w": 495,
-          "h": 258,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 232,
-          "y": 20,
-          "w": 495,
-          "h": 258,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "packages_heading": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 302,
-          "y": 31,
-          "w": 224,
-          "h": 52,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 302,
-          "y": 7,
-          "w": 224,
-          "h": 52,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mr9ik21y": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 31,
-          "y": -3,
-          "w": 214,
-          "h": 25,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 31,
-          "y": -27,
-          "w": 214,
-          "h": 25,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "packages_section_label": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 32,
-          "y": 29,
-          "w": 264,
-          "h": 55,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 32,
-          "y": 5,
-          "w": 264,
-          "h": 55,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "testimonials_intro_text": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 41,
-          "y": 66,
-          "w": 821,
-          "h": 33,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 65,
-          "y": 66,
-          "w": 821,
-          "h": 33,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "testimonials_heading": {
-      "type": "once",
-      "speed": 0.55,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 241,
-          "y": 30,
-          "w": 259,
-          "h": 47,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 241,
-          "y": 6,
-          "w": 259,
-          "h": 47,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mra6rgjk": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 7,
-          "y": -27,
-          "w": 177,
-          "h": 25,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 31,
-          "y": -27,
-          "w": 177,
-          "h": 25,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "testimonials_heading_line1": {
-      "type": "once",
-      "speed": 0.55,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 32,
-          "y": 29,
-          "w": 264,
-          "h": 55,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 32,
-          "y": 5,
-          "w": 264,
-          "h": 55,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "fleet_description": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 40,
-          "y": 66,
-          "w": 638,
-          "h": 36,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 64,
-          "y": 66,
-          "w": 638,
-          "h": 36,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "fleet_heading_line2": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 394,
-          "y": 27,
-          "w": 337,
-          "h": 32,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 394,
-          "y": 3,
-          "w": 337,
-          "h": 32,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "fleet_heading_line1": {
-      "type": "once",
-      "speed": 0.55,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 24,
-          "y": 29,
-          "w": 369,
-          "h": 32,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 24,
-          "y": 5,
-          "w": 369,
-          "h": 32,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "fleet_description_2": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 41,
-          "y": 218,
-          "w": 638,
-          "h": 36,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 65,
-          "y": 218,
-          "w": 638,
-          "h": 36,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "testimonial_1_quote_icon_open": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 8,
-          "y": 180,
-          "w": 103,
-          "h": 119,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 8,
-          "y": 156,
-          "w": 103,
-          "h": 119,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "testimonial_1_quote_icon_close": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 272,
-          "y": -37,
-          "w": 103,
-          "h": 119,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 272,
-          "y": -61,
-          "w": 103,
-          "h": 119,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "testimonial_1_quote": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 22,
-          "y": 78,
-          "w": 296,
-          "h": 43,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 46,
-          "y": 78,
-          "w": 296,
-          "h": 43,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "cta_intro_text": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 65,
-          "y": 90,
-          "w": 821,
-          "h": 33,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 65,
-          "y": 66,
-          "w": 821,
-          "h": 33,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "cta_heading_line2": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 320,
-          "y": 6,
-          "w": 411,
-          "h": 23,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 344,
-          "y": 6,
-          "w": 411,
-          "h": 23,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mraw949u": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 31,
-          "y": -3,
-          "w": 177,
-          "h": 25,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 31,
-          "y": -27,
-          "w": 177,
-          "h": 25,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "cta_heading_line1": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 8,
-          "y": 5,
-          "w": 335,
-          "h": 48,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 32,
-          "y": 5,
-          "w": 335,
-          "h": 48,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrcd83lw": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 417,
-          "y": 2322,
-          "w": 140,
-          "h": 25,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 417,
-          "y": 2298,
-          "w": 140,
-          "h": 25,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    }
-  },
-  "mobile": {
-    "decorative_image_1": {
-      "type": "once",
-      "speed": 1,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 324,
-          "y": 1207,
-          "w": 175,
-          "h": 556,
-          "opacity": 0.4,
-          "scale": 1,
-          "rotation": 12
-        },
-        {
-          "x": 255,
-          "y": 1310,
-          "w": 175,
-          "h": 556,
-          "opacity": 0.4,
-          "scale": 1,
-          "rotation": -16
-        }
-      ]
-    },
-    "decorative_image_2": {
-      "type": "once",
-      "speed": 0.45,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 11,
-          "y": 3652,
-          "w": 365,
-          "h": 251,
-          "opacity": 0,
-          "scale": 0.92,
-          "rotation": 0
-        },
-        {
-          "x": 11,
-          "y": 3652,
-          "w": 365,
-          "h": 251,
-          "opacity": 0.5,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "decorative_image_3": {
-      "type": "loop",
-      "speed": 50,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": true,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 1,
-          "y": 4001,
-          "w": 707,
-          "h": 257,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": -319,
-          "y": 3988,
-          "w": 707,
-          "h": 257,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "decorative_image_4": {
-      "type": "scroll",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -49,
-          "y": 4682,
-          "w": 471,
-          "h": 378,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": -49,
-          "y": 4547,
-          "w": 471,
-          "h": 378,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "decorative_image_5": {
-      "type": "once",
-      "speed": 1,
-      "delay": 0,
-      "animateOnAppear": false,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -16,
-          "y": 6075,
-          "w": 718,
-          "h": 333,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": -16,
-          "y": 6075,
-          "w": 718,
-          "h": 333,
-          "opacity": 0.5,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "marquee_logo_1": {
-      "type": "loop",
-      "speed": 40,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": true,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -86,
-          "y": 6012,
-          "w": 200,
-          "h": 80,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 386,
-          "y": 6012,
-          "w": 200,
-          "h": 80,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 386,
-          "y": 6012,
-          "w": 200,
-          "h": 80,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "marquee_logo_2": {
-      "type": "loop",
-      "speed": 30,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": true,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 303,
-          "y": 6086,
-          "w": 200,
-          "h": 80,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": -172,
-          "y": 6086,
-          "w": 200,
-          "h": 80,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "gallery_polaroid_frame": {
-      "type": "once",
-      "speed": 1,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -2,
-          "y": -59,
-          "w": 408,
-          "h": 325,
-          "opacity": 0,
-          "scale": 0.92,
-          "rotation": 0
-        },
-        {
-          "x": -2,
-          "y": -59,
-          "w": 408,
-          "h": 325,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrboyqlt": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -11,
-          "y": 22,
-          "w": 249,
-          "h": 79,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 13,
-          "y": 22,
-          "w": 249,
-          "h": 79,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrboyqlz": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -8,
-          "y": 128,
-          "w": 249,
-          "h": 79,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 16,
-          "y": 128,
-          "w": 249,
-          "h": 79,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrboyqm4": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -8,
-          "y": 243,
-          "w": 249,
-          "h": 79,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 16,
-          "y": 243,
-          "w": 249,
-          "h": 79,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrboyqm9": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -8,
-          "y": 358,
-          "w": 249,
-          "h": 79,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 16,
-          "y": 358,
-          "w": 249,
-          "h": 79,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrbma3fj": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 374,
-          "y": -22,
-          "w": 177,
-          "h": 25,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 374,
-          "y": -46,
-          "w": 177,
-          "h": 25,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrbw694s": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -11,
-          "y": 22,
-          "w": 249,
-          "h": 79,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 13,
-          "y": 22,
-          "w": 249,
-          "h": 79,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrbw694x": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -8,
-          "y": 128,
-          "w": 249,
-          "h": 79,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 16,
-          "y": 128,
-          "w": 249,
-          "h": 79,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrbw6952": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -8,
-          "y": 243,
-          "w": 249,
-          "h": 79,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 16,
-          "y": 243,
-          "w": 249,
-          "h": 79,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrbw6957": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -8,
-          "y": 358,
-          "w": 249,
-          "h": 79,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 16,
-          "y": 358,
-          "w": 249,
-          "h": 79,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "gallery_tagline": {
-      "type": "once",
-      "speed": 1,
-      "delay": 0.5,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 103,
-          "y": 439,
-          "w": 566,
-          "h": 107,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 103,
-          "y": 439,
-          "w": 566,
-          "h": 107,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrc0dj11": {
-      "type": "trigger",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "package_3_enquire_button",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 676,
-          "y": 41,
-          "w": 133,
-          "h": 157,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 517,
-          "y": 41,
-          "w": 133,
-          "h": 157,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "slider_mrad23lg": {
-      "type": "once",
-      "speed": 1,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 12,
-          "y": 7,
-          "w": 405,
-          "h": 275,
-          "opacity": 0,
-          "scale": 0.92,
-          "rotation": 0
-        },
-        {
-          "x": 12,
-          "y": 7,
-          "w": 405,
-          "h": 275,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "fleet_slider_next_button": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0.5,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 379,
-          "y": 242,
-          "w": 45,
-          "h": 48,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 379,
-          "y": 242,
-          "w": 45,
-          "h": 48,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "fleet_slider_prev_button": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0.5,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 8,
-          "y": 242,
-          "w": 45,
-          "h": 48,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 8,
-          "y": 242,
-          "w": 45,
-          "h": 48,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrax5i7o": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 526,
-          "y": 674,
-          "w": 350,
-          "h": 374,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 526,
-          "y": 650,
-          "w": 350,
-          "h": 374,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "Testimonial_Form": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 522,
-          "y": 14,
-          "w": 358,
-          "h": 542,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 522,
-          "y": -10,
-          "w": 358,
-          "h": 542,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "footer_logo_image": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 99,
-          "y": 66,
-          "w": 224,
-          "h": 100,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 99,
-          "y": 42,
-          "w": 224,
-          "h": 100,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "footer_tagline": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 61,
-          "y": 111,
-          "w": 275,
-          "h": 41,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 85,
-          "y": 111,
-          "w": 275,
-          "h": 41,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "group_mr7fkzds": {
-      "type": "scroll",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 323,
-          "y": -111,
-          "w": 550,
-          "h": 443,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 323,
-          "y": -132,
-          "w": 550,
-          "h": 443,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "about_intro_paragraph": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -362,
-          "y": 338,
-          "w": 349,
-          "h": 39,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": -338,
-          "y": 338,
-          "w": 349,
-          "h": 39,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "about_secondary_paragraph": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -365,
-          "y": 507,
-          "w": 348,
-          "h": 38,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": -341,
-          "y": 507,
-          "w": 348,
-          "h": 38,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "about_background_image": {
-      "type": "once",
-      "speed": 1,
-      "delay": 2,
-      "animateOnAppear": false,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -1038,
-          "y": -87,
-          "w": 760,
-          "h": 327,
-          "opacity": 0.3,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": -725,
-          "y": -87,
-          "w": 760,
-          "h": 327,
-          "opacity": 0.3,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mr9ik21w": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -345,
-          "y": 246,
-          "w": 129,
-          "h": 28,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": -345,
-          "y": 222,
-          "w": 129,
-          "h": 28,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "packages_see_more_button": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 377,
-          "y": 1515,
-          "w": 161,
-          "h": 33,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 401,
-          "y": 1515,
-          "w": 161,
-          "h": 33,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mraxrtcx": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 4,
-          "y": 584,
-          "w": 161,
-          "h": 34,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 4,
-          "y": 560,
-          "w": 161,
-          "h": 34,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrax5i7t": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": false,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 176,
-          "y": -105,
-          "w": 195,
-          "h": 33,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 176,
-          "y": -105,
-          "w": 195,
-          "h": 33,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mraxrtcv": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 61,
-          "y": -32,
-          "w": 232,
-          "h": 32,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 61,
-          "y": -56,
-          "w": 232,
-          "h": 32,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "packages_intro_text": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 297,
-          "y": 48,
-          "w": 326,
-          "h": 33,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 321,
-          "y": 48,
-          "w": 326,
-          "h": 33,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_PKG_Card": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 259,
-          "y": 0,
-          "w": 307,
-          "h": 445,
-          "opacity": 0,
-          "scale": 0.92,
-          "rotation": 0
-        },
-        {
-          "x": 259,
-          "y": 0,
-          "w": 307,
-          "h": 445,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mr9i3apy": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0.5,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 253,
-          "y": 461,
-          "w": 310,
-          "h": 440,
-          "opacity": 0,
-          "scale": 0.92,
-          "rotation": 0
-        },
-        {
-          "x": 253,
-          "y": 461,
-          "w": 310,
-          "h": 440,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mr9i3aqi": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0.5,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 256,
-          "y": 933,
-          "w": 305,
-          "h": 445,
-          "opacity": 0,
-          "scale": 0.92,
-          "rotation": 0
-        },
-        {
-          "x": 256,
-          "y": 933,
-          "w": 305,
-          "h": 445,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "hero_photo_card_1": {
-      "type": "once",
-      "speed": 1.5,
-      "delay": 0,
-      "animateOnAppear": false,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 64,
-          "y": 49,
-          "w": 303,
-          "h": 346,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 4
-        },
-        {
-          "x": 64,
-          "y": 49,
-          "w": 303,
-          "h": 346,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 4
-        }
-      ]
-    },
-    "hero_photo_card_2": {
-      "type": "once",
-      "speed": 1.5,
-      "delay": 1.5,
-      "animateOnAppear": false,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 275,
-          "y": 152,
-          "w": 303,
-          "h": 346,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 4
-        },
-        {
-          "x": 275,
-          "y": 152,
-          "w": 303,
-          "h": 346,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 4
-        }
-      ]
-    },
-    "hero_photo_card_3": {
-      "type": "once",
-      "speed": 1.5,
-      "delay": 3,
-      "animateOnAppear": false,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 187,
-          "y": -65,
-          "w": 303,
-          "h": 346,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 4
-        },
-        {
-          "x": 187,
-          "y": -65,
-          "w": 303,
-          "h": 346,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 4
-        }
-      ]
-    },
-    "hero_photo_card_1_label": {
-      "type": "once",
-      "speed": 1.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 33,
-          "y": 278,
-          "w": 229,
-          "h": 62,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 1
-        },
-        {
-          "x": 33,
-          "y": 254,
-          "w": 229,
-          "h": 62,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 1
-        }
-      ]
-    },
-    "hero_photo_card_3_label": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 40,
-          "y": 298,
-          "w": 239,
-          "h": 31,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 40,
-          "y": 274,
-          "w": 239,
-          "h": 31,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "hero_photo_card_2_label": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 29,
-          "y": 292,
-          "w": 281,
-          "h": 41,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 29,
-          "y": 268,
-          "w": 281,
-          "h": 41,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "about_heading_line1": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -366,
-          "y": 263,
-          "w": 161,
-          "h": 20,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": -342,
-          "y": 263,
-          "w": 161,
-          "h": 20,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "about_heading_line2": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": -370,
-          "y": 293,
-          "w": 415,
-          "h": 20,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": -346,
-          "y": 293,
-          "w": 415,
-          "h": 20,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "packages_heading": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 490,
-          "y": 31,
-          "w": 224,
-          "h": 52,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 490,
-          "y": 7,
-          "w": 224,
-          "h": 52,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mr9ik21y": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 316,
-          "y": -11,
-          "w": 214,
-          "h": 25,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 316,
-          "y": -35,
-          "w": 214,
-          "h": 25,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "packages_section_label": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 322,
-          "y": 30,
-          "w": 168,
-          "h": 34,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 322,
-          "y": 6,
-          "w": 168,
-          "h": 34,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "testimonials_intro_text": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 20,
-          "y": 62,
-          "w": 821,
-          "h": 33,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 44,
-          "y": 62,
-          "w": 821,
-          "h": 33,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "testimonials_heading": {
-      "type": "once",
-      "speed": 0.55,
-      "delay": 0,
-      "animateOnAppear": false,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 241,
-          "y": 30,
-          "w": 259,
-          "h": 47,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 241,
-          "y": 6,
-          "w": 259,
-          "h": 47,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mra6rgjk": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 7,
-          "y": -27,
-          "w": 209,
-          "h": 31,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 31,
-          "y": -27,
-          "w": 209,
-          "h": 31,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "testimonials_heading_line1": {
-      "type": "once",
-      "speed": 0.55,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 32,
-          "y": 29,
-          "w": 264,
-          "h": 55,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 32,
-          "y": 5,
-          "w": 264,
-          "h": 55,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "fleet_description": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 22,
-          "y": 353,
-          "w": 363,
-          "h": 36,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 46,
-          "y": 353,
-          "w": 363,
-          "h": 36,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "fleet_heading_line2": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 23,
-          "y": 55,
-          "w": 337,
-          "h": 32,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 47,
-          "y": 55,
-          "w": 337,
-          "h": 32,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mrad23lb": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 41,
-          "y": 14,
-          "w": 142,
-          "h": 26,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 41,
-          "y": -10,
-          "w": 142,
-          "h": 26,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "fleet_heading_line1": {
-      "type": "once",
-      "speed": 0.55,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 24,
-          "y": 26,
-          "w": 369,
-          "h": 32,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 48,
-          "y": 26,
-          "w": 369,
-          "h": 32,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "fleet_description_2": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 20,
-          "y": 503,
-          "w": 375,
-          "h": 36,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 44,
-          "y": 503,
-          "w": 375,
-          "h": 36,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "testimonial_1_quote": {
-      "type": "once",
-      "speed": 1,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 22,
-          "y": 78,
-          "w": 296,
-          "h": 43,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 46,
-          "y": 78,
-          "w": 296,
-          "h": 43,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "cta_intro_text": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 508,
-          "y": -72,
-          "w": 367,
-          "h": 36,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 532,
-          "y": -72,
-          "w": 367,
-          "h": 36,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "cta_heading_line2": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 500,
-          "y": -107,
-          "w": 411,
-          "h": 23,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 524,
-          "y": -107,
-          "w": 411,
-          "h": 23,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "container_mraw949u": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 499,
-          "y": -168,
-          "w": 156,
-          "h": 24,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 523,
-          "y": -168,
-          "w": 156,
-          "h": 24,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    },
-    "cta_heading_line1": {
-      "type": "once",
-      "speed": 0.5,
-      "delay": 0,
-      "animateOnAppear": true,
-      "smooth": false,
-      "scrollRange": 200,
-      "triggerButtonId": "",
-      "hoverElementId": "",
-      "frames": [
-        {
-          "x": 500,
-          "y": -136,
-          "w": 335,
-          "h": 48,
-          "opacity": 0,
-          "scale": 1,
-          "rotation": 0
-        },
-        {
-          "x": 524,
-          "y": -136,
-          "w": 335,
-          "h": 48,
-          "opacity": 1,
-          "scale": 1,
-          "rotation": 0
-        }
-      ]
-    }
+
+  return {
+    entries,
+    byId,
+    bySelection,
+    destinations: Array.from(destinationLookup.keys()),
+    combosByDestination: Object.fromEntries(
+      Array.from(destinationLookup.entries()).map(([destination, comboSet]) => [destination, Array.from(comboSet)]),
+    ) as Record<string, string[]>,
+  };
+})();
+
+const TOUR_PACKAGE_DESTINATIONS = TOUR_PACKAGE_INDEX.destinations;
+const TOUR_PACKAGE_COMBOS_BY_DESTINATION = TOUR_PACKAGE_INDEX.combosByDestination;
+
+function resolveTourPackageEntry({
+  packageId,
+  destination,
+  combo,
+  durationCode,
+}: {
+  packageId?: string | null;
+  destination?: string | null;
+  combo?: string | null;
+  durationCode?: string | null;
+}) {
+  const cleanPackageId = packageId?.trim();
+  if (cleanPackageId) {
+    const byId = TOUR_PACKAGE_INDEX.byId.get(cleanPackageId);
+    if (byId) return byId;
   }
+
+  const cleanDestination = destination?.trim();
+  const cleanCombo = combo?.trim();
+  if (!cleanDestination || !cleanCombo) return null;
+
+  if (durationCode?.trim()) {
+    const exactMatch = TOUR_PACKAGE_INDEX.entries.find(
+      (entry) =>
+        entry.destination === cleanDestination &&
+        entry.combos.includes(cleanCombo) &&
+        entry.duration?.code === durationCode.trim(),
+    );
+    if (exactMatch) return exactMatch;
+  }
+
+  return TOUR_PACKAGE_INDEX.bySelection.get(`${cleanDestination}||${cleanCombo}`) ?? null;
+}
+
+function formatPackageDurationText(duration?: PackageDuration) {
+  if (!duration) return "";
+  if (typeof duration.days === "number" && typeof duration.nights === "number") {
+    if (duration.days === 1 && duration.nights === 0) return "1 day trip";
+    if (duration.nights === 0) return `${duration.days} day${duration.days === 1 ? "" : "s"} trip`;
+    return `${duration.days} day${duration.days === 1 ? "" : "s"} and ${duration.nights} night${duration.nights === 1 ? "" : "s"}`;
+  }
+  return duration.label;
+}
+
+function buildWhatsAppMessage({
+  name,
+  destination,
+  combo,
+  durationText,
+  date,
+  members,
+  message,
+}: {
+  name: string;
+  destination: string;
+  combo: string;
+  durationText: string;
+  date: string;
+  members: string;
+  message: string;
+}) {
+  return [
+    `Name: ${name.trim()}`,
+    `Destination: ${destination.trim()}`,
+    `Combo: ${combo.trim()}`,
+    `Duration: ${durationText}`,
+    `Date: ${date.trim()}`,
+    `No. of member: ${members.trim()}`,
+    `Message: ${message.trim()}`,
+  ].join("\n");
+}
+
+type SliderConfig = {
+  duration: number;
+  loop: boolean;
+  autoScroll: boolean;
+  vertical: boolean;
+  gap: number;
+  counts: { desktop: number; mobile: number };
 };
+type ButtonActionConfig =
+  | { slider: string; direction: "next" | "previous" }
+  | { locationId: string; target?: string; speed?: number };
+type TripFactoryAnimationsData = {
+  mobileCanvas: { width: number; height: number };
+  sliders: Record<string, SliderConfig>;
+  buttonActions: Record<Mode, Record<string, ButtonActionConfig>>;
+  locations: Record<string, number>;
+  advancedAnimations: Record<Mode, Record<string, AdvancedAnimationSpec>>;
+};
+
+const tripFactoryAnimations = tripFactoryAnimationsJson as unknown as TripFactoryAnimationsData;
+
+const MOBILE_CANVAS_WIDTH = tripFactoryAnimations.mobileCanvas.width;
+const MOBILE_CANVAS_HEIGHT = tripFactoryAnimations.mobileCanvas.height;
+const SLIDERS = tripFactoryAnimations.sliders;
+const BUTTON_ACTIONS = tripFactoryAnimations.buttonActions;
+const LOCATIONS = tripFactoryAnimations.locations;
+const ADVANCED_ANIMATIONS = tripFactoryAnimations.advancedAnimations;
 
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
@@ -3949,116 +309,87 @@ function smoothScrollTo(targetY: number, speed = 1) {
   window.requestAnimationFrame(step);
 }
 
-function scaledChildren(scaleClassName: string | undefined, children: ReactNode) {
-  if (!scaleClassName) return children;
-  return <div className={`tf-scale-wrap ${scaleClassName}`}>{children}</div>;
-}
 
-function BoxElement({ id, className, type, children, style, scaleClassName }: ElementProps & { type: "container" | "group" }) {
-  return (
-    <div className={`tf-el tf-${type} ${className}`} data-id={id} data-type={type} style={style}>
-      {scaledChildren(scaleClassName, children)}
-    </div>
-  );
-}
+type InputElementProps = ElementProps & {
+  inputType?: "text" | "date" | "number";
+  value?: string;
+  onValueChange?: (value: string) => void;
+};
 
-function TextElement({ id, className, children, style }: ElementProps) {
-  return (
-    <div className={`tf-el tf-text ${className}`} data-id={id} data-type="text" style={style}>
-      {content.texts[id] ?? ""}
-      {children}
-    </div>
-  );
-}
-
-function TextLinkElement({ id, className, href, children, style }: ElementProps & { href: string }) {
-  return (
-    <a className={`tf-el tf-text ${className}`} data-id={id} data-type="text" href={href} style={style}>
-      {content.texts[id] ?? ""}
-      {children}
-    </a>
-  );
-}
-
-function ImageElement({ id, className, children, style, scaleClassName }: ElementProps) {
-  const image = content.images[id];
-
-  return (
-    <div className={`tf-el tf-image ${className}`} data-id={id} data-type="image" style={style}>
-      {image?.src ? <Image src={image.src} alt={image.alt ?? ""} fill sizes="100vw" unoptimized /> : null}
-      {scaledChildren(scaleClassName, children)}
-    </div>
-  );
-}
-
-function ButtonElement({ id, mode, className, children, style, onAction }: ElementProps & { mode: Mode; onAction: ButtonAction }) {
-  const button = content.buttons[id];
-  const label = button?.label ?? "";
-  const icon = button?.icon ? (
-    <Image
-      className={`tf-button-icon${label ? "" : " tf-button-icon-only"}`}
-      src={button.icon}
-      alt={label ? "" : button.iconAlt ?? ""}
-      width={28}
-      height={28}
-      unoptimized
-    />
-  ) : null;
-  const body = children ?? (button?.image ? (
-    <Image className="tf-button-full-image" src={button.image} alt={button.alt ?? label} fill sizes="100vw" unoptimized />
-  ) : (
-    <>
-      {button?.iconPosition === "left" ? icon : null}
-      {label ? <span className="tf-button-label">{label}</span> : null}
-      {button?.iconPosition !== "left" ? icon : null}
-    </>
-  ));
-  const href = button?.href && button.href !== "#" ? button.href : undefined;
-  const handleClick = (event: MouseEvent<HTMLElement>) => {
-    if (onAction(id, mode, event)) event.preventDefault();
+function InputElement({ id, className, children, style, scaleClassName, inputType = "text", value, onValueChange }: InputElementProps) {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const nextValue = inputType === "number" ? event.target.value.replace(/[^\d]/g, "") : event.target.value;
+    onValueChange?.(nextValue);
   };
-  const buttonClassName = `tf-el tf-button ${button?.icon ? "tf-button-with-icon " : ""}${className}`;
+  const inputValueProps = value !== undefined ? { value } : {};
 
-  if (href) {
-    return (
-      <a className={buttonClassName} data-id={id} data-type="button" href={href} target={button?.target || undefined} onClick={handleClick} style={style}>
-        {body}
-      </a>
-    );
-  }
-
-  return (
-    <button className={buttonClassName} data-id={id} data-type="button" type="button" onClick={handleClick} style={style}>
-      {body}
-    </button>
-  );
-}
-
-function InputElement({ id, className, children, style, scaleClassName }: ElementProps) {
   return (
     <div className={`tf-el tf-input ${className}`} data-id={id} data-type="input" style={style}>
-      <input type="text" placeholder={content.fields[id]?.placeholder ?? ""} />
+      <input
+        type={inputType}
+        placeholder={content.fields[id]?.placeholder ?? ""}
+        min={inputType === "number" ? 1 : undefined}
+        step={inputType === "number" ? 1 : undefined}
+        inputMode={inputType === "number" ? "numeric" : undefined}
+        pattern={inputType === "number" ? "[0-9]*" : undefined}
+        onChange={handleChange}
+        {...inputValueProps}
+      />
       {scaledChildren(scaleClassName, children)}
     </div>
   );
 }
 
-function TextareaElement({ id, className, children, style, scaleClassName }: ElementProps) {
+type TextareaElementProps = ElementProps & {
+  value?: string;
+  onValueChange?: (value: string) => void;
+};
+
+function TextareaElement({ id, className, children, style, scaleClassName, value, onValueChange }: TextareaElementProps) {
+  const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    onValueChange?.(event.target.value);
+  };
+  const textValueProps = value !== undefined ? { value } : {};
+
   return (
     <div className={`tf-el tf-textarea ${className}`} data-id={id} data-type="textarea" style={style}>
-      <textarea placeholder={content.fields[id]?.placeholder ?? ""} />
+      <textarea placeholder={content.fields[id]?.placeholder ?? ""} onChange={handleChange} {...textValueProps} />
       {scaledChildren(scaleClassName, children)}
     </div>
   );
 }
 
-function SelectElement({ id, className, children, style, scaleClassName }: ElementProps) {
-  const options = content.fields[id]?.options?.length ? content.fields[id]?.options : ["Option 1", "Option 2", "Option 3"];
+type SelectElementProps = ElementProps & {
+  options?: string[];
+  value?: string;
+  onValueChange?: (value: string) => void;
+  disabled?: boolean;
+  placeholder?: string;
+};
+
+function SelectElement({
+  id,
+  className,
+  children,
+  style,
+  scaleClassName,
+  options,
+  value,
+  onValueChange,
+  disabled = false,
+  placeholder,
+}: SelectElementProps) {
+  const resolvedOptions = options ?? (content.fields[id]?.options?.length ? content.fields[id]?.options : ["Option 1", "Option 2", "Option 3"]);
+  const resolvedPlaceholder = placeholder ?? content.fields[id]?.placeholder ?? "Select an option";
+  const selectValueProps = value !== undefined ? { value } : {};
 
   return (
     <div className={`tf-el tf-select ${className}`} data-id={id} data-type="select" style={style}>
-      <select>
-        {options?.map((option) => (
+      <select disabled={disabled} onChange={(event) => onValueChange?.(event.target.value)} {...selectValueProps}>
+        <option value="" disabled>
+          {resolvedPlaceholder}
+        </option>
+        {resolvedOptions.map((option) => (
           <option key={option} value={option}>
             {option}
           </option>
@@ -4097,320 +428,8 @@ function SliderElement({ id, className, activeIndex, children, style }: ElementP
   );
 }
 
-type GeneratedElementSpec = {
-  id: string;
-  classToken: string;
-  scaleClassToken?: string;
-};
-type TextContainerSpec = {
-  container: GeneratedElementSpec;
-  text: GeneratedElementSpec;
-};
-type PackageCardSpec = {
-  root: GeneratedElementSpec;
-  image: GeneratedElementSpec;
-  button: GeneratedElementSpec;
-  title: TextContainerSpec;
-  combos: TextContainerSpec[];
-  location: {
-    container: GeneratedElementSpec;
-    text: GeneratedElementSpec;
-    icon: GeneratedElementSpec;
-  };
-  comboCount?: TextContainerSpec;
-};
-type TestimonialCardSpec = {
-  root: GeneratedElementSpec;
-  quoteOpen: GeneratedElementSpec;
-  quoteClose: GeneratedElementSpec;
-  avatar: GeneratedElementSpec;
-  initial: GeneratedElementSpec;
-  name: GeneratedElementSpec;
-  role: GeneratedElementSpec;
-  quote: GeneratedElementSpec;
-};
-type OfferingCardSpec = {
-  root: GeneratedElementSpec;
-  background: GeneratedElementSpec;
-  icon: GeneratedElementSpec;
-  title: GeneratedElementSpec;
-  subtitle: GeneratedElementSpec;
-};
 
-const modeClassName = (mode: Mode, classToken: string) => `tf-${mode === "desktop" ? "d" : "m"}-${classToken}`;
-const modeScaleClassName = (mode: Mode, classToken?: string) => (mode === "mobile" && classToken ? `tf-scale-m-${classToken}` : undefined);
-
-const PACKAGE_CARDS: PackageCardSpec[] = [
-  {
-    root: { id: "container_PKG_Card", classToken: "container_PKG_Card_oycau", scaleClassToken: "container_PKG_Card_oycau" },
-    image: { id: "package_1_image", classToken: "image_mr9adhx8_s4fgo" },
-    button: { id: "package_1_enquire_button", classToken: "button_mr9adhx9_5ehan" },
-    title: {
-      container: { id: "container_mr9cjvf0", classToken: "container_mr9cjvf0_62xtd" },
-      text: { id: "package_1_title", classToken: "text_mr9cjvf1_dozms" },
-    },
-    combos: [
-      {
-        container: { id: "container_mr9cjvf2", classToken: "container_mr9cjvf2_62xtd" },
-        text: { id: "package_1_combo_1", classToken: "text_mr9cjvf3_dozms" },
-      },
-      {
-        container: { id: "container_mr9gr3zj", classToken: "container_mr9gr3zj_658qh" },
-        text: { id: "package_1_combo_2", classToken: "text_mr9gr3zk_dmopo" },
-      },
-      {
-        container: { id: "container_mr9gr3zl", classToken: "container_mr9gr3zl_658qh" },
-        text: { id: "package_1_combo_3", classToken: "text_mr9gr3zm_dmopo" },
-      },
-      {
-        container: { id: "container_mr9gr3zn", classToken: "container_mr9gr3zn_658qh" },
-        text: { id: "package_1_combo_4", classToken: "text_mr9gr3zo_dmopo" },
-      },
-      {
-        container: { id: "container_mr9gr3zp", classToken: "container_mr9gr3zp_658qi" },
-        text: { id: "package_1_combo_5", classToken: "text_mr9gr3zq_dmopo" },
-      },
-    ],
-    location: {
-      container: { id: "container_mr9h7du0", classToken: "container_mr9h7du0_64rv1" },
-      text: { id: "package_1_location", classToken: "text_mr9h7du1_dn5l5" },
-      icon: { id: "package_1_location_icon", classToken: "image_mr9h7du2_s1dpz" },
-    },
-    comboCount: {
-      container: { id: "container_mr9h7du3", classToken: "container_mr9h7du3_64rv1" },
-      text: { id: "package_1_combo_count", classToken: "text_mr9h7du4_dn5l5" },
-    },
-  },
-  {
-    root: { id: "container_mr9i3apy", classToken: "container_mr9i3apy_6591e", scaleClassToken: "container_mr9i3apy_6591e" },
-    image: { id: "package_2_image", classToken: "image_mr9i3apz_s0wjm" },
-    button: { id: "package_2_enquire_button", classToken: "button_mr9i3aq0_5aydm" },
-    title: {
-      container: { id: "container_mr9i3aq1", classToken: "container_mr9i3aq1_6591c" },
-      text: { id: "package_2_title", classToken: "text_mr9i3aq2_dmoet" },
-    },
-    combos: [
-      {
-        container: { id: "container_mr9i3aq3", classToken: "container_mr9i3aq3_6591c" },
-        text: { id: "package_2_combo_1", classToken: "text_mr9i3aq4_dmoet" },
-      },
-      {
-        container: { id: "container_mr9i3aq5", classToken: "container_mr9i3aq5_6591d" },
-        text: { id: "package_2_combo_2", classToken: "text_mr9i3aq6_dmoet" },
-      },
-      {
-        container: { id: "container_mr9i3aq7", classToken: "container_mr9i3aq7_6591d" },
-        text: { id: "package_2_combo_3", classToken: "text_mr9i3aq8_dmoet" },
-      },
-      {
-        container: { id: "container_mr9i3aq9", classToken: "container_mr9i3aq9_6591d" },
-        text: { id: "package_2_combo_4", classToken: "text_mr9i3aqa_dmoes" },
-      },
-      {
-        container: { id: "container_mr9i3aqb", classToken: "container_mr9i3aqb_6591e" },
-        text: { id: "package_2_combo_5", classToken: "text_mr9i3aqc_dmoes" },
-      },
-    ],
-    location: {
-      container: { id: "container_mr9i3aqd", classToken: "container_mr9i3aqd_6591e" },
-      text: { id: "package_2_location", classToken: "text_mr9i3aqe_dmoes" },
-      icon: { id: "package_2_location_icon", classToken: "image_mr9i3aqf_s0wjl" },
-    },
-    comboCount: {
-      container: { id: "container_mr9i3aqg", classToken: "container_mr9i3aqg_6591e" },
-      text: { id: "package_2_combo_count", classToken: "text_mr9i3aqh_dmoes" },
-    },
-  },
-  {
-    root: { id: "container_mr9i3aqi", classToken: "container_mr9i3aqi_6591e", scaleClassToken: "container_mr9i3aqi_6591e" },
-    image: { id: "package_3_image", classToken: "image_mr9i3aqj_s0wjl" },
-    button: { id: "package_3_enquire_button", classToken: "button_mr9i3aqk_5aydk" },
-    title: {
-      container: { id: "container_mr9i3aql", classToken: "container_mr9i3aql_6591e" },
-      text: { id: "package_3_title", classToken: "text_mr9i3aqm_dmoer" },
-    },
-    combos: [
-      {
-        container: { id: "container_mr9i3aqn", classToken: "container_mr9i3aqn_6591e" },
-        text: { id: "package_3_combo_1", classToken: "text_mr9i3aqo_dmoer" },
-      },
-      {
-        container: { id: "container_mr9i3aqp", classToken: "container_mr9i3aqp_6591e" },
-        text: { id: "package_3_combo_2", classToken: "text_mr9i3aqq_dmoer" },
-      },
-      {
-        container: { id: "container_mr9i3aqr", classToken: "container_mr9i3aqr_6591e" },
-        text: { id: "package_3_combo_3", classToken: "text_mr9i3aqs_dmoer" },
-      },
-      {
-        container: { id: "container_mr9i3aqt", classToken: "container_mr9i3aqt_6591e" },
-        text: { id: "package_3_combo_4", classToken: "text_mr9i3aqu_dmoer" },
-      },
-      {
-        container: { id: "container_mr9i3aqv", classToken: "container_mr9i3aqv_6591e" },
-        text: { id: "package_3_combo_5", classToken: "text_mr9i3aqw_dmoer" },
-      },
-    ],
-    location: {
-      container: { id: "container_mr9i3aqx", classToken: "container_mr9i3aqx_6591e" },
-      text: { id: "package_3_location", classToken: "text_mr9i3aqy_dmoer" },
-      icon: { id: "package_3_location_icon", classToken: "image_mr9i3aqz_s0wjl" },
-    },
-  },
-];
-
-const TESTIMONIAL_CARDS: TestimonialCardSpec[] = [
-  {
-    root: { id: "container_mrarstno", classToken: "container_mrarstno_p95bp" },
-    quoteOpen: { id: "testimonial_1_quote_icon_open", classToken: "image_mrarstnp_8x09b" },
-    quoteClose: { id: "testimonial_1_quote_icon_close", classToken: "image_mrarstnq_8x09b" },
-    avatar: { id: "container_mrarstnr", classToken: "container_mrarstnr_p95bp" },
-    initial: { id: "testimonial_1_initial", classToken: "text_mrarstns_5h7vi" },
-    name: { id: "testimonial_1_name", classToken: "text_mrarstnu_5h7vi" },
-    role: { id: "testimonial_1_role", classToken: "text_mrarstnv_5h7vi" },
-    quote: { id: "testimonial_1_quote", classToken: "text_mrarstnw_5h7vi" },
-  },
-  {
-    root: { id: "container_mrav47v5", classToken: "container_mrav47v5_pa70t" },
-    quoteOpen: { id: "testimonial_2_quote_icon_open", classToken: "image_mrav47v6_8vyk7" },
-    quoteClose: { id: "testimonial_2_quote_icon_close", classToken: "image_mrav47v7_8vyk7" },
-    avatar: { id: "container_mrav47v8", classToken: "container_mrav47v8_pa70t" },
-    initial: { id: "testimonial_2_initial", classToken: "text_mrav47v9_5i9km" },
-    name: { id: "testimonial_2_name", classToken: "text_mrav47va_5i9kn" },
-    role: { id: "testimonial_2_role", classToken: "text_mrav47vb_5i9kn" },
-    quote: { id: "testimonial_2_quote", classToken: "text_mrav47vc_5i9kn" },
-  },
-  {
-    root: { id: "container_mrav47vd", classToken: "container_mrav47vd_pa70u" },
-    quoteOpen: { id: "testimonial_3_quote_icon_open", classToken: "image_mrav47ve_8vyk5" },
-    quoteClose: { id: "testimonial_3_quote_icon_close", classToken: "image_mrav47vf_8vyk5" },
-    avatar: { id: "container_mrav47vg", classToken: "container_mrav47vg_pa70u" },
-    initial: { id: "testimonial_3_initial", classToken: "text_mrav47vh_5i9ko" },
-    name: { id: "testimonial_3_name", classToken: "text_mrav47vi_5i9ko" },
-    role: { id: "testimonial_3_role", classToken: "text_mrav47vj_5i9ko" },
-    quote: { id: "testimonial_3_quote", classToken: "text_mrav47vk_5i9ko" },
-  },
-];
-
-const PRIMARY_OFFERING_CARDS: OfferingCardSpec[] = [
-  {
-    root: { id: "container_mrboyqlt", classToken: "container_mrboyqlt_ponby" },
-    background: { id: "container_mrboyqlv", classToken: "container_mrboyqlv_ponby" },
-    icon: { id: "offering_hotels_icon", classToken: "image_mrboyqlu_8hi91" },
-    title: { id: "offering_hotels_title", classToken: "text_mrboyqlx_5wpvs" },
-    subtitle: { id: "offering_hotels_subtitle", classToken: "text_mrboyqly_5wpvs" },
-  },
-  {
-    root: { id: "container_mrboyqlz", classToken: "container_mrboyqlz_ponby" },
-    background: { id: "container_mrboyqm0", classToken: "container_mrboyqm0_ponbx" },
-    icon: { id: "offering_food_icon", classToken: "image_mrboyqm1_8hi92" },
-    title: { id: "offering_food_title", classToken: "text_mrboyqm2_5wpvr" },
-    subtitle: { id: "offering_food_subtitle", classToken: "text_mrboyqm3_5wpvr" },
-  },
-  {
-    root: { id: "container_mrboyqm4", classToken: "container_mrboyqm4_ponbx" },
-    background: { id: "container_mrboyqm5", classToken: "container_mrboyqm5_ponbx" },
-    icon: { id: "offering_transport_icon", classToken: "image_mrboyqm6_8hi92" },
-    title: { id: "offering_transport_title", classToken: "text_mrboyqm7_5wpvr" },
-    subtitle: { id: "offering_transport_subtitle", classToken: "text_mrboyqm8_5wpvr" },
-  },
-  {
-    root: { id: "container_mrboyqm9", classToken: "container_mrboyqm9_ponbx" },
-    background: { id: "container_mrboyqma", classToken: "container_mrboyqma_ponbz" },
-    icon: { id: "offering_coordinators_icon", classToken: "image_mrboyqmb_8hi91" },
-    title: { id: "offering_coordinators_title", classToken: "text_mrboyqmc_5wpvs" },
-    subtitle: { id: "offering_coordinators_subtitle", classToken: "text_mrboyqmd_5wpvs" },
-  },
-];
-
-const SECONDARY_OFFERING_CARDS: OfferingCardSpec[] = [
-  {
-    root: { id: "container_mrbw694s", classToken: "container_mrbw694s_prtpq" },
-    background: { id: "container_mrbw694t", classToken: "container_mrbw694t_prtpq" },
-    icon: { id: "offering_women_guide_icon", classToken: "image_mrbw694u_8ebva" },
-    title: { id: "offering_women_guide_title", classToken: "text_mrbw694v_5zw9j" },
-    subtitle: { id: "offering_women_guide_subtitle", classToken: "text_mrbw694w_5zw9j" },
-  },
-  {
-    root: { id: "container_mrbw694x", classToken: "container_mrbw694x_prtpq" },
-    background: { id: "container_mrbw694y", classToken: "container_mrbw694y_prtpq" },
-    icon: { id: "offering_student_pricing_icon", classToken: "image_mrbw694z_8ebva" },
-    title: { id: "offering_student_pricing_title", classToken: "text_mrbw6950_5zw9i" },
-    subtitle: { id: "offering_student_pricing_subtitle", classToken: "text_mrbw6951_5zw9i" },
-  },
-  {
-    root: { id: "container_mrbw6952", classToken: "container_mrbw6952_prtpp" },
-    background: { id: "container_mrbw6953", classToken: "container_mrbw6953_prtpp" },
-    icon: { id: "offering_24x7_support_icon", classToken: "image_mrbw6954_8ebvb" },
-    title: { id: "offering_24x7_support_title", classToken: "text_mrbw6955_5zw9i" },
-    subtitle: { id: "offering_24x7_support_subtitle", classToken: "text_mrbw6956_5zw9i" },
-  },
-  {
-    root: { id: "container_mrbw6957", classToken: "container_mrbw6957_prtpp" },
-    background: { id: "container_mrbw6958", classToken: "container_mrbw6958_prtpp" },
-    icon: { id: "offering_custom_itinerary_icon", classToken: "image_mrbw6959_8ebva" },
-    title: { id: "offering_custom_itinerary_title", classToken: "text_mrbw695a_5zw9j" },
-    subtitle: { id: "offering_custom_itinerary_subtitle", classToken: "text_mrbw695b_5zw9j" },
-  },
-];
-
-function TextContainer({ mode, item }: { mode: Mode; item: TextContainerSpec }) {
-  return (
-    <BoxElement id={item.container.id} className={modeClassName(mode, item.container.classToken)} type="container">
-      <TextElement id={item.text.id} className={modeClassName(mode, item.text.classToken)} />
-    </BoxElement>
-  );
-}
-
-function PackageCard({ mode, card, buttonAction }: { mode: Mode; card: PackageCardSpec; buttonAction: ButtonAction }) {
-  return (
-    <BoxElement
-      id={card.root.id}
-      className={modeClassName(mode, card.root.classToken)}
-      type="container"
-      scaleClassName={modeScaleClassName(mode, card.root.scaleClassToken)}
-    >
-      <ImageElement id={card.image.id} className={modeClassName(mode, card.image.classToken)} />
-      <ButtonElement id={card.button.id} className={modeClassName(mode, card.button.classToken)} mode={mode} onAction={buttonAction} />
-      <TextContainer mode={mode} item={card.title} />
-      {card.combos.map((combo) => (
-        <TextContainer key={combo.container.id} mode={mode} item={combo} />
-      ))}
-      <BoxElement id={card.location.container.id} className={modeClassName(mode, card.location.container.classToken)} type="container">
-        <TextElement id={card.location.text.id} className={modeClassName(mode, card.location.text.classToken)} />
-        <ImageElement id={card.location.icon.id} className={modeClassName(mode, card.location.icon.classToken)} />
-      </BoxElement>
-      {card.comboCount ? <TextContainer mode={mode} item={card.comboCount} /> : null}
-    </BoxElement>
-  );
-}
-
-function TestimonialCard({ mode, card }: { mode: Mode; card: TestimonialCardSpec }) {
-  return (
-    <BoxElement id={card.root.id} className={modeClassName(mode, card.root.classToken)} type="container">
-      <ImageElement id={card.quoteOpen.id} className={modeClassName(mode, card.quoteOpen.classToken)} />
-      <ImageElement id={card.quoteClose.id} className={modeClassName(mode, card.quoteClose.classToken)} />
-      <BoxElement id={card.avatar.id} className={modeClassName(mode, card.avatar.classToken)} type="container" />
-      <TextElement id={card.initial.id} className={modeClassName(mode, card.initial.classToken)} />
-      <TextElement id={card.name.id} className={modeClassName(mode, card.name.classToken)} />
-      <TextElement id={card.role.id} className={modeClassName(mode, card.role.classToken)} />
-      <TextElement id={card.quote.id} className={modeClassName(mode, card.quote.classToken)} />
-    </BoxElement>
-  );
-}
-
-function OfferingCard({ mode, card }: { mode: Mode; card: OfferingCardSpec }) {
-  return (
-    <BoxElement id={card.root.id} className={modeClassName(mode, card.root.classToken)} type="container">
-      <BoxElement id={card.background.id} className={modeClassName(mode, card.background.classToken)} type="container" />
-      <ImageElement id={card.icon.id} className={modeClassName(mode, card.icon.classToken)} />
-      <TextElement id={card.title.id} className={modeClassName(mode, card.title.classToken)} />
-      <TextElement id={card.subtitle.id} className={modeClassName(mode, card.subtitle.classToken)} />
-    </BoxElement>
-  );
-}
-
-function DesktopPage({ buttonAction, sliderIndexes }: PageTreeProps) {
+function DesktopPage({ buttonAction, sliderIndexes, enquiryForm, packageDurationText, onPackageEnquire }: PageTreeProps) {
   return (
     <>
     <BoxElement id={"Hero_Section"} className="tf-d-Hero_Section_qks5n" type="group">
@@ -4435,13 +454,7 @@ function DesktopPage({ buttonAction, sliderIndexes }: PageTreeProps) {
       <TextElement id={"hero_heading_line2"} className="tf-d-text_mr639bcc_fvebo" />
       <TextElement id={"hero_subtext"} className="tf-d-text_mr63mchh_fuh3h" />
     </BoxElement>
-    <BoxElement id={"Navbar_Section"} className="tf-d-Navbar_Section_jxg4z" type="container">
-      <ButtonElement id={"nav_about_us_link"} className="tf-d-text_mr4pnrti_fuzxp" mode="desktop" onAction={buttonAction} />
-      <ButtonElement id={"nav_enquiry_link"} className="tf-d-text_mr4pnrtk_fuzxo" mode="desktop" onAction={buttonAction} />
-      <ButtonElement id={"nav_packages_link"} className="tf-d-text_mr4pnrtl_fuzxo" mode="desktop" onAction={buttonAction} />
-      <ButtonElement id={"nav_bus_link"} className="tf-d-text_mr4pnrtm_fuzxo" mode="desktop" onAction={buttonAction} />
-      <ImageElement id={"nav_logo_image"} className="tf-d-image_mr5ue7rl_tpmfu" />
-    </BoxElement>
+    <SiteNavbar className="tf-home-site-navbar tf-home-site-navbar--desktop" currentPath="/" label="Home page navigation" mode="desktop" onAction={buttonAction} />
     <BoxElement id={"About_US_Section"} className="tf-d-About_US_Section_4xggq" type="group">
       <TextElement id={"about_intro_paragraph"} className="tf-d-text_mr7zgza9_eahg1" />
       <TextElement id={"about_secondary_paragraph"} className="tf-d-text_mr7zgzaa_eahg0" />
@@ -4452,10 +465,42 @@ function DesktopPage({ buttonAction, sliderIndexes }: PageTreeProps) {
       <TextElement id={"about_heading_line1"} className="tf-d-text_mr7zgza6_eahg1" />
       <TextElement id={"about_heading_line2"} className="tf-d-text_mr7zgza7_eahg1" />
     </BoxElement>
-    <BoxElement id={"Available_package_section"} className="tf-d-Available_package_section_bi3c1" type="group">
-      <BoxElement id={"Package_grp"} className="tf-d-Package_grp_seqzz" type="group">
+    <BoxElement
+      id={"Available_package_section"}
+      className="tf-d-Available_package_section_bi3c1"
+      type="group"
+      style={{ overflow: "visible" }}
+    >
+      <BoxElement
+        id={"Package_grp"}
+        className="tf-d-Package_grp_seqzz"
+        type="group"
+        style={{
+          // The classToken CSS positions each child card absolutely at its own
+          // fixed x/y from the original canvas design, which is why they were
+          // stacking on top of each other instead of sitting in a row. Forcing
+          // a real flex row here (combined with the position reset on each
+          // card's root, see PackageCard.tsx) lays them out side by side.
+          //
+          // flexWrap must stay "nowrap": the class this group inherits still
+          // carries a fixed width sized for the old absolute-stacked layout
+          // (narrower than 3 cards + gaps), so "wrap" was sending the 3rd card
+          // onto a second row that then sat outside the parent section's fixed
+          // height and got clipped — i.e. it looked "missing" rather than
+          // wrapped. Keeping everything on one row and letting the group size
+          // to its content (instead of the class's fixed width) fixes that.
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "flex-start",
+          flexWrap: "nowrap",
+          gap: "24px",
+          width: "fit-content",
+          maxWidth: "none",
+          position: "relative",
+        }}
+      >
         {PACKAGE_CARDS.map((card) => (
-          <PackageCard key={card.root.id} mode="desktop" card={card} buttonAction={buttonAction} />
+          <PackageCard key={card.root.id} mode="desktop" card={card} buttonAction={buttonAction} onEnquire={onPackageEnquire} />
         ))}
       </BoxElement>
       <ButtonElement id={"packages_see_more_button"} className="tf-d-button_mr9iulk6_59s0g" mode="desktop" onAction={buttonAction} />
@@ -4479,9 +524,7 @@ function DesktopPage({ buttonAction, sliderIndexes }: PageTreeProps) {
     </BoxElement>
     <ImageElement id={"decorative_image_3"} className="tf-d-image_mrc4gq2l_8x80t" />
     <BoxElement id={"Testimonial_Section"} className="tf-d-Testimonial_Section_djwgz" type="group">
-      {TESTIMONIAL_CARDS.map((card) => (
-        <TestimonialCard key={card.root.id} mode="desktop" card={card} />
-      ))}
+      <TestimonialDeck mode="desktop" />
       <TextElement id={"testimonials_intro_text"} className="tf-d-text_mra6rgji_4k7b6" />
       <TextElement id={"testimonials_heading"} className="tf-d-text_mra6rgjj_4k7b6" />
       <BoxElement id={"container_mra6rgjk"} className="tf-d-container_mra6rgjk_oc4rd" type="container">
@@ -4500,31 +543,68 @@ function DesktopPage({ buttonAction, sliderIndexes }: PageTreeProps) {
         </BoxElement>
       </BoxElement>
       <BoxElement id={"Testimonial_Form"} className="tf-d-Testimonial_Form_tx4ll" type="container">
-        <InputElement id={"enquiry_name_input"} className="tf-d-input_mrb0ygep_kwdlv">
-          <TextElement id={"enquiry_name_label"} className="tf-d-text_mrb0ygew_4y2mt" />
-        </InputElement>
-        <SelectElement id={"enquiry_destination_select"} className="tf-d-select_mrb0yger_8l91i">
-          <TextElement id={"enquiry_destination_label"} className="tf-d-text_mrb0ygex_4y2mt" />
-        </SelectElement>
-        <SelectElement id={"enquiry_combo_select"} className="tf-d-select_mrb0yges_8l91i">
+        <div className="tf-enquiry-row tf-enquiry-row--paired">
+          <InputElement id={"enquiry_name_input"} className="tf-d-input_mrb0ygep_kwdlv" value={enquiryForm.name} onValueChange={enquiryForm.onNameChange}>
+            <TextElement id={"enquiry_name_label"} className="tf-d-text_mrb0ygew_4y2mt" />
+          </InputElement>
+          <SelectElement
+            id={"enquiry_destination_select"}
+            className="tf-d-select_mrb0yger_8l91i"
+            options={enquiryForm.destinationOptions}
+            value={enquiryForm.destination}
+            onValueChange={enquiryForm.onDestinationChange}
+            placeholder="Select destination"
+          >
+            <TextElement id={"enquiry_destination_label"} className="tf-d-text_mrb0ygex_4y2mt" />
+          </SelectElement>
+        </div>
+        <SelectElement
+          id={"enquiry_combo_select"}
+          className="tf-d-select_mrb0yges_8l91i"
+          options={enquiryForm.comboOptions}
+          value={enquiryForm.combo}
+          onValueChange={enquiryForm.onComboChange}
+          disabled={!enquiryForm.destination}
+          placeholder={enquiryForm.destination ? "Choose combo" : "Select destination first"}
+        >
           <TextElement id={"enquiry_combo_label"} className="tf-d-text_mrb0ygey_4y2mt" />
         </SelectElement>
-        <ButtonElement id={"enquiry_send_button"} className="tf-d-button_mrb0yget_d9so0" mode="desktop" onAction={buttonAction} />
-        <InputElement id={"enquiry_date_input"} className="tf-d-input_mrb0ygeu_kwdlv">
-          <TextElement id={"enquiry_date_label"} className="tf-d-text_mrb0ygf0_4y2ms" />
-        </InputElement>
-        <InputElement id={"enquiry_members_input"} className="tf-d-input_mrb0ygev_kwdlv">
-          <TextElement id={"enquiry_members_label"} className="tf-d-text_mrb0ygf1_4y2ms" />
-        </InputElement>
-        <TextareaElement id={"enquiry_message_textarea"} className="tf-d-textarea_mrb0ygez_t94rj">
+        {packageDurationText ? (
+          <div
+            className="tf-enquiry-duration-note tf-d-enquiry-duration-note"
+            aria-live="polite"
+          >
+            {packageDurationText}
+          </div>
+        ) : null}
+        <div className="tf-enquiry-row tf-enquiry-row--paired">
+          <InputElement id={"enquiry_date_input"} className="tf-d-input_mrb0ygeu_kwdlv" inputType="date" value={enquiryForm.date} onValueChange={enquiryForm.onDateChange}>
+            <TextElement id={"enquiry_date_label"} className="tf-d-text_mrb0ygf0_4y2ms" />
+          </InputElement>
+          <InputElement
+            id={"enquiry_members_input"}
+            className="tf-d-input_mrb0ygev_kwdlv"
+            inputType="number"
+            value={enquiryForm.members}
+            onValueChange={enquiryForm.onMembersChange}
+          >
+            <TextElement id={"enquiry_members_label"} className="tf-d-text_mrb0ygf1_4y2ms" />
+          </InputElement>
+        </div>
+        <TextareaElement id={"enquiry_message_textarea"} className="tf-d-textarea_mrb0ygez_t94rj" value={enquiryForm.message} onValueChange={enquiryForm.onMessageChange}>
           <TextElement id={"enquiry_message_label"} className="tf-d-text_mrb0ygf2_4y2ms" />
         </TextareaElement>
+        <div className="tf-enquiry-row tf-enquiry-row--button">
+          <ButtonElement id={"enquiry_send_button"} className="tf-d-button_mrb0yget_d9so0" mode="desktop" onAction={buttonAction} />
+        </div>
+        <div className="tf-enquiry-contact-line">
+          <ImageElement id={"enquiry_whatsapp_icon"} className="tf-d-image_mrb2zm77_9f16j" />
+          <TextElement id={"enquiry_whatsapp_text"} className="tf-d-text_mrb2fots_4yu9j" />
+        </div>
         <BoxElement id={"container_mraxrtcx"} className="tf-d-container_mraxrtcx_pcfg0" type="container">
           <TextElement id={"enquiry_phone_text"} className="tf-d-text_mraxrtcy_5khzt" />
           <ImageElement id={"enquiry_phone_icon"} className="tf-d-image_mrb0t6c8_9g9pd" />
         </BoxElement>
-        <TextElement id={"enquiry_whatsapp_text"} className="tf-d-text_mrb2fots_4yu9j" />
-        <ImageElement id={"enquiry_whatsapp_icon"} className="tf-d-image_mrb2zm77_9f16j" />
       </BoxElement>
       <BoxElement id={"container_mrax5i7t"} className="tf-d-container_mrax5i7t_pbc8l" type="container">
         <TextElement id={"contact_website_text"} className="tf-d-text_mraxrtcu_5khzt" />
@@ -4541,27 +621,7 @@ function DesktopPage({ buttonAction, sliderIndexes }: PageTreeProps) {
       </BoxElement>
       <TextElement id={"cta_heading_line1"} className="tf-d-text_mraw949w_5iwgi" />
     </BoxElement>
-    <BoxElement id={"Footer_Section"} className="tf-d-Footer_Section_flkou" type="container">
-      <BoxElement id={"container_mrb30nlc"} className="tf-d-container_mrb30nlc_oqd02" type="container">
-        <ImageElement id={"footer_logo_image"} className="tf-d-image_mrb30nlb_9fskx" />
-        <TextElement id={"footer_tagline"} className="tf-d-text_mrb30nld_4yfjw" />
-      </BoxElement>
-      <TextElement id={"footer_rapid_links_heading"} className="tf-d-text_mrb3e0zj_4zc4k">
-        <TextElement id={"footer_packages_link"} className="tf-d-text_mrb3e0zk_4zc4k" />
-        <TextElement id={"footer_about_us_link"} className="tf-d-text_mrb3e0zl_4zc4k" />
-        <TextElement id={"footer_enquiry_link"} className="tf-d-text_mrb3e0zm_4zc4k" />
-        <TextElement id={"footer_testimonials_link"} className="tf-d-text_mrb3e0zn_4zc4k" />
-      </TextElement>
-      <TextElement id={"footer_legal_heading"} className="tf-d-text_mrb3e0zo_4zc4k">
-        <TextLinkElement id={"footer_terms_link"} className="tf-d-text_mrb3e0zp_4zc4k" href={LEGAL_FOOTER_LINKS.footer_terms_link} />
-        <TextLinkElement id={"footer_privacy_link"} className="tf-d-text_mrb3e0zq_4zc4k" href={LEGAL_FOOTER_LINKS.footer_privacy_link} />
-        <TextLinkElement id={"footer_legal_extra_1"} className="tf-d-text_mrb3e0zr_4zc4k" href={LEGAL_FOOTER_LINKS.footer_legal_extra_1} />
-        <TextLinkElement id={"footer_legal_extra_2"} className="tf-d-text_mrb3e0zs_4zc4k" href={LEGAL_FOOTER_LINKS.footer_legal_extra_2} />
-      </TextElement>
-      <TextElement id={"footer_copyright"} className="tf-d-text_mrb3e0zu_4zc4k" />
-      <TextElement id={"footer_contact_link"} className="tf-d-text_mrb3e0zv_4zc4k" />
-      <BoxElement id={"container_mrb3q9g6"} className="tf-d-container_mrb3q9g6_orher" type="container" />
-    </BoxElement>
+    <SiteFooter className="tf-home-site-footer tf-home-site-footer--desktop" mode="desktop" onAction={buttonAction} />
     <ImageElement id={"decorative_image_5"} className="tf-d-image_mrc98pax_8vb1u" />
     <ImageElement id={"marquee_logo_1"} className="tf-d-image_mrc9fn5h_8uhqz" />
     <ImageElement id={"marquee_logo_2"} className="tf-d-image_mrc9fn5g_8uhqz" />
@@ -4587,18 +647,6 @@ function DesktopPage({ buttonAction, sliderIndexes }: PageTreeProps) {
       </SliderElement>
       <ButtonElement id={"fleet_slider_next_button"} className="tf-d-rightBtn_nr0rc" mode="desktop" onAction={buttonAction} />
       <ButtonElement id={"fleet_slider_prev_button"} className="tf-d-leftBtn_wzr9x" mode="desktop" onAction={buttonAction} />
-    </BoxElement>
-    <BoxElement id={"container_mrbq03iy"} className="tf-d-container_mrbq03iy_pof12" type="container">
-      <TextElement id={"contact_footer_phone"} className="tf-d-text_mrbq03iz_5whkv" />
-      <ImageElement id={"contact_footer_phone_icon"} className="tf-d-image_mrbq03j0_8hqjz" />
-    </BoxElement>
-    <BoxElement id={"container_mrbq03j1"} className="tf-d-container_mrbq03j1_pof11" type="container">
-      <TextElement id={"contact_footer_email"} className="tf-d-text_mrbq03j2_5whku" />
-      <ImageElement id={"contact_footer_email_icon"} className="tf-d-image_mrbq03j3_8hqjz" />
-    </BoxElement>
-    <BoxElement id={"container_mrbq5l5n"} className="tf-d-container_mrbq5l5n_pojd0" type="container">
-      <TextElement id={"contact_footer_website"} className="tf-d-text_mrbq5l5o_5wlwt" />
-      <ImageElement id={"contact_footer_website_icon"} className="tf-d-image_mrbq5l5p_8hm7z" />
     </BoxElement>
     <ImageElement id={"gallery_polaroid_frame"} className="tf-d-Poloroid_slider_plsqu">
       <SliderElement id={"slider_mrbma3g2"} className="tf-d-slider_mrbma3g2_zckcx" activeIndex={sliderIndexes["slider_mrbma3g2"] ?? 0}>
@@ -4634,7 +682,7 @@ function DesktopPage({ buttonAction, sliderIndexes }: PageTreeProps) {
   );
 }
 
-function MobilePage({ buttonAction, sliderIndexes }: PageTreeProps) {
+function MobilePage({ buttonAction, sliderIndexes, enquiryForm, packageDurationText, onPackageEnquire }: PageTreeProps) {
   return (
     <>
     <BoxElement id={"Hero_Section"} className="tf-m-Hero_Section_qks5n" type="group">
@@ -4659,15 +707,7 @@ function MobilePage({ buttonAction, sliderIndexes }: PageTreeProps) {
       <TextElement id={"hero_heading_line2"} className="tf-m-text_mr639bcc_fvebo" />
       <TextElement id={"hero_subtext"} className="tf-m-text_mr63mchh_fuh3h" />
     </BoxElement>
-    <BoxElement id={"Navbar_Section"} className="tf-m-Navbar_Section_jxg4z" type="container">
-      <BoxElement id={"container_mrc0dj11"} className="tf-m-container_mrc0dj11_p6obl" type="container">
-        <ButtonElement id={"nav_about_us_link"} className="tf-m-text_mr4pnrti_fuzxp" mode="mobile" onAction={buttonAction} />
-        <ButtonElement id={"nav_enquiry_link"} className="tf-m-text_mr4pnrtk_fuzxo" mode="mobile" onAction={buttonAction} />
-        <ButtonElement id={"nav_packages_link"} className="tf-m-text_mr4pnrtl_fuzxo" mode="mobile" onAction={buttonAction} />
-        <ButtonElement id={"nav_bus_link"} className="tf-m-text_mr4pnrtm_fuzxo" mode="mobile" onAction={buttonAction} />
-      </BoxElement>
-      <ImageElement id={"nav_logo_image"} className="tf-m-image_mr5ue7rl_tpmfu" />
-    </BoxElement>
+    <SiteNavbar className="tf-home-site-navbar tf-home-site-navbar--mobile" currentPath="/" label="Home page navigation" mode="mobile" onAction={buttonAction} />
     <BoxElement id={"About_US_Section"} className="tf-m-About_US_Section_4xggq" type="group">
       <TextElement id={"about_intro_paragraph"} className="tf-m-text_mr7zgza9_eahg1" />
       <TextElement id={"about_secondary_paragraph"} className="tf-m-text_mr7zgzaa_eahg0" />
@@ -4679,9 +719,33 @@ function MobilePage({ buttonAction, sliderIndexes }: PageTreeProps) {
       <TextElement id={"about_heading_line2"} className="tf-m-text_mr7zgza7_eahg1" />
     </BoxElement>
     <BoxElement id={"Available_package_section"} className="tf-m-Available_package_section_bi3c1" type="group">
-      <BoxElement id={"Package_grp"} className="tf-m-Package_grp_seqzz" type="group">
+      <BoxElement
+        id={"Package_grp"}
+        className="tf-m-Package_grp_seqzz"
+        type="group"
+        style={{
+          // Same fix as the desktop tree: replace the legacy absolute-positioned
+          // stacking with a real flex row. On mobile there isn't room for three
+          // cards side by side without shrinking them illegibly, so this row
+          // scrolls horizontally instead of wrapping.
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "flex-start",
+          flexWrap: "nowrap",
+          gap: "16px",
+          overflowX: "auto",
+          position: "relative",
+          left: "316px",
+          width: "calc(100vw - 32px)",
+          maxWidth: "358px",
+          height: "465px",
+          scrollSnapType: "x mandatory",
+          scrollbarWidth: "none",
+          background: "transparent",
+        }}
+      >
         {PACKAGE_CARDS.map((card) => (
-          <PackageCard key={card.root.id} mode="mobile" card={card} buttonAction={buttonAction} />
+          <PackageCard key={card.root.id} mode="mobile" card={card} buttonAction={buttonAction} onEnquire={onPackageEnquire} />
         ))}
       </BoxElement>
       <ButtonElement id={"packages_see_more_button"} className="tf-m-button_mr9iulk6_59s0g" mode="mobile" onAction={buttonAction} />
@@ -4727,9 +791,7 @@ function MobilePage({ buttonAction, sliderIndexes }: PageTreeProps) {
     </BoxElement>
     <ImageElement id={"decorative_image_3"} className="tf-m-image_mrc4gq2l_8x80t" />
     <BoxElement id={"Testimonial_Section"} className="tf-m-Testimonial_Section_djwgz" type="group" scaleClassName="tf-scale-m-Testimonial_Section_djwgz">
-      {TESTIMONIAL_CARDS.map((card) => (
-        <TestimonialCard key={card.root.id} mode="mobile" card={card} />
-      ))}
+      <TestimonialDeck mode="mobile" />
       <TextElement id={"testimonials_intro_text"} className="tf-m-text_mra6rgji_4k7b6" />
       <TextElement id={"testimonials_heading"} className="tf-m-text_mra6rgjj_4k7b6" />
       <BoxElement id={"container_mra6rgjk"} className="tf-m-container_mra6rgjk_oc4rd" type="container">
@@ -4756,31 +818,68 @@ function MobilePage({ buttonAction, sliderIndexes }: PageTreeProps) {
         </BoxElement>
       </BoxElement>
       <BoxElement id={"Testimonial_Form"} className="tf-m-Testimonial_Form_tx4ll" type="container">
-        <InputElement id={"enquiry_name_input"} className="tf-m-input_mrb0ygep_kwdlv">
-          <TextElement id={"enquiry_name_label"} className="tf-m-text_mrb0ygew_4y2mt" />
-        </InputElement>
-        <SelectElement id={"enquiry_destination_select"} className="tf-m-select_mrb0yger_8l91i">
-          <TextElement id={"enquiry_destination_label"} className="tf-m-text_mrb0ygex_4y2mt" />
-        </SelectElement>
-        <SelectElement id={"enquiry_combo_select"} className="tf-m-select_mrb0yges_8l91i">
+        <div className="tf-enquiry-row tf-enquiry-row--paired">
+          <InputElement id={"enquiry_name_input"} className="tf-m-input_mrb0ygep_kwdlv" value={enquiryForm.name} onValueChange={enquiryForm.onNameChange}>
+            <TextElement id={"enquiry_name_label"} className="tf-m-text_mrb0ygew_4y2mt" />
+          </InputElement>
+          <SelectElement
+            id={"enquiry_destination_select"}
+            className="tf-m-select_mrb0yger_8l91i"
+            options={enquiryForm.destinationOptions}
+            value={enquiryForm.destination}
+            onValueChange={enquiryForm.onDestinationChange}
+            placeholder="Select destination"
+          >
+            <TextElement id={"enquiry_destination_label"} className="tf-m-text_mrb0ygex_4y2mt" />
+          </SelectElement>
+        </div>
+        <SelectElement
+          id={"enquiry_combo_select"}
+          className="tf-m-select_mrb0yges_8l91i"
+          options={enquiryForm.comboOptions}
+          value={enquiryForm.combo}
+          onValueChange={enquiryForm.onComboChange}
+          disabled={!enquiryForm.destination}
+          placeholder={enquiryForm.destination ? "Choose combo" : "Select destination first"}
+        >
           <TextElement id={"enquiry_combo_label"} className="tf-m-text_mrb0ygey_4y2mt" />
         </SelectElement>
-        <ButtonElement id={"enquiry_send_button"} className="tf-m-button_mrb0yget_d9so0" mode="mobile" onAction={buttonAction} />
-        <InputElement id={"enquiry_date_input"} className="tf-m-input_mrb0ygeu_kwdlv">
-          <TextElement id={"enquiry_date_label"} className="tf-m-text_mrb0ygf0_4y2ms" />
-        </InputElement>
-        <InputElement id={"enquiry_members_input"} className="tf-m-input_mrb0ygev_kwdlv">
-          <TextElement id={"enquiry_members_label"} className="tf-m-text_mrb0ygf1_4y2ms" />
-        </InputElement>
-        <TextareaElement id={"enquiry_message_textarea"} className="tf-m-textarea_mrb0ygez_t94rj">
+        {packageDurationText ? (
+          <div
+            className="tf-enquiry-duration-note tf-m-enquiry-duration-note"
+            aria-live="polite"
+          >
+            {packageDurationText}
+          </div>
+        ) : null}
+        <div className="tf-enquiry-row tf-enquiry-row--paired">
+          <InputElement id={"enquiry_date_input"} className="tf-m-input_mrb0ygeu_kwdlv" inputType="date" value={enquiryForm.date} onValueChange={enquiryForm.onDateChange}>
+            <TextElement id={"enquiry_date_label"} className="tf-m-text_mrb0ygf0_4y2ms" />
+          </InputElement>
+          <InputElement
+            id={"enquiry_members_input"}
+            className="tf-m-input_mrb0ygev_kwdlv"
+            inputType="number"
+            value={enquiryForm.members}
+            onValueChange={enquiryForm.onMembersChange}
+          >
+            <TextElement id={"enquiry_members_label"} className="tf-m-text_mrb0ygf1_4y2ms" />
+          </InputElement>
+        </div>
+        <TextareaElement id={"enquiry_message_textarea"} className="tf-m-textarea_mrb0ygez_t94rj" value={enquiryForm.message} onValueChange={enquiryForm.onMessageChange}>
           <TextElement id={"enquiry_message_label"} className="tf-m-text_mrb0ygf2_4y2ms" />
         </TextareaElement>
+        <div className="tf-enquiry-row tf-enquiry-row--button">
+          <ButtonElement id={"enquiry_send_button"} className="tf-m-button_mrb0yget_d9so0" mode="mobile" onAction={buttonAction} />
+        </div>
+        <div className="tf-enquiry-contact-line">
+          <ImageElement id={"enquiry_whatsapp_icon"} className="tf-m-image_mrb2zm77_9f16j" />
+          <TextElement id={"enquiry_whatsapp_text"} className="tf-m-text_mrb2fots_4yu9j" />
+        </div>
         <BoxElement id={"container_mraxrtcx"} className="tf-m-container_mraxrtcx_pcfg0" type="container">
           <TextElement id={"enquiry_phone_text"} className="tf-m-text_mraxrtcy_5khzt" />
           <ImageElement id={"enquiry_phone_icon"} className="tf-m-image_mrb0t6c8_9g9pd" />
         </BoxElement>
-        <TextElement id={"enquiry_whatsapp_text"} className="tf-m-text_mrb2fots_4yu9j" />
-        <ImageElement id={"enquiry_whatsapp_icon"} className="tf-m-image_mrb2zm77_9f16j" />
       </BoxElement>
       <TextElement id={"cta_intro_text"} className="tf-m-text_mraw949s_5iwgi" />
       <TextElement id={"cta_heading_line2"} className="tf-m-text_mraw949t_5iwgi" />
@@ -4789,40 +888,7 @@ function MobilePage({ buttonAction, sliderIndexes }: PageTreeProps) {
       </BoxElement>
       <TextElement id={"cta_heading_line1"} className="tf-m-text_mraw949w_5iwgi" />
     </BoxElement>
-    <BoxElement id={"Footer_Section"} className="tf-m-Footer_Section_flkou" type="container">
-      <BoxElement id={"Contact_box"} className="tf-m-Contact_box_s9jeh" type="container">
-        <BoxElement id={"container_mrbq03iy"} className="tf-m-container_mrbq03iy_pof12" type="container">
-          <TextElement id={"contact_footer_phone"} className="tf-m-text_mrbq03iz_5whkv" />
-          <ImageElement id={"contact_footer_phone_icon"} className="tf-m-image_mrbq03j0_8hqjz" />
-        </BoxElement>
-        <BoxElement id={"container_mrbq03j1"} className="tf-m-container_mrbq03j1_pof11" type="container">
-          <TextElement id={"contact_footer_email"} className="tf-m-text_mrbq03j2_5whku" />
-          <ImageElement id={"contact_footer_email_icon"} className="tf-m-image_mrbq03j3_8hqjz" />
-        </BoxElement>
-        <BoxElement id={"container_mrbq5l5n"} className="tf-m-container_mrbq5l5n_pojd0" type="container">
-          <TextElement id={"contact_footer_website"} className="tf-m-text_mrbq5l5o_5wlwt" />
-          <ImageElement id={"contact_footer_website_icon"} className="tf-m-image_mrbq5l5p_8hm7z" />
-        </BoxElement>
-      </BoxElement>
-      <BoxElement id={"container_mrb30nlc"} className="tf-m-container_mrb30nlc_oqd02" type="container" />
-      <ImageElement id={"footer_logo_image"} className="tf-m-image_mrb30nlb_9fskx" />
-      <TextElement id={"footer_tagline"} className="tf-m-text_mrb30nld_4yfjw" />
-      <TextElement id={"footer_rapid_links_heading"} className="tf-m-text_mrb3e0zj_4zc4k">
-        <TextElement id={"footer_packages_link"} className="tf-m-text_mrb3e0zk_4zc4k" />
-        <TextElement id={"footer_about_us_link"} className="tf-m-text_mrb3e0zl_4zc4k" />
-        <TextElement id={"footer_enquiry_link"} className="tf-m-text_mrb3e0zm_4zc4k" />
-        <TextElement id={"footer_testimonials_link"} className="tf-m-text_mrb3e0zn_4zc4k" />
-      </TextElement>
-      <TextElement id={"footer_legal_heading"} className="tf-m-text_mrb3e0zo_4zc4k">
-        <TextLinkElement id={"footer_terms_link"} className="tf-m-text_mrb3e0zp_4zc4k" href={LEGAL_FOOTER_LINKS.footer_terms_link} />
-        <TextLinkElement id={"footer_privacy_link"} className="tf-m-text_mrb3e0zq_4zc4k" href={LEGAL_FOOTER_LINKS.footer_privacy_link} />
-        <TextLinkElement id={"footer_legal_extra_1"} className="tf-m-text_mrb3e0zr_4zc4k" href={LEGAL_FOOTER_LINKS.footer_legal_extra_1} />
-        <TextLinkElement id={"footer_legal_extra_2"} className="tf-m-text_mrb3e0zs_4zc4k" href={LEGAL_FOOTER_LINKS.footer_legal_extra_2} />
-      </TextElement>
-      <TextElement id={"footer_copyright"} className="tf-m-text_mrb3e0zu_4zc4k" />
-      <TextElement id={"footer_contact_link"} className="tf-m-text_mrb3e0zv_4zc4k" />
-      <BoxElement id={"container_mrb3q9g6"} className="tf-m-container_mrb3q9g6_orher" type="container" />
-    </BoxElement>
+    <SiteFooter className="tf-home-site-footer tf-home-site-footer--mobile" mode="mobile" onAction={buttonAction} />
     <ImageElement id={"decorative_image_5"} className="tf-m-image_mrc98pax_8vb1u" />
     <ImageElement id={"marquee_logo_1"} className="tf-m-image_mrc9fn5h_8uhqz" />
     <ImageElement id={"marquee_logo_2"} className="tf-m-image_mrc9fn5g_8uhqz" />
@@ -4862,7 +928,6 @@ function MobilePage({ buttonAction, sliderIndexes }: PageTreeProps) {
       </BoxElement>
     </BoxElement>
     <ImageElement id={"decorative_image_6"} className="tf-m-image_mrboyqls_8hi91" />
-    <ImageElement id={"mobile_decorative_icon"} className="tf-m-image_mrc12obt_8zt98" />
     <TextElement id={"mobile_contact_us_heading"} className="tf-m-text_mrdfrhpx_6pqbq" />
     </>
   );
@@ -5157,8 +1222,117 @@ export default function TripFactoryPage() {
   useAdvancedAnimations();
   const mobileScale = useMobileScale();
   const { sliderIndexes, moveSlider } = useSliderIndexes();
+  const searchParams = useSearchParams();
+  const searchParamsKey = searchParams.toString();
+  const lastPrefillKeyRef = useRef<string>("");
+  const [name, setName] = useState("");
+  const [destination, setDestination] = useState("");
+  const [combo, setCombo] = useState("");
+  const [date, setDate] = useState("");
+  const [members, setMembers] = useState("");
+  const [message, setMessage] = useState("");
+  const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParamsKey);
+    const hasEnquiryPrefill = params.get("enquiry") === "1";
+    if (!hasEnquiryPrefill) return;
+
+    const packageId = params.get("packageId");
+    const queryDestination = params.get("destination");
+    const queryCombo = params.get("combo");
+    const durationCode = params.get("duration");
+    const prefillKey = [packageId ?? "", queryDestination ?? "", queryCombo ?? "", durationCode ?? ""].join("|");
+
+    if (!packageId && !queryDestination && !queryCombo && !durationCode) return;
+    if (lastPrefillKeyRef.current === prefillKey) return;
+
+    const resolvedPackage = resolveTourPackageEntry({
+      packageId,
+      destination: queryDestination,
+      combo: queryCombo,
+      durationCode,
+    });
+
+    if (!resolvedPackage) return;
+
+    const timer = window.setTimeout(() => {
+      const nextCombo = queryCombo?.trim() && resolvedPackage.combos.includes(queryCombo.trim())
+        ? queryCombo.trim()
+        : resolvedPackage.combos[0] ?? "";
+
+      setDestination(resolvedPackage.destination);
+      setCombo(nextCombo);
+      setSelectedPackageId(resolvedPackage.packageId);
+      lastPrefillKeyRef.current = prefillKey;
+      smoothScrollTo(LOCATIONS.loc_mrcd1in9, 1);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [searchParamsKey]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParamsKey);
+    if (params.get("enquiry") === "1") return;
+
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [searchParamsKey]);
+
+  const handleNameChange = useCallback((value: string) => setName(value), []);
+  const handleDestinationChange = useCallback((value: string) => {
+    setDestination(value);
+    setCombo("");
+    setSelectedPackageId(null);
+  }, []);
+  const handleComboChange = useCallback((value: string) => {
+    setCombo(value);
+    setSelectedPackageId(null);
+  }, []);
+  const handleDateChange = useCallback((value: string) => setDate(value), []);
+  const handleMembersChange = useCallback((value: string) => setMembers(value.replace(/[^\d]/g, "")), []);
+  const handleMessageChange = useCallback((value: string) => setMessage(value), []);
+
+  const selectedPackage = useMemo(
+    () =>
+      resolveTourPackageEntry({
+        packageId: selectedPackageId,
+        destination,
+        combo,
+      }),
+    [selectedPackageId, destination, combo],
+  );
+  const selectedPackageDuration = selectedPackage?.duration;
+  const packageDurationText = selectedPackageDuration ? formatPackageDurationText(selectedPackageDuration) : "";
+  const whatsappDurationText = selectedPackageDuration
+    ? (selectedPackageDuration.code.includes("/") ? selectedPackageDuration.code.replace("/", "/ ") : selectedPackageDuration.code)
+    : "";
+
+  const handlePackageEnquire = useCallback((selection: PackageEnquirySelection) => {
+    setDestination(selection.destination);
+    setCombo(selection.combo);
+    setSelectedPackageId(selection.cardId);
+    smoothScrollTo(LOCATIONS.loc_mrcd1in9, 1);
+  }, []);
 
   const buttonAction = useCallback<ButtonAction>((id, mode) => {
+    if (id === "enquiry_send_button") {
+      const whatsappMessage = buildWhatsAppMessage({
+        name,
+        destination,
+        combo,
+        durationText: whatsappDurationText,
+        date,
+        members,
+        message,
+      });
+      window.location.href = `https://wa.me/919487428892?text=${encodeURIComponent(whatsappMessage)}`;
+      return true;
+    }
+
+    if (id === "nav_packages_link" || id === "packages_see_more_button") {
+      return false;
+    }
+
     const action = BUTTON_ACTIONS[mode][id as keyof (typeof BUTTON_ACTIONS)[typeof mode]];
 
     if (action && "slider" in action) {
@@ -5176,18 +1350,47 @@ export default function TripFactoryPage() {
     }
 
     return false;
-  }, [moveSlider]);
+  }, [combo, date, destination, members, message, moveSlider, name, whatsappDurationText]);
+
+  const enquiryForm: EnquiryFormState = {
+    name,
+    destination,
+    combo,
+    date,
+    members,
+    message,
+    destinationOptions: TOUR_PACKAGE_DESTINATIONS,
+    comboOptions: destination ? TOUR_PACKAGE_COMBOS_BY_DESTINATION[destination] ?? [] : [],
+    onNameChange: handleNameChange,
+    onDestinationChange: handleDestinationChange,
+    onComboChange: handleComboChange,
+    onDateChange: handleDateChange,
+    onMembersChange: handleMembersChange,
+    onMessageChange: handleMessageChange,
+  };
 
   return (
     <main className="tf-page-shell">
       <div className="tf-desktop-shell">
         <div className="tf-canvas tf-desktop-canvas">
-          <DesktopPage buttonAction={buttonAction} sliderIndexes={sliderIndexes} />
+          <DesktopPage
+            buttonAction={buttonAction}
+            sliderIndexes={sliderIndexes}
+            enquiryForm={enquiryForm}
+            packageDurationText={packageDurationText}
+            onPackageEnquire={handlePackageEnquire}
+          />
         </div>
       </div>
       <div className="tf-mobile-shell" style={{ height: MOBILE_CANVAS_HEIGHT * mobileScale }}>
         <div className="tf-canvas tf-mobile-canvas" style={{ transform: `scale(${mobileScale})` }}>
-          <MobilePage buttonAction={buttonAction} sliderIndexes={sliderIndexes} />
+          <MobilePage
+            buttonAction={buttonAction}
+            sliderIndexes={sliderIndexes}
+            enquiryForm={enquiryForm}
+            packageDurationText={packageDurationText}
+            onPackageEnquire={handlePackageEnquire}
+          />
         </div>
       </div>
     </main>

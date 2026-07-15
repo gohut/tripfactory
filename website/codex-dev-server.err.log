@@ -1,0 +1,8 @@
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3000
+- PID:          13248
+- Dir:          D:\Projects\TripFactory\tripfactory\website
+- Log:          .next\dev\logs\next-development.log
+
+Run taskkill /PID 13248 /F to stop it.

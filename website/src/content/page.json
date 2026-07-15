@@ -285,15 +285,15 @@
       "alt": "Location icon"
     },
     "contact_website_icon": {
-      "src": "/icons/globe.svg",
-      "alt": "Website icon"
+      "src": "/asset/ic5.png",
+      "alt": "Instagram icon"
     },
     "enquiry_phone_icon": {
-      "src": "/icons/phone.svg",
+      "src": "/asset/ic4.png",
       "alt": "Phone icon"
     },
     "contact_email_icon": {
-      "src": "/icons/mail.svg",
+      "src": "/asset/ic7.png",
       "alt": "Mail icon"
     },
     "enquiry_whatsapp_icon": {
@@ -426,7 +426,7 @@
     },
     "nav_packages_link": {
       "label": "Packages",
-      "href": "",
+      "href": "/tour-packages",
       "target": ""
     },
     "nav_bus_link": {
@@ -461,7 +461,7 @@
     },
     "packages_see_more_button": {
       "label": "See More",
-      "href": "#",
+      "href": "/tour-packages",
       "target": "",
       "icon": "/icons/arrow-right-minimal.svg",
       "iconAlt": "Right arrow",
@@ -492,19 +492,10 @@
       "placeholder": "Name"
     },
     "enquiry_destination_select": {
-      "options": [
-        "None",
-        "Option 2",
-        "Option 3",
-        "Option 4"
-      ]
+      "options": []
     },
     "enquiry_combo_select": {
-      "options": [
-        "Option 1",
-        "Option 2",
-        "Option 3"
-      ]
+      "options": []
     },
     "enquiry_date_input": {
       "placeholder": "Date of Interest"

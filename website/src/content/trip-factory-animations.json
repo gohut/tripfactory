@@ -1,0 +1,3690 @@
+{
+  "mobileCanvas": {
+    "width": 390,
+    "height": 6308
+  },
+  "sliders": {
+    "slider_mrad23lg": {
+      "duration": 3,
+      "loop": true,
+      "autoScroll": true,
+      "vertical": false,
+      "gap": 0,
+      "counts": {
+        "desktop": 16,
+        "mobile": 16
+      }
+    },
+    "slider_mrbma3g2": {
+      "duration": 3,
+      "loop": true,
+      "autoScroll": true,
+      "vertical": false,
+      "gap": 0,
+      "counts": {
+        "desktop": 10,
+        "mobile": 10
+      }
+    }
+  },
+  "buttonActions": {
+    "desktop": {
+      "fleet_slider_next_button": {
+        "slider": "slider_mrad23lg",
+        "direction": "next"
+      },
+      "fleet_slider_prev_button": {
+        "slider": "slider_mrad23lg",
+        "direction": "previous"
+      },
+      "nav_about_us_link": {
+        "locationId": "loc_mrcddcfx",
+        "target": "main"
+      },
+      "nav_enquiry_link": {
+        "locationId": "loc_mrcd1in9"
+      },
+      "nav_packages_link": {
+        "locationId": "loc_mrcd0ve0",
+        "target": "main"
+      },
+      "nav_bus_link": {
+        "locationId": "loc_mrcdf778",
+        "target": "main"
+      },
+      "hero_plan_trip_button": {
+        "locationId": "loc_mrcd2xkz",
+        "target": "main"
+      },
+      "hero_contact_us_button": {
+        "locationId": "loc_mrcd39tj",
+        "target": "main"
+      },
+      "footer_about_us_link": {
+        "locationId": "loc_mrcddcfx",
+        "target": "main"
+      },
+      "footer_enquiry_link": {
+        "locationId": "loc_mrcd1in9"
+      },
+      "footer_testimonials_link": {
+        "locationId": "loc_mrcdf778",
+        "target": "main"
+      }
+    },
+    "mobile": {
+      "fleet_slider_next_button": {
+        "slider": "slider_mrad23lg",
+        "direction": "next"
+      },
+      "fleet_slider_prev_button": {
+        "slider": "slider_mrad23lg",
+        "direction": "previous"
+      },
+      "nav_about_us_link": {
+        "locationId": "loc_mrcddcfx",
+        "target": "main"
+      },
+      "nav_enquiry_link": {
+        "locationId": "loc_mrcd1in9"
+      },
+      "nav_packages_link": {
+        "locationId": "loc_mrcd0ve0",
+        "target": "main"
+      },
+      "nav_bus_link": {
+        "locationId": "loc_mrcdf778",
+        "target": "main"
+      },
+      "hero_plan_trip_button": {
+        "locationId": "loc_mrcd2xkz",
+        "target": "main"
+      },
+      "hero_contact_us_button": {
+        "locationId": "loc_mrcd39tj",
+        "target": "main"
+      },
+      "footer_about_us_link": {
+        "locationId": "loc_mrcddcfx",
+        "target": "main"
+      },
+      "footer_enquiry_link": {
+        "locationId": "loc_mrcd1in9"
+      },
+      "footer_testimonials_link": {
+        "locationId": "loc_mrcdf778",
+        "target": "main"
+      }
+    }
+  },
+  "locations": {
+    "loc_mr0edof2": 656,
+    "loc_mrcd0ve0": 1350,
+    "loc_mrcd1in9": 3539,
+    "loc_mrcd2xkz": 1350,
+    "loc_mrcd39tj": 3539,
+    "loc_mrcddcfx": 663,
+    "loc_mrcdf778": 2112
+  },
+  "legalFooterLinks": {
+    "footer_terms_link": "/legal#terms-and-conditions",
+    "footer_privacy_link": "/legal#privacy-policy",
+    "footer_legal_extra_1": "/legal#refund-policy",
+    "footer_legal_extra_2": "/legal#cancellation-policy"
+  },
+  "advancedAnimations": {
+    "desktop": {
+      "decorative_image_1": {
+        "type": "scroll",
+        "speed": 1,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 1160,
+            "y": 915,
+            "w": 476,
+            "h": 789,
+            "opacity": 0.4,
+            "scale": 1,
+            "rotation": 42
+          },
+          {
+            "x": 846,
+            "y": 1046,
+            "w": 476,
+            "h": 789,
+            "opacity": 0.4,
+            "scale": 1,
+            "rotation": -24
+          }
+        ]
+      },
+      "decorative_image_2": {
+        "type": "scroll",
+        "speed": 1,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 452,
+            "y": 2425,
+            "w": 569,
+            "h": 399,
+            "opacity": 0,
+            "scale": 0.92,
+            "rotation": 0
+          },
+          {
+            "x": 452,
+            "y": 2425,
+            "w": 569,
+            "h": 399,
+            "opacity": 0.35,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "decorative_image_4": {
+        "type": "once",
+        "speed": 1,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -405,
+            "y": 3929,
+            "w": 1588,
+            "h": 804,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": -405,
+            "y": 3632,
+            "w": 1588,
+            "h": 804,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "decorative_image_5": {
+        "type": "once",
+        "speed": 1,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -380,
+            "y": 4632,
+            "w": 1537,
+            "h": 562,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": -380,
+            "y": 4632,
+            "w": 1537,
+            "h": 562,
+            "opacity": 0.5,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "marquee_logo_1": {
+        "type": "loop",
+        "speed": 60,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": true,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -427,
+            "y": 4638,
+            "w": 331,
+            "h": 135,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 866,
+            "y": 4638,
+            "w": 331,
+            "h": 135,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "marquee_logo_2": {
+        "type": "loop",
+        "speed": 60,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": true,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 850,
+            "y": 4512,
+            "w": 331,
+            "h": 135,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": -377,
+            "y": 4509,
+            "w": 331,
+            "h": 135,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "gallery_polaroid_frame": {
+        "type": "once",
+        "speed": 1,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 22,
+            "y": 4575,
+            "w": 745,
+            "h": 576,
+            "opacity": 0,
+            "scale": 0.92,
+            "rotation": 0
+          },
+          {
+            "x": 22,
+            "y": 4575,
+            "w": 745,
+            "h": 576,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrboyqlt": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -284,
+            "y": 4565,
+            "w": 249,
+            "h": 79,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": -260,
+            "y": 4565,
+            "w": 249,
+            "h": 79,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrboyqlz": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -286,
+            "y": 4680,
+            "w": 249,
+            "h": 79,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": -262,
+            "y": 4680,
+            "w": 249,
+            "h": 79,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrboyqm4": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -286,
+            "y": 4795,
+            "w": 249,
+            "h": 79,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": -262,
+            "y": 4795,
+            "w": 249,
+            "h": 79,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrboyqm9": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -286,
+            "y": 4910,
+            "w": 249,
+            "h": 79,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": -262,
+            "y": 4910,
+            "w": 249,
+            "h": 79,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrbma3fj": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": false,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 335,
+            "y": 4453,
+            "w": 177,
+            "h": 25,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 335,
+            "y": 4429,
+            "w": 177,
+            "h": 25,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrbw694s": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 783,
+            "y": 4566,
+            "w": 249,
+            "h": 79,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 807,
+            "y": 4566,
+            "w": 249,
+            "h": 79,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrbw694x": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 784,
+            "y": 4680,
+            "w": 249,
+            "h": 79,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 808,
+            "y": 4680,
+            "w": 249,
+            "h": 79,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrbw6952": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 803,
+            "y": 4790,
+            "w": 249,
+            "h": 79,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 803,
+            "y": 4790,
+            "w": 249,
+            "h": 79,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrbw6957": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 776,
+            "y": 4908,
+            "w": 249,
+            "h": 79,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 800,
+            "y": 4908,
+            "w": 249,
+            "h": 79,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "gallery_tagline": {
+        "type": "once",
+        "speed": 1,
+        "delay": 0.5,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 141,
+            "y": 5001,
+            "w": 531,
+            "h": 116,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 141,
+            "y": 5001,
+            "w": 531,
+            "h": 116,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrarstno": {
+        "type": "once",
+        "speed": 0.3,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 132,
+            "y": 140,
+            "w": 384,
+            "h": 227,
+            "opacity": 0,
+            "scale": 0.92,
+            "rotation": 0
+          },
+          {
+            "x": 132,
+            "y": 140,
+            "w": 384,
+            "h": 227,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrax5i7o": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 70,
+            "y": 149,
+            "w": 611,
+            "h": 526,
+            "opacity": 0,
+            "scale": 0.92,
+            "rotation": 0
+          },
+          {
+            "x": 70,
+            "y": 149,
+            "w": 611,
+            "h": 526,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "Testimonial_Form": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 729,
+            "y": 151,
+            "w": 616,
+            "h": 467,
+            "opacity": 0,
+            "scale": 0.92,
+            "rotation": 0
+          },
+          {
+            "x": 729,
+            "y": 151,
+            "w": 616,
+            "h": 467,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "footer_logo_image": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": false,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 10,
+            "y": -2,
+            "w": 224,
+            "h": 100,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 34,
+            "y": -2,
+            "w": 224,
+            "h": 100,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "footer_tagline": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -9,
+            "y": 65,
+            "w": 275,
+            "h": 41,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 15,
+            "y": 65,
+            "w": 275,
+            "h": 41,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "group_mr7fkzds": {
+        "type": "hover",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": false,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 822,
+            "y": -36,
+            "w": 550,
+            "h": 443,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 822,
+            "y": -55,
+            "w": 550,
+            "h": 443,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "about_intro_paragraph": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 20,
+            "y": 83,
+            "w": 638,
+            "h": 47,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 44,
+            "y": 83,
+            "w": 638,
+            "h": 47,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "about_secondary_paragraph": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 22,
+            "y": 222,
+            "w": 638,
+            "h": 47,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 46,
+            "y": 222,
+            "w": 638,
+            "h": 47,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "about_background_image": {
+        "type": "once",
+        "speed": 1,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -1405,
+            "y": -66,
+            "w": 913,
+            "h": 473,
+            "opacity": 0.3,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": -878,
+            "y": -66,
+            "w": 913,
+            "h": 473,
+            "opacity": 0.3,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mr9ik21w": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 13,
+            "y": 10,
+            "w": 129,
+            "h": 28,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 13,
+            "y": -14,
+            "w": 129,
+            "h": 28,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "packages_see_more_button": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 1.5,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 565,
+            "y": 751,
+            "w": 302,
+            "h": 50,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 565,
+            "y": 727,
+            "w": 302,
+            "h": 50,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mraxrtcx": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 1,
+            "y": 510,
+            "w": 161,
+            "h": 34,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 1,
+            "y": 486,
+            "w": 161,
+            "h": 34,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrax5i7t": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": false,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 1153,
+            "y": 660,
+            "w": 195,
+            "h": 33,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 1153,
+            "y": 636,
+            "w": 195,
+            "h": 33,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mraxrtcv": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 905,
+            "y": 661,
+            "w": 232,
+            "h": 32,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 905,
+            "y": 637,
+            "w": 232,
+            "h": 32,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "packages_intro_text": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 41,
+            "y": 66,
+            "w": 821,
+            "h": 33,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 65,
+            "y": 66,
+            "w": 821,
+            "h": 33,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "hero_photo_card_1": {
+        "type": "once",
+        "speed": 1.5,
+        "delay": 0,
+        "animateOnAppear": false,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 64,
+            "y": 49,
+            "w": 303,
+            "h": 346,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 4
+          },
+          {
+            "x": 64,
+            "y": 49,
+            "w": 303,
+            "h": 346,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 4
+          }
+        ]
+      },
+      "hero_photo_card_2": {
+        "type": "once",
+        "speed": 1.5,
+        "delay": 1.5,
+        "animateOnAppear": false,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 275,
+            "y": 152,
+            "w": 303,
+            "h": 346,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 4
+          },
+          {
+            "x": 275,
+            "y": 152,
+            "w": 303,
+            "h": 346,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 4
+          }
+        ]
+      },
+      "hero_photo_card_3": {
+        "type": "once",
+        "speed": 1.5,
+        "delay": 3,
+        "animateOnAppear": false,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 187,
+            "y": -65,
+            "w": 303,
+            "h": 346,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 4
+          },
+          {
+            "x": 187,
+            "y": -65,
+            "w": 303,
+            "h": 346,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 4
+          }
+        ]
+      },
+      "hero_heading_line1": {
+        "type": "loop",
+        "speed": 1.5,
+        "delay": 0,
+        "animateOnAppear": false,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 16,
+            "y": -2,
+            "w": 414,
+            "h": 68,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 16,
+            "y": -2,
+            "w": 414,
+            "h": 68,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "about_heading_line1": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 20,
+            "y": 43,
+            "w": 495,
+            "h": 258,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 20,
+            "y": 19,
+            "w": 495,
+            "h": 258,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "about_heading_line2": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 232,
+            "y": 44,
+            "w": 495,
+            "h": 258,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 232,
+            "y": 20,
+            "w": 495,
+            "h": 258,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "packages_heading": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 302,
+            "y": 31,
+            "w": 224,
+            "h": 52,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 302,
+            "y": 7,
+            "w": 224,
+            "h": 52,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mr9ik21y": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 31,
+            "y": -3,
+            "w": 214,
+            "h": 25,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 31,
+            "y": -27,
+            "w": 214,
+            "h": 25,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "packages_section_label": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 32,
+            "y": 29,
+            "w": 264,
+            "h": 55,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 32,
+            "y": 5,
+            "w": 264,
+            "h": 55,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "testimonials_intro_text": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 41,
+            "y": 66,
+            "w": 821,
+            "h": 33,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 65,
+            "y": 66,
+            "w": 821,
+            "h": 33,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "testimonials_heading": {
+        "type": "once",
+        "speed": 0.55,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 241,
+            "y": 30,
+            "w": 259,
+            "h": 47,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 241,
+            "y": 6,
+            "w": 259,
+            "h": 47,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mra6rgjk": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 7,
+            "y": -27,
+            "w": 177,
+            "h": 25,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 31,
+            "y": -27,
+            "w": 177,
+            "h": 25,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "testimonials_heading_line1": {
+        "type": "once",
+        "speed": 0.55,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 32,
+            "y": 29,
+            "w": 264,
+            "h": 55,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 32,
+            "y": 5,
+            "w": 264,
+            "h": 55,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "fleet_description": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 40,
+            "y": 66,
+            "w": 638,
+            "h": 36,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 64,
+            "y": 66,
+            "w": 638,
+            "h": 36,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "fleet_heading_line2": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 394,
+            "y": 27,
+            "w": 337,
+            "h": 32,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 394,
+            "y": 3,
+            "w": 337,
+            "h": 32,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "fleet_heading_line1": {
+        "type": "once",
+        "speed": 0.55,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 24,
+            "y": 29,
+            "w": 369,
+            "h": 32,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 24,
+            "y": 5,
+            "w": 369,
+            "h": 32,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "fleet_description_2": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 41,
+            "y": 218,
+            "w": 638,
+            "h": 36,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 65,
+            "y": 218,
+            "w": 638,
+            "h": 36,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "testimonial_1_quote_icon_open": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 8,
+            "y": 180,
+            "w": 103,
+            "h": 119,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 8,
+            "y": 156,
+            "w": 103,
+            "h": 119,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "testimonial_1_quote_icon_close": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 272,
+            "y": -37,
+            "w": 103,
+            "h": 119,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 272,
+            "y": -61,
+            "w": 103,
+            "h": 119,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "testimonial_1_quote": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 22,
+            "y": 78,
+            "w": 296,
+            "h": 43,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 46,
+            "y": 78,
+            "w": 296,
+            "h": 43,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "cta_intro_text": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 65,
+            "y": 90,
+            "w": 821,
+            "h": 33,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 65,
+            "y": 66,
+            "w": 821,
+            "h": 33,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "cta_heading_line2": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 320,
+            "y": 6,
+            "w": 411,
+            "h": 23,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 344,
+            "y": 6,
+            "w": 411,
+            "h": 23,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mraw949u": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 31,
+            "y": -3,
+            "w": 177,
+            "h": 25,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 31,
+            "y": -27,
+            "w": 177,
+            "h": 25,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "cta_heading_line1": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 8,
+            "y": 5,
+            "w": 335,
+            "h": 48,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 32,
+            "y": 5,
+            "w": 335,
+            "h": 48,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrcd83lw": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 417,
+            "y": 2322,
+            "w": 140,
+            "h": 25,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 417,
+            "y": 2298,
+            "w": 140,
+            "h": 25,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      }
+    },
+    "mobile": {
+      "decorative_image_1": {
+        "type": "once",
+        "speed": 1,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 324,
+            "y": 1207,
+            "w": 175,
+            "h": 556,
+            "opacity": 0.4,
+            "scale": 1,
+            "rotation": 12
+          },
+          {
+            "x": 255,
+            "y": 1310,
+            "w": 175,
+            "h": 556,
+            "opacity": 0.4,
+            "scale": 1,
+            "rotation": -16
+          }
+        ]
+      },
+      "decorative_image_2": {
+        "type": "once",
+        "speed": 0.45,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 11,
+            "y": 2682,
+            "w": 365,
+            "h": 251,
+            "opacity": 0,
+            "scale": 0.92,
+            "rotation": 0
+          },
+          {
+            "x": 11,
+            "y": 2682,
+            "w": 365,
+            "h": 251,
+            "opacity": 0.5,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "decorative_image_3": {
+        "type": "loop",
+        "speed": 50,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": true,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 1,
+            "y": 3031,
+            "w": 707,
+            "h": 257,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": -319,
+            "y": 3018,
+            "w": 707,
+            "h": 257,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "decorative_image_4": {
+        "type": "scroll",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -49,
+            "y": 3712,
+            "w": 471,
+            "h": 378,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": -49,
+            "y": 3577,
+            "w": 471,
+            "h": 378,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "decorative_image_5": {
+        "type": "once",
+        "speed": 1,
+        "delay": 0,
+        "animateOnAppear": false,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -16,
+            "y": 5105,
+            "w": 718,
+            "h": 333,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": -16,
+            "y": 5105,
+            "w": 718,
+            "h": 333,
+            "opacity": 0.5,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "marquee_logo_1": {
+        "type": "loop",
+        "speed": 40,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": true,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -86,
+            "y": 5042,
+            "w": 200,
+            "h": 80,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 386,
+            "y": 5042,
+            "w": 200,
+            "h": 80,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 386,
+            "y": 5042,
+            "w": 200,
+            "h": 80,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "marquee_logo_2": {
+        "type": "loop",
+        "speed": 30,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": true,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 303,
+            "y": 5116,
+            "w": 200,
+            "h": 80,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": -172,
+            "y": 5116,
+            "w": 200,
+            "h": 80,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "gallery_polaroid_frame": {
+        "type": "once",
+        "speed": 1,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -2,
+            "y": -59,
+            "w": 408,
+            "h": 325,
+            "opacity": 0,
+            "scale": 0.92,
+            "rotation": 0
+          },
+          {
+            "x": -2,
+            "y": -59,
+            "w": 408,
+            "h": 325,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrboyqlt": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -11,
+            "y": 22,
+            "w": 249,
+            "h": 79,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 13,
+            "y": 22,
+            "w": 249,
+            "h": 79,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrboyqlz": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -8,
+            "y": 128,
+            "w": 249,
+            "h": 79,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 16,
+            "y": 128,
+            "w": 249,
+            "h": 79,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrboyqm4": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -8,
+            "y": 243,
+            "w": 249,
+            "h": 79,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 16,
+            "y": 243,
+            "w": 249,
+            "h": 79,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrboyqm9": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -8,
+            "y": 358,
+            "w": 249,
+            "h": 79,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 16,
+            "y": 358,
+            "w": 249,
+            "h": 79,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrbma3fj": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 374,
+            "y": -22,
+            "w": 177,
+            "h": 25,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 374,
+            "y": -46,
+            "w": 177,
+            "h": 25,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrbw694s": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -11,
+            "y": 22,
+            "w": 249,
+            "h": 79,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 13,
+            "y": 22,
+            "w": 249,
+            "h": 79,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrbw694x": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -8,
+            "y": 128,
+            "w": 249,
+            "h": 79,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 16,
+            "y": 128,
+            "w": 249,
+            "h": 79,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrbw6952": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -8,
+            "y": 243,
+            "w": 249,
+            "h": 79,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 16,
+            "y": 243,
+            "w": 249,
+            "h": 79,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrbw6957": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -8,
+            "y": 358,
+            "w": 249,
+            "h": 79,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 16,
+            "y": 358,
+            "w": 249,
+            "h": 79,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "gallery_tagline": {
+        "type": "once",
+        "speed": 1,
+        "delay": 0.5,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 103,
+            "y": 439,
+            "w": 566,
+            "h": 107,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 103,
+            "y": 439,
+            "w": 566,
+            "h": 107,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrc0dj11": {
+        "type": "trigger",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "package_3_enquire_button",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 676,
+            "y": 41,
+            "w": 133,
+            "h": 157,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 517,
+            "y": 41,
+            "w": 133,
+            "h": 157,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "slider_mrad23lg": {
+        "type": "once",
+        "speed": 1,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 12,
+            "y": 7,
+            "w": 405,
+            "h": 275,
+            "opacity": 0,
+            "scale": 0.92,
+            "rotation": 0
+          },
+          {
+            "x": 12,
+            "y": 7,
+            "w": 405,
+            "h": 275,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "fleet_slider_next_button": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0.5,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 379,
+            "y": 242,
+            "w": 45,
+            "h": 48,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 379,
+            "y": 242,
+            "w": 45,
+            "h": 48,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "fleet_slider_prev_button": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0.5,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 8,
+            "y": 242,
+            "w": 45,
+            "h": 48,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 8,
+            "y": 242,
+            "w": 45,
+            "h": 48,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrax5i7o": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 526,
+            "y": 674,
+            "w": 350,
+            "h": 374,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 526,
+            "y": 650,
+            "w": 350,
+            "h": 374,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "Testimonial_Form": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 522,
+            "y": 14,
+            "w": 358,
+            "h": 542,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 522,
+            "y": -10,
+            "w": 358,
+            "h": 542,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "footer_logo_image": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 99,
+            "y": 66,
+            "w": 224,
+            "h": 100,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 99,
+            "y": 42,
+            "w": 224,
+            "h": 100,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "footer_tagline": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 61,
+            "y": 111,
+            "w": 275,
+            "h": 41,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 85,
+            "y": 111,
+            "w": 275,
+            "h": 41,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "group_mr7fkzds": {
+        "type": "scroll",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 323,
+            "y": -111,
+            "w": 550,
+            "h": 443,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 323,
+            "y": -132,
+            "w": 550,
+            "h": 443,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "about_intro_paragraph": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -362,
+            "y": 338,
+            "w": 349,
+            "h": 39,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": -338,
+            "y": 338,
+            "w": 349,
+            "h": 39,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "about_secondary_paragraph": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -365,
+            "y": 507,
+            "w": 348,
+            "h": 38,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": -341,
+            "y": 507,
+            "w": 348,
+            "h": 38,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "about_background_image": {
+        "type": "once",
+        "speed": 1,
+        "delay": 2,
+        "animateOnAppear": false,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -1038,
+            "y": -87,
+            "w": 760,
+            "h": 327,
+            "opacity": 0.3,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": -725,
+            "y": -87,
+            "w": 760,
+            "h": 327,
+            "opacity": 0.3,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mr9ik21w": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -345,
+            "y": 246,
+            "w": 129,
+            "h": 28,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": -345,
+            "y": 222,
+            "w": 129,
+            "h": 28,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "packages_see_more_button": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 377,
+            "y": 585,
+            "w": 161,
+            "h": 33,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 401,
+            "y": 585,
+            "w": 161,
+            "h": 33,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mraxrtcx": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 4,
+            "y": 584,
+            "w": 161,
+            "h": 34,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 4,
+            "y": 560,
+            "w": 161,
+            "h": 34,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrax5i7t": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": false,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 176,
+            "y": -105,
+            "w": 195,
+            "h": 33,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 176,
+            "y": -105,
+            "w": 195,
+            "h": 33,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mraxrtcv": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 61,
+            "y": -32,
+            "w": 232,
+            "h": 32,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 61,
+            "y": -56,
+            "w": 232,
+            "h": 32,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "packages_intro_text": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 297,
+            "y": 48,
+            "w": 326,
+            "h": 33,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 321,
+            "y": 48,
+            "w": 326,
+            "h": 33,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "hero_photo_card_1": {
+        "type": "once",
+        "speed": 1.5,
+        "delay": 0,
+        "animateOnAppear": false,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 64,
+            "y": 49,
+            "w": 303,
+            "h": 346,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 4
+          },
+          {
+            "x": 64,
+            "y": 49,
+            "w": 303,
+            "h": 346,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 4
+          }
+        ]
+      },
+      "hero_photo_card_2": {
+        "type": "once",
+        "speed": 1.5,
+        "delay": 1.5,
+        "animateOnAppear": false,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 275,
+            "y": 152,
+            "w": 303,
+            "h": 346,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 4
+          },
+          {
+            "x": 275,
+            "y": 152,
+            "w": 303,
+            "h": 346,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 4
+          }
+        ]
+      },
+      "hero_photo_card_3": {
+        "type": "once",
+        "speed": 1.5,
+        "delay": 3,
+        "animateOnAppear": false,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 187,
+            "y": -65,
+            "w": 303,
+            "h": 346,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 4
+          },
+          {
+            "x": 187,
+            "y": -65,
+            "w": 303,
+            "h": 346,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 4
+          }
+        ]
+      },
+      "hero_photo_card_1_label": {
+        "type": "once",
+        "speed": 1.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 33,
+            "y": 278,
+            "w": 229,
+            "h": 62,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 1
+          },
+          {
+            "x": 33,
+            "y": 254,
+            "w": 229,
+            "h": 62,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 1
+          }
+        ]
+      },
+      "hero_photo_card_3_label": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 40,
+            "y": 298,
+            "w": 239,
+            "h": 31,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 40,
+            "y": 274,
+            "w": 239,
+            "h": 31,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "hero_photo_card_2_label": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 29,
+            "y": 292,
+            "w": 281,
+            "h": 41,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 29,
+            "y": 268,
+            "w": 281,
+            "h": 41,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "about_heading_line1": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -366,
+            "y": 263,
+            "w": 161,
+            "h": 20,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": -342,
+            "y": 263,
+            "w": 161,
+            "h": 20,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "about_heading_line2": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": -370,
+            "y": 293,
+            "w": 415,
+            "h": 20,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": -346,
+            "y": 293,
+            "w": 415,
+            "h": 20,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "packages_heading": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 490,
+            "y": 31,
+            "w": 224,
+            "h": 52,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 490,
+            "y": 7,
+            "w": 224,
+            "h": 52,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mr9ik21y": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 316,
+            "y": -11,
+            "w": 214,
+            "h": 25,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 316,
+            "y": -35,
+            "w": 214,
+            "h": 25,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "packages_section_label": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 322,
+            "y": 30,
+            "w": 168,
+            "h": 34,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 322,
+            "y": 6,
+            "w": 168,
+            "h": 34,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "testimonials_intro_text": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 20,
+            "y": 62,
+            "w": 821,
+            "h": 33,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 44,
+            "y": 62,
+            "w": 821,
+            "h": 33,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "testimonials_heading": {
+        "type": "once",
+        "speed": 0.55,
+        "delay": 0,
+        "animateOnAppear": false,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 241,
+            "y": 30,
+            "w": 259,
+            "h": 47,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 241,
+            "y": 6,
+            "w": 259,
+            "h": 47,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mra6rgjk": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 7,
+            "y": -27,
+            "w": 209,
+            "h": 31,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 31,
+            "y": -27,
+            "w": 209,
+            "h": 31,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "testimonials_heading_line1": {
+        "type": "once",
+        "speed": 0.55,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 32,
+            "y": 29,
+            "w": 264,
+            "h": 55,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 32,
+            "y": 5,
+            "w": 264,
+            "h": 55,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "fleet_description": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 22,
+            "y": 353,
+            "w": 363,
+            "h": 36,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 46,
+            "y": 353,
+            "w": 363,
+            "h": 36,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "fleet_heading_line2": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 23,
+            "y": 55,
+            "w": 337,
+            "h": 32,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 47,
+            "y": 55,
+            "w": 337,
+            "h": 32,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mrad23lb": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 41,
+            "y": 14,
+            "w": 142,
+            "h": 26,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 41,
+            "y": -10,
+            "w": 142,
+            "h": 26,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "fleet_heading_line1": {
+        "type": "once",
+        "speed": 0.55,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 24,
+            "y": 26,
+            "w": 369,
+            "h": 32,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 48,
+            "y": 26,
+            "w": 369,
+            "h": 32,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "fleet_description_2": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 20,
+            "y": 503,
+            "w": 375,
+            "h": 36,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 44,
+            "y": 503,
+            "w": 375,
+            "h": 36,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "testimonial_1_quote": {
+        "type": "once",
+        "speed": 1,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 22,
+            "y": 78,
+            "w": 296,
+            "h": 43,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 46,
+            "y": 78,
+            "w": 296,
+            "h": 43,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "cta_intro_text": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 508,
+            "y": -72,
+            "w": 367,
+            "h": 36,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 532,
+            "y": -72,
+            "w": 367,
+            "h": 36,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "cta_heading_line2": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 500,
+            "y": -107,
+            "w": 411,
+            "h": 23,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 524,
+            "y": -107,
+            "w": 411,
+            "h": 23,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "container_mraw949u": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 499,
+            "y": -168,
+            "w": 156,
+            "h": 24,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 523,
+            "y": -168,
+            "w": 156,
+            "h": 24,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      "cta_heading_line1": {
+        "type": "once",
+        "speed": 0.5,
+        "delay": 0,
+        "animateOnAppear": true,
+        "smooth": false,
+        "scrollRange": 200,
+        "triggerButtonId": "",
+        "hoverElementId": "",
+        "frames": [
+          {
+            "x": 500,
+            "y": -136,
+            "w": 335,
+            "h": 48,
+            "opacity": 0,
+            "scale": 1,
+            "rotation": 0
+          },
+          {
+            "x": 524,
+            "y": -136,
+            "w": 335,
+            "h": 48,
+            "opacity": 1,
+            "scale": 1,
+            "rotation": 0
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "reviews": [
+    {
+      "id": "review_vtv_mukund",
+      "name": "Mukund M",
+      "subName": "VTV Institution, Trichy",
+      "review": "Liked the trip very much. The students were comfortable throughout, and the itinerary was handled neatly enough that we already started discussing next year.",
+      "starCount": 5,
+      "logoLocation": "/asset/logo.png",
+      "logoSize": {
+        "width": 78,
+        "height": 36
+      }
+    },
+    {
+      "id": "review_keerthi_college",
+      "name": "Keerthi M",
+      "subName": "College Tour Coordinator",
+      "review": "The buses arrived on time, food stops were planned well, and every small change from our side was managed without creating stress for the students.",
+      "starCount": 5,
+      "logoLocation": "/asset/cl1.png",
+      "logoSize": {
+        "width": 64,
+        "height": 42
+      }
+    },
+    {
+      "id": "review_arun_school",
+      "name": "Arun Prakash",
+      "subName": "Green Valley School",
+      "review": "A very smooth school trip experience with responsive coordinators, clean transport, and practical planning from pickup to return.",
+      "starCount": 5,
+      "logoLocation": "/asset/cl2.png",
+      "logoSize": {
+        "width": 72,
+        "height": 34
+      }
+    },
+    {
+      "id": "review_nisha_hr",
+      "name": "Nisha R",
+      "subName": "Corporate HR Team",
+      "review": "Our team outing needed multiple pickup points and a tight schedule. TripFactory kept everything moving calmly, and the group came back genuinely happy.",
+      "starCount": 5,
+      "logoLocation": "/asset/logo.png",
+      "logoSize": {
+        "width": 78,
+        "height": 36
+      }
+    },
+    {
+      "id": "review_praveen_admin",
+      "name": "Praveen S",
+      "subName": "Admin Department",
+      "review": "The coordination was clear, pricing was transparent, and the driver team was polite. We would happily choose them again for student travel.",
+      "starCount": 4,
+      "logoLocation": "/asset/cl1.png",
+      "logoSize": {
+        "width": 64,
+        "height": 42
+      }
+    },
+    {
+      "id": "review_lavanya_faculty",
+      "name": "Lavanya K",
+      "subName": "Faculty In-charge",
+      "review": "Parents appreciated the updates, students enjoyed the destination, and our faculty team felt supported throughout the journey.",
+      "starCount": 5,
+      "logoLocation": "/asset/cl2.png",
+      "logoSize": {
+        "width": 72,
+        "height": 34
+      }
+    }
+  ]
+}

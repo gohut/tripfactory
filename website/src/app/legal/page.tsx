@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
+import { SiteFooter } from "@/components/SiteFooter";
+import { SiteNavbar } from "@/components/SiteNavbar";
 
 type LegalBlock = {
   heading?: string;
@@ -14,13 +14,6 @@ type LegalSection = {
   intro?: string[];
   blocks: LegalBlock[];
 };
-
-const legalLinks = [
-  { href: "#privacy-policy", label: "Privacy Policy" },
-  { href: "#terms-and-conditions", label: "Terms and Conditions" },
-  { href: "#cancellation-policy", label: "Cancellation Policy" },
-  { href: "#refund-policy", label: "Refund Policy" },
-];
 
 const legalSections: LegalSection[] = [
   {
@@ -352,61 +345,10 @@ function LegalDocumentSection({ section }: { section: LegalSection }) {
   );
 }
 
-function LegalNavbar() {
-  return (
-    <nav className="legal-navbar" aria-label="Legal page navigation">
-      <Link href="/" className="legal-brand" aria-label="TripFactory home">
-        <Image src="/asset/logo.png" alt="TripFactory" width={180} height={80} priority unoptimized />
-      </Link>
-      <div className="legal-nav-links">
-        <Link href="/">Home</Link>
-        {legalLinks.map((link) => (
-          <a key={link.href} href={link.href}>
-            {link.label}
-          </a>
-        ))}
-      </div>
-    </nav>
-  );
-}
-
-function LegalFooter() {
-  return (
-    <footer className="legal-footer">
-      <div>
-        <Image src="/asset/logo.png" alt="TripFactory" width={190} height={84} unoptimized />
-        <p>Your trusted partner for educational and experiential tours.</p>
-      </div>
-      <div>
-        <h2>Rapid Links</h2>
-        <Link href="/">Home</Link>
-        <Link href="/#packages">Packages</Link>
-        <Link href="/#about">About Us</Link>
-        <Link href="/#enquiry">Enquiry</Link>
-      </div>
-      <div>
-        <h2>Legal</h2>
-        {legalLinks.map((link) => (
-          <a key={link.href} href={link.href}>
-            {link.label}
-          </a>
-        ))}
-      </div>
-      <div>
-        <h2>Contact</h2>
-        <p>+91 85310 20303</p>
-        <p>info@tripfactory.co.in</p>
-        <p>@tripfactory.co.in</p>
-      </div>
-      <p className="legal-copyright">© 2026 Trip Factory. All rights reserved.</p>
-    </footer>
-  );
-}
-
 export default function LegalPage() {
   return (
     <main className="legal-shell">
-      <LegalNavbar />
+      <SiteNavbar currentPath="/legal" label="Legal page navigation" />
       <header className="legal-hero">
         <div>
           <p className="legal-eyebrow">Effective Date: 10 July 2026</p>
@@ -422,19 +364,12 @@ export default function LegalPage() {
           <p>All legal sections are available below and can be opened directly from the footer links.</p>
         </div>
       </header>
-      <div className="legal-section-tabs" aria-label="Legal policy quick links">
-        {legalLinks.map((link) => (
-          <a key={link.href} href={link.href}>
-            {link.label}
-          </a>
-        ))}
-      </div>
       <div className="legal-content">
         {legalSections.map((section) => (
           <LegalDocumentSection key={section.id} section={section} />
         ))}
       </div>
-      <LegalFooter />
+      <SiteFooter />
     </main>
   );
 }

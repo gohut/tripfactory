@@ -1,0 +1,804 @@
+{
+  "collections": [
+    {
+      "id": "kerala-2d-1n",
+      "eyebrow": "Kerala",
+      "title": "Kerala's Most Popular 2-Day Combo Packages",
+      "intro": "Student-friendly high-demand routes, hill stations, backwaters, beaches, city experiences, and North Kerala combinations.",
+      "cards": [
+        {
+          "id": "kerala-student-friendly",
+          "state": "Kerala",
+          "title": "Student-Friendly High Demand Packages",
+          "subtitle": "High demand Kerala combos",
+          "duration": { "days": 2, "nights": 1, "code": "2D/1N", "label": "2 Days / 1 Night" },
+          "image": { "src": "/asset/pkgimg.webp", "alt": "Kerala student friendly package" },
+          "combos": [
+            "Munnar + Thekkady",
+            "Vagamon + Thekkady",
+            "Kochi + Alleppey",
+            "Athirappilly + Kochi",
+            "Wayanad + Kozhikode",
+            "Munnar + Vagamon",
+            "Kochi + Kumarakom",
+            "Kannur + Bekal",
+            "Alleppey + Kumarakom",
+            "Athirappilly + Munnar"
+          ],
+          "notes": []
+        },
+        {
+          "id": "kerala-hill-adventure",
+          "state": "Kerala",
+          "title": "Hill Stations & Adventure",
+          "subtitle": "Cool hills and active routes",
+          "duration": { "days": 2, "nights": 1, "code": "2D/1N", "label": "2 Days / 1 Night" },
+          "image": { "src": "/asset/pkgimg2.jpg", "alt": "Kerala hill station package" },
+          "combos": [
+            "Munnar + Thekkady",
+            "Munnar + Vagamon",
+            "Munnar + Idukki",
+            "Munnar + Marayoor",
+            "Munnar + Chinnar",
+            "Vagamon + Idukki",
+            "Vagamon + Thekkady",
+            "Wayanad + Mysuru (Kerala Border Combo)",
+            "Wayanad + Kannur",
+            "Wayanad + Kozhikode"
+          ],
+          "notes": []
+        },
+        {
+          "id": "kerala-nature-waterfalls",
+          "state": "Kerala",
+          "title": "Nature & Waterfalls",
+          "subtitle": "Waterfalls, valleys, and green escapes",
+          "duration": { "days": 2, "nights": 1, "code": "2D/1N", "label": "2 Days / 1 Night" },
+          "image": { "src": "/asset/pkgimg3.jpg", "alt": "Kerala nature and waterfalls package" },
+          "combos": [
+            "Athirappilly + Kochi",
+            "Athirappilly + Vagamon",
+            "Athirappilly + Munnar",
+            "Wayanad + Athirappilly",
+            "Munnar + Valparai (TN-Kerala Combo)"
+          ],
+          "notes": []
+        },
+        {
+          "id": "kerala-backwaters-beaches",
+          "state": "Kerala",
+          "title": "Backwaters & Beaches",
+          "subtitle": "Backwater stays and beach routes",
+          "duration": { "days": 2, "nights": 1, "code": "2D/1N", "label": "2 Days / 1 Night" },
+          "image": { "src": "/asset/bp3.jpg", "alt": "Kerala backwaters and beaches package" },
+          "combos": [
+            "Kochi + Alleppey",
+            "Kochi + Kumarakom",
+            "Alleppey + Kumarakom",
+            "Kochi + Cherai Beach",
+            "Alleppey + Marari Beach"
+          ],
+          "notes": []
+        },
+        {
+          "id": "kerala-cultural-city",
+          "state": "Kerala",
+          "title": "Cultural & City Experience",
+          "subtitle": "Culture, temples, and city visits",
+          "duration": { "days": 2, "nights": 1, "code": "2D/1N", "label": "2 Days / 1 Night" },
+          "image": { "src": "/asset/bp2.jpg", "alt": "Kerala cultural city package" },
+          "combos": [
+            "Kochi + Fort Kochi",
+            "Kochi + Athirappilly",
+            "Kochi + Guruvayur",
+            "Guruvayur + Thrissur",
+            "Kochi + Kumarakom"
+          ],
+          "notes": []
+        },
+        {
+          "id": "kerala-north-combos",
+          "state": "Kerala",
+          "title": "North Kerala Combos",
+          "subtitle": "Kannur, Bekal, Kozhikode routes",
+          "duration": { "days": 2, "nights": 1, "code": "2D/1N", "label": "2 Days / 1 Night" },
+          "image": { "src": "/asset/bp1.jpg", "alt": "North Kerala package" },
+          "combos": [
+            "Kannur + Bekal",
+            "Kannur + Wayanad",
+            "Bekal + Kasaragod",
+            "Kozhikode + Kannur",
+            "Kozhikode + Bekal"
+          ],
+          "notes": []
+        },
+        {
+          "id": "kerala-tripfactory-specials",
+          "state": "Kerala",
+          "title": "TripFactory Special Combos",
+          "subtitle": "Most repeated customer favourites",
+          "duration": { "days": 2, "nights": 1, "code": "2D/1N", "label": "2 Days / 1 Night" },
+          "image": { "src": "/grpic/im1.jpeg", "alt": "TripFactory special Kerala package" },
+          "combos": [
+            "Kanthaloor + Kochi",
+            "Munnar + Kochi",
+            "Vagamon + Kochi",
+            "Vagamon + Varkala",
+            "Trivandrum + Varkala",
+            "Varkala + Alleppey",
+            "Munnar + Alleppey",
+            "Vagamon + Alleppey"
+          ],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "id": "five-days-four-nights",
+      "eyebrow": "Group Packages",
+      "title": "5 Days / 4 Nights Group Packages",
+      "intro": "Longer circuits for schools, colleges, and group tours across Kerala, Karnataka, Goa, Hyderabad, and North India.",
+      "cards": [
+        {
+          "id": "kerala-5d-hill-circuit",
+          "state": "Kerala",
+          "title": "Hill Station Circuit",
+          "subtitle": "Kerala 5-day group routes",
+          "duration": { "days": 5, "nights": 4, "code": "5D/4N", "label": "5 Days / 4 Nights" },
+          "image": { "src": "/asset/pkgimg.webp", "alt": "Kerala hill station circuit" },
+          "combos": [
+            "Munnar + Thekkady + Vagamon + Kochi (Best Seller)",
+            "Munnar + Thekkady + Alleppey + Kochi",
+            "Munnar + Vagamon + Alleppey + Kochi",
+            "Munnar + Athirappilly + Kochi + Wonderla",
+            "Munnar + Thekkady + Kumarakom + Kochi"
+          ],
+          "notes": []
+        },
+        {
+          "id": "kerala-5d-north",
+          "state": "Kerala",
+          "title": "North Kerala",
+          "subtitle": "Wayanad, Kannur, Bekal, and Kochi circuits",
+          "duration": { "days": 5, "nights": 4, "code": "5D/4N", "label": "5 Days / 4 Nights" },
+          "image": { "src": "/asset/pkgimg2.jpg", "alt": "North Kerala group package" },
+          "combos": [
+            "Wayanad + Kozhikode + Kannur + Bekal",
+            "Wayanad + Kannur + Bekal + Mangaluru",
+            "Wayanad + Kozhikode + Athirappilly + Kochi"
+          ],
+          "notes": []
+        },
+        {
+          "id": "karnataka-5d-heritage-hills",
+          "state": "Karnataka",
+          "title": "Heritage & Hills",
+          "subtitle": "Mysuru, Coorg, Chikkamagaluru circuits",
+          "duration": { "days": 5, "nights": 4, "code": "5D/4N", "label": "5 Days / 4 Nights" },
+          "image": { "src": "/asset/pkgimg3.jpg", "alt": "Karnataka heritage and hills package" },
+          "combos": [
+            "Mysuru + Coorg + Chikkamagaluru + Shivamogga (Best Seller)",
+            "Mysuru + Coorg + Chikkamagaluru + Belur & Halebidu",
+            "Bengaluru + Mysuru + Coorg + Chikkamagaluru",
+            "Mysuru + Kabini + Coorg + Bandipur"
+          ],
+          "notes": []
+        },
+        {
+          "id": "karnataka-5d-coast",
+          "state": "Karnataka",
+          "title": "Coastal Karnataka",
+          "subtitle": "Mangaluru, Udupi, Gokarna, and Dandeli",
+          "duration": { "days": 5, "nights": 4, "code": "5D/4N", "label": "5 Days / 4 Nights" },
+          "image": { "src": "/asset/bp1.jpg", "alt": "Coastal Karnataka package" },
+          "combos": [
+            "Mangaluru + Udupi + Murudeshwar + Gokarna (Best Seller)",
+            "Mangaluru + Udupi + Gokarna + Dandeli",
+            "Mangaluru + Murudeshwar + Jog Falls + Dandeli",
+            "Udupi + Kollur + Murudeshwar + Gokarna"
+          ],
+          "notes": []
+        },
+        {
+          "id": "karnataka-5d-north",
+          "state": "Karnataka",
+          "title": "North Karnataka",
+          "subtitle": "Hampi, Badami, Dandeli, and Gokarna",
+          "duration": { "days": 5, "nights": 4, "code": "5D/4N", "label": "5 Days / 4 Nights" },
+          "image": { "src": "/asset/bp2.jpg", "alt": "North Karnataka package" },
+          "combos": [
+            "Hampi + Badami + Pattadakal + Aihole (Best Seller)",
+            "Hampi + Chitradurga + Shivamogga + Jog Falls",
+            "Hampi + Dandeli + Gokarna"
+          ],
+          "notes": []
+        },
+        {
+          "id": "goa-5d-bus-tour",
+          "state": "Goa",
+          "title": "Goa Bus Tour",
+          "subtitle": "North Goa, South Goa, Dudhsagar, and cruise",
+          "duration": { "days": 5, "nights": 4, "code": "5D/4N", "label": "5 Days / 4 Nights" },
+          "image": { "src": "/asset/bp3.jpg", "alt": "Goa bus tour package" },
+          "combos": [
+            "Goa (North + South + Dudhsagar + Cruise)"
+          ],
+          "notes": []
+        },
+        {
+          "id": "goa-5d-combined",
+          "state": "Goa",
+          "title": "Combined Packages",
+          "subtitle": "Goa with Gokarna, Dandeli, Hampi, and Udupi",
+          "duration": { "days": 5, "nights": 4, "code": "5D/4N", "label": "5 Days / 4 Nights" },
+          "image": { "src": "/grpic/im2.jpeg", "alt": "Goa combined package" },
+          "combos": [
+            "Goa + Gokarna + Murudeshwar (Best Seller)",
+            "Goa + Dandeli + Gokarna (Best Seller)",
+            "Goa + Dandeli + Hampi",
+            "Goa + Udupi + Murudeshwar",
+            "Goa + Jog Falls + Gokarna"
+          ],
+          "notes": []
+        },
+        {
+          "id": "hyderabad-5d",
+          "state": "Hyderabad",
+          "title": "Hyderabad Packages",
+          "subtitle": "City, Ramoji, Wonderla, and heritage add-ons",
+          "duration": { "days": 5, "nights": 4, "code": "5D/4N", "label": "5 Days / 4 Nights" },
+          "image": { "src": "/grpic/im3.jpeg", "alt": "Hyderabad package" },
+          "combos": [
+            "Hyderabad City + Ramoji Film City + Wonderla Hyderabad + Srisailam (Best Seller)",
+            "Hyderabad + Nagarjuna Sagar + Ramoji",
+            "Hyderabad + Warangal + Ramoji",
+            "Hyderabad + Bidar + Gulbarga",
+            "Hyderabad + Hampi (Best Seller)"
+          ],
+          "notes": []
+        },
+        {
+          "id": "north-india-5d",
+          "state": "North India",
+          "title": "Delhi - Manali - Shimla",
+          "subtitle": "Train + Volvo routes",
+          "duration": { "days": 5, "nights": 4, "code": "5D/4N", "label": "5 Days / 4 Nights" },
+          "image": { "src": "/grpic/im4.jpeg", "alt": "North India package" },
+          "combos": [
+            "Delhi + Manali + Kullu + Solang Valley (Best Seller)",
+            "Delhi + Manali + Kasol + Manikaran",
+            "Delhi + Shimla + Kufri + Manali (Best Seller)",
+            "Delhi + Dharamshala + Manali",
+            "Delhi + Chandigarh + Manali",
+            "Delhi + Agra + Manali",
+            "Delhi + Amritsar + Manali"
+          ],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "id": "train-bus-student-specials",
+      "eyebrow": "Special Routes",
+      "title": "Train, Bus & Student Special Packages",
+      "intro": "Flexible route collections from the source package sheet for train specials, bus exclusive tours, and most demanded student circuits.",
+      "cards": [
+        {
+          "id": "train-special-goa",
+          "state": "Goa",
+          "title": "Train Special - Goa",
+          "subtitle": "Train route combo",
+          "duration": { "days": null, "nights": null, "code": "Flexible", "label": "Train Special" },
+          "image": { "src": "/asset/bp3.jpg", "alt": "Goa train special package" },
+          "combos": [
+            "Coimbatore -> Goa -> Gokarna -> Murudeshwar"
+          ],
+          "notes": []
+        },
+        {
+          "id": "train-special-karnataka-coast",
+          "state": "Karnataka",
+          "title": "Train Special - Karnataka Coast",
+          "subtitle": "Mangaluru, Udupi, Murudeshwar, Gokarna, Dandeli",
+          "duration": { "days": null, "nights": null, "code": "Flexible", "label": "Train Special" },
+          "image": { "src": "/asset/bp1.jpg", "alt": "Karnataka coast train package" },
+          "combos": [
+            "Mangaluru -> Udupi -> Murudeshwar -> Gokarna",
+            "Mangaluru -> Udupi -> Dandeli"
+          ],
+          "notes": []
+        },
+        {
+          "id": "train-special-hyderabad",
+          "state": "Hyderabad",
+          "title": "Train Special - Hyderabad",
+          "subtitle": "Ramoji, Wonderla, and city tour",
+          "duration": { "days": null, "nights": null, "code": "Flexible", "label": "Train Special" },
+          "image": { "src": "/grpic/im3.jpeg", "alt": "Hyderabad train special package" },
+          "combos": [
+            "Hyderabad -> Ramoji -> Wonderla -> City Tour"
+          ],
+          "notes": []
+        },
+        {
+          "id": "train-special-north-india",
+          "state": "North India",
+          "title": "Train Special - North India",
+          "subtitle": "Delhi, Shimla, Manali, Agra, Amritsar routes",
+          "duration": { "days": null, "nights": null, "code": "Flexible", "label": "Train Special" },
+          "image": { "src": "/grpic/im4.jpeg", "alt": "North India train special package" },
+          "combos": [
+            "Delhi -> Shimla -> Manali",
+            "Delhi -> Agra -> Mathura -> Vrindavan",
+            "Delhi -> Amritsar -> Wagah Border"
+          ],
+          "notes": []
+        },
+        {
+          "id": "bus-exclusive",
+          "state": "South India",
+          "title": "Bus Exclusive Packages",
+          "subtitle": "Source-listed bus-only combos",
+          "duration": { "days": null, "nights": null, "code": "Flexible", "label": "Bus Exclusive" },
+          "image": { "src": "/busc/b1.jpeg", "alt": "Bus exclusive package" },
+          "combos": [
+            "Mysuru + Coorg + Chikkamagaluru + Shivamogga",
+            "Munnar + Thekkady + Vagamon + Kochi",
+            "Wayanad + Kozhikode + Kannur + Bekal",
+            "Hampi + Badami + Pattadakal",
+            "Goa + Dandeli + Gokarna",
+            "Mangaluru + Udupi + Murudeshwar + Gokarna"
+          ],
+          "notes": []
+        },
+        {
+          "id": "student-special-most-demanded",
+          "state": "Multi-State",
+          "title": "Student Special - Most Demanded",
+          "subtitle": "Eight named student package circuits",
+          "duration": { "days": null, "nights": null, "code": "Flexible", "label": "Student Special" },
+          "image": { "src": "/grpic/im5.jpeg", "alt": "Student special package" },
+          "combos": [
+            "Kerala Explorer: Munnar + Thekkady + Vagamon + Kochi",
+            "Karnataka Hills: Mysuru + Coorg + Chikkamagaluru + Shivamogga",
+            "Karnataka Coast: Mangaluru + Udupi + Murudeshwar + Gokarna",
+            "Adventure Karnataka: Dandeli + Gokarna + Murudeshwar + Jog Falls",
+            "Heritage Karnataka: Hampi + Badami + Pattadakal + Aihole",
+            "Goa Adventure: Goa + Dudhsagar Falls + Gokarna + Dandeli",
+            "Hyderabad Educational: Hyderabad + Ramoji Film City + Wonderla + Srisailam",
+            "North India Premium: Delhi + Shimla + Manali + Solang Valley"
+          ],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "id": "south-india-3d-2n",
+      "eyebrow": "South India",
+      "title": "3 Days / 2 Nights Student Packages",
+      "intro": "State-wise 3D/2N student tours covering Kerala, Karnataka, Tamil Nadu, Pondicherry, and multi-state best sellers.",
+      "cards": [
+        {
+          "id": "kerala-3d-hill-stations",
+          "state": "Kerala",
+          "title": "Hill Stations",
+          "subtitle": "Kerala 3-day hill station routes",
+          "duration": { "days": 3, "nights": 2, "code": "3D/2N", "label": "3 Days / 2 Nights" },
+          "image": { "src": "/asset/pkgimg.webp", "alt": "Kerala 3 day hill station package" },
+          "combos": [
+            "Munnar + Thekkady + Vagamon (Best Seller)",
+            "Munnar + Thekkady + Kochi",
+            "Munnar + Vagamon + Kochi",
+            "Munnar + Alleppey + Kochi",
+            "Munnar + Athirappilly + Kochi",
+            "Vagamon + Thekkady + Alleppey",
+            "Vagamon + Kochi + Alleppey",
+            "Thekkady + Kumarakom + Kochi",
+            "Athirappilly + Kochi + Alleppey",
+            "Athirappilly + Kochi + Wonderla",
+            "Vagamon + Varkala + Thiruvananthapuram (Popular)",
+            "Varkala + Alleppey + Kochi",
+            "Varkala + Thiruvananthapuram + Poovar",
+            "Kanthalloor + Munnar + Kochi",
+            "Kanthalloor + Marayoor + Munnar"
+          ],
+          "notes": [
+                    ]
+        },
+        {
+          "id": "kerala-3d-north",
+          "state": "Kerala",
+          "title": "North Kerala",
+          "subtitle": "Wayanad, Kozhikode, Kannur, Bekal, Mysuru, Bandipur",
+          "duration": { "days": 3, "nights": 2, "code": "3D/2N", "label": "3 Days / 2 Nights" },
+          "image": { "src": "/asset/pkgimg2.jpg", "alt": "North Kerala 3 day package" },
+          "combos": [
+            "Wayanad + Kozhikode + Kannur",
+            "Wayanad + Kozhikode + Bekal",
+            "Wayanad + Kannur + Bekal",
+            "Wayanad + Mysuru + Bandipur"
+          ],
+          "notes": []
+        },
+        {
+          "id": "kerala-3d-nature-eco",
+          "state": "Kerala",
+          "title": "Nature & Eco Tours",
+          "subtitle": "Eco-friendly Kerala and border routes",
+          "duration": { "days": 3, "nights": 2, "code": "3D/2N", "label": "3 Days / 2 Nights" },
+          "image": { "src": "/asset/pkgimg3.jpg", "alt": "Kerala nature eco tour package" },
+          "combos": [
+            "Nelliyampathy + Silent Valley + Malampuzha",
+            "Silent Valley + Parambikulam + Topslip (TN-Kerala Eco Tour)"
+          ],
+          "notes": []
+        },
+        {
+          "id": "karnataka-3d-heritage-hills",
+          "state": "Karnataka",
+          "title": "Heritage + Hills",
+          "subtitle": "Mysuru, Coorg, Bengaluru, Chikkamagaluru, Wonderla",
+          "duration": { "days": 3, "nights": 2, "code": "3D/2N", "label": "3 Days / 2 Nights" },
+          "image": { "src": "/asset/bp1.jpg", "alt": "Karnataka 3 day heritage and hills package" },
+          "combos": [
+            "Mysuru + Coorg + Chikkamagaluru (Best Seller)",
+            "Mysuru + Coorg + Bengaluru",
+            "Mysuru + Bandipur + Coorg",
+            "Mysuru + Kabini + Coorg",
+            "Coorg + Chikkamagaluru + Belur",
+            "Coorg + Sakleshpur + Chikkamagaluru",
+            "Chikkamagaluru + Shivamogga + Jog Falls",
+            "Chikkamagaluru + Belur + Halebidu",
+            "Bengaluru + Mysuru + Coorg",
+            "Bengaluru + Mysuru + Chikkamagaluru",
+            "Bengaluru + Wonderla + Mysuru (Night Stay in Bengaluru)",
+            "Bengaluru + Wonderla + Coorg (Night Stay in Bengaluru)",
+            "Mysuru + Wonderla + Bengaluru (Night Stay in Mysuru or Bengaluru)"
+          ],
+          "notes": [
+           
+          ]
+        },
+        {
+          "id": "karnataka-3d-coast",
+          "state": "Karnataka",
+          "title": "Coastal Karnataka",
+          "subtitle": "Mangaluru, Udupi, Murudeshwar, Gokarna, Dandeli",
+          "duration": { "days": 3, "nights": 2, "code": "3D/2N", "label": "3 Days / 2 Nights" },
+          "image": { "src": "/asset/bp2.jpg", "alt": "Coastal Karnataka 3 day package" },
+          "combos": [
+            "Mangaluru + Udupi + Murudeshwar",
+            "Mangaluru + Udupi + Gokarna",
+            "Mangaluru + Dandeli + Gokarna",
+            "Dandeli + Murudeshwar + Gokarna",
+            "Udupi + Kollur + Murudeshwar",
+            "Jog Falls + Murudeshwar + Gokarna"
+          ],
+          "notes": []
+        },
+        {
+          "id": "tamil-nadu-3d",
+          "state": "Tamil Nadu",
+          "title": "Tamil Nadu",
+          "subtitle": "Ooty, Valparai, Kodaikanal, Madurai, and more",
+          "duration": { "days": 3, "nights": 2, "code": "3D/2N", "label": "3 Days / 2 Nights" },
+          "image": { "src": "/asset/bp3.jpg", "alt": "Tamil Nadu 3 day package" },
+          "combos": [
+            "Ooty + Coonoor + Kotagiri (Best Seller)",
+            "Ooty + Avalanche + Emerald",
+            "Valparai + Topslip + Pollachi",
+            "Kodaikanal + Palani",
+            "Yercaud + Hogenakkal + Salem",
+            "Ooty + Mudumalai + Bandipur",
+            "Kodaikanal + Madurai + Rameswaram",
+            "Madurai + Thanjavur + Trichy",
+            "Ooty + Black Thunder + Coonoor"
+          ],
+          "notes": []
+        },
+        {
+          "id": "pondicherry-3d",
+          "state": "Pondicherry",
+          "title": "Pondicherry Special",
+          "subtitle": "Pondicherry with Chennai, Auroville, and Mahabalipuram",
+          "duration": { "days": 3, "nights": 2, "code": "3D/2N", "label": "3 Days / 2 Nights" },
+          "image": { "src": "/grpic/im6.jpeg", "alt": "Pondicherry 3 day package" },
+          "combos": [
+            "Pondicherry + Mahabalipuram + Chennai (Best Seller)",
+            "Pondicherry + Chidambaram + Pichavaram",
+            "Pondicherry + Auroville + Mahabalipuram",
+            "Pondicherry + Yelagiri + Chennai"
+          ],
+          "notes": []
+        },
+        {
+          "id": "multi-state-kerala-karnataka",
+          "state": "Kerala + Karnataka",
+          "title": "Multi-State Best Sellers",
+          "subtitle": "Kerala with Karnataka hill routes",
+          "duration": { "days": 3, "nights": 2, "code": "3D/2N", "label": "3 Days / 2 Nights" },
+          "image": { "src": "/grpic/im7.jpeg", "alt": "Kerala Karnataka multi state package" },
+          "combos": [
+            "Munnar + Mysuru + Coorg",
+            "Wayanad + Mysuru + Coorg",
+            "Kochi + Mysuru + Coorg",
+            "Munnar + Chikkamagaluru + Coorg"
+          ],
+          "notes": []
+        },
+        {
+          "id": "multi-state-kerala-tamil-nadu",
+          "state": "Kerala + Tamil Nadu",
+          "title": "Multi-State Best Sellers",
+          "subtitle": "Kerala with Tamil Nadu hill routes",
+          "duration": { "days": 3, "nights": 2, "code": "3D/2N", "label": "3 Days / 2 Nights" },
+          "image": { "src": "/grpic/im8.jpeg", "alt": "Kerala Tamil Nadu multi state package" },
+          "combos": [
+            "Munnar + Valparai + Topslip",
+            "Munnar + Ooty + Coonoor",
+            "Athirappilly + Valparai + Pollachi",
+            "Vagamon + Munnar + Valparai",
+            "Vagamon + Kodaikanal + Munnar",
+            "Munnar + Palani + Kodaikanal"
+          ],
+          "notes": []
+        },
+        {
+          "id": "multi-state-tamil-nadu-karnataka",
+          "state": "Tamil Nadu + Karnataka",
+          "title": "Multi-State Best Sellers",
+          "subtitle": "Tamil Nadu with Karnataka hill routes",
+          "duration": { "days": 3, "nights": 2, "code": "3D/2N", "label": "3 Days / 2 Nights" },
+          "image": { "src": "/grpic/im9.jpeg", "alt": "Tamil Nadu Karnataka multi state package" },
+          "combos": [
+            "Ooty + Mysuru + Coorg",
+            "Ooty + Bandipur + Mysuru",
+            "Valparai + Chikkamagaluru + Coorg"
+          ],
+          "notes": []
+        },
+        {
+          "id": "top-market-3d",
+          "state": "South India",
+          "title": "Top 15 Most Marketable Packages",
+          "subtitle": "Highest-selling 3D/2N student package list",
+          "duration": { "days": 3, "nights": 2, "code": "3D/2N", "label": "3 Days / 2 Nights" },
+          "image": { "src": "/grpic/im10.jpeg", "alt": "Top marketable 3 day packages" },
+          "combos": [
+            "Munnar + Thekkady + Vagamon",
+            "Mysuru + Coorg + Chikkamagaluru",
+            "Bengaluru + Mysuru + Coorg",
+            "Munnar + Kochi + Alleppey",
+            "Wayanad + Kozhikode + Kannur",
+            "Ooty + Coonoor + Kotagiri",
+            "Valparai + Topslip + Pollachi",
+            "Mangaluru + Udupi + Murudeshwar",
+            "Mangaluru + Dandeli + Gokarna",
+            "Athirappilly + Kochi + Wonderla (Kochi)",
+            "Coorg + Chikkamagaluru + Belur",
+            "Wayanad + Mysuru + Coorg",
+            "Ooty + Mysuru + Coorg",
+            "Munnar + Athirappilly + Kochi",
+            "Munnar + Valparai + Topslip"
+          ],
+          "notes": []
+        },
+        {
+          "id": "additional-high-selling",
+          "state": "South India",
+          "title": "Additional High-Selling Packages",
+          "subtitle": "Extra source-listed fast movers",
+          "duration": { "days": 3, "nights": 2, "code": "3D/2N", "label": "3 Days / 2 Nights" },
+          "image": { "src": "/asset/pkgimg2.jpg", "alt": "Additional high selling packages" },
+          "combos": [
+            "Vagamon + Varkala + Thiruvananthapuram",
+            "Bengaluru + Wonderla + Mysuru",
+            "Pondicherry + Mahabalipuram + Chennai",
+            "Varkala + Alleppey + Kochi",
+            "Kanthalloor + Munnar + Kochi"
+          ],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "id": "one-day-packages",
+      "eyebrow": "One-Day Tours",
+      "title": "Special One-Day Student Packages",
+      "intro": "Short student-friendly trips and practical one-day routes, including tours from Coimbatore.",
+      "cards": [
+        {
+          "id": "one-day-student-packages",
+          "state": "South India",
+          "title": "Special One-Day Student Packages",
+          "subtitle": "Compact one-day school and college tours",
+          "duration": { "days": 1, "nights": 0, "code": "1D/0N", "label": "One Day" },
+          "image": { "src": "/asset/bp1.jpg", "alt": "One day student package" },
+          "combos": [
+            "Ooty + Coonoor",
+            "Kotagiri + Coonoor",
+            "Valparai + Monkey Falls",
+            "Topslip + Pollachi",
+            "Adiyogi + Siruvani",
+            "Bhavanisagar + Kodiveri Dam",
+            "Malampuzha + Fantasy Park",
+            "Athirappilly + Vazhachal",
+            "Kochi + Wonderla",
+            "Kochi + Cherai Beach",
+            "Guruvayur + Thrissur",
+            "Palakkad Fort + Malampuzha",
+            "Nelliyampathy + Palakkad",
+            "Munnar + Tea Museum Circuit",
+            "Vagamon + Adventure Park"
+          ],
+          "notes": []
+        },
+        {
+          "id": "one-day-coimbatore-kerala",
+          "state": "Kerala",
+          "title": "Practical One-Day Tours from Coimbatore",
+          "subtitle": "Kerala options from Coimbatore",
+          "duration": { "days": 1, "nights": 0, "code": "1D/0N", "label": "One Day" },
+          "image": { "src": "/asset/pkgimg3.jpg", "alt": "Kerala one day package from Coimbatore" },
+          "combos": [
+            "Munnar",
+            "Athirappilly",
+            "Wonderla Kochi",
+            "Kochi City",
+            "Vagamon",
+            "Nelliyampathy",
+            "Malampuzha",
+            "Silent Valley"
+          ],
+          "notes": []
+        },
+        {
+          "id": "one-day-coimbatore-tamil-nadu",
+          "state": "Tamil Nadu",
+          "title": "Practical One-Day Tours from Coimbatore",
+          "subtitle": "Tamil Nadu options from Coimbatore",
+          "duration": { "days": 1, "nights": 0, "code": "1D/0N", "label": "One Day" },
+          "image": { "src": "/asset/bp2.jpg", "alt": "Tamil Nadu one day package from Coimbatore" },
+          "combos": [
+            "Madurai",
+            "Thanjavur",
+            "Ooty",
+            "Coonoor",
+            "Valparai",
+            "Black Thunder",
+            "Topslip",
+            "Pollachi",
+            "Adiyogi + Siruvani",
+            "Hogenakkal (longer travel day)"
+          ],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "id": "alternate-3d-2n-listing",
+      "eyebrow": "Alternate Listing",
+      "title": "3 Days / 2 Nights Best Student Packages",
+      "intro": "A second TripFactory flyer covering the same 3D/2N category with a Bangalore Wonderla add-on and slightly different grouping.",
+      "cards": [
+        {
+          "id": "alternate-kerala-3d-hill",
+          "state": "Kerala",
+          "title": "Kerala Hill Stations",
+          "subtitle": "Alternate 3D/2N flyer grouping",
+          "duration": { "days": 3, "nights": 2, "code": "3D/2N", "label": "3 Days / 2 Nights" },
+          "image": { "src": "/asset/pkgimg.webp", "alt": "Alternate Kerala hill package" },
+          "combos": [
+            "Munnar + Thekkady + Vagamon (Best Seller)",
+            "Munnar + Thekkady + Kochi",
+            "Munnar + Vagamon + Kochi",
+            "Munnar + Alleppey + Kochi",
+            "Munnar + Athirappilly + Kochi",
+            "Vagamon + Thekkady + Alleppey",
+            "Vagamon + Kochi + Alleppey",
+            "Thekkady + Kumarakom + Kochi",
+            "Athirappilly + Kochi + Alleppey",
+            "Athirappilly + Kochi + Wonderla",
+            "Vagamon + Varkala + Thiruvananthapuram (Popular)",
+            "Varkala + Alleppey + Kochi",
+            "Varkala + Thiruvananthapuram + Poovar",
+            "Kanthalloor + Munnar + Kochi",
+            "Kanthalloor + Marayoor + Munnar"
+          ],
+          "notes": []
+        },
+        {
+          "id": "alternate-karnataka-3d-heritage",
+          "state": "Karnataka",
+          "title": "Heritage & Hills",
+          "subtitle": "Alternate Karnataka 3D/2N grouping",
+          "duration": { "days": 3, "nights": 2, "code": "3D/2N", "label": "3 Days / 2 Nights" },
+          "image": { "src": "/asset/bp1.jpg", "alt": "Alternate Karnataka heritage package" },
+          "combos": [
+            "Mysuru + Coorg + Chikkamagaluru (Best Seller)",
+            "Mysuru + Coorg + Bengaluru",
+            "Mysuru + Bandipur + Coorg",
+            "Mysuru + Kabini + Coorg",
+            "Coorg + Chikkamagaluru + Belur",
+            "Coorg + Sakleshpur + Chikkamagaluru",
+            "Chikkamagaluru + Shivamogga + Jog Falls",
+            "Chikkamagaluru + Belur + Halebidu",
+            "Bengaluru + Mysuru + Coorg",
+            "Bengaluru + Mysuru + Chikkamagaluru",
+            "Bengaluru + Wonderla + Mysuru (Best Seller)",
+            "Bengaluru + Wonderla + Coorg",
+            "Mysuru + Wonderla + Bengaluru"
+          ]
+          ,
+          "notes": [
+                    ]
+        },
+        {
+          "id": "alternate-karnataka-3d-coastal",
+          "state": "Karnataka",
+          "title": "Coastal Karnataka",
+          "subtitle": "Alternate coastal grouping",
+          "duration": { "days": 3, "nights": 2, "code": "3D/2N", "label": "3 Days / 2 Nights" },
+          "image": { "src": "/asset/bp2.jpg", "alt": "Alternate coastal Karnataka package" },
+          "combos": [
+            "Mangaluru + Udupi + Murudeshwar",
+            "Mangaluru + Udupi + Gokarna",
+            "Mangaluru + Dandeli + Gokarna",
+            "Dandeli + Murudeshwar + Gokarna",
+            "Udupi + Kollur + Murudeshwar",
+            "Jog Falls + Murudeshwar + Gokarna"
+          ],
+          "notes": []
+        },
+        {
+          "id": "alternate-tamil-nadu-3d",
+          "state": "Tamil Nadu",
+          "title": "Tamil Nadu",
+          "subtitle": "Alternate Tamil Nadu 3D/2N grouping",
+          "duration": { "days": 3, "nights": 2, "code": "3D/2N", "label": "3 Days / 2 Nights" },
+          "image": { "src": "/asset/bp3.jpg", "alt": "Alternate Tamil Nadu package" },
+          "combos": [
+            "Ooty + Coonoor + Kotagiri",
+            "Ooty + Avalanche + Emerald",
+            "Valparai + Topslip + Pollachi",
+            "Kodaikanal + Palani",
+            "Yercaud + Hogenakkal + Salem",
+            "Ooty + Mudumalai + Bandipur",
+            "Kodaikanal + Madurai + Rameswaram",
+            "Madurai + Thanjavur + Trichy",
+            "Ooty + Black Thunder + Coonoor"
+          ],
+          "notes": []
+        },
+        {
+          "id": "alternate-pondicherry",
+          "state": "Pondicherry",
+          "title": "Pondicherry Special",
+          "subtitle": "Alternate Pondicherry grouping",
+          "duration": { "days": 3, "nights": 2, "code": "3D/2N", "label": "3 Days / 2 Nights" },
+          "image": { "src": "/grpic/im6.jpeg", "alt": "Alternate Pondicherry package" },
+          "combos": [
+            "Pondicherry + Mahabalipuram + Chennai (Best Seller)",
+            "Pondicherry + Chidambaram + Pichavaram",
+            "Pondicherry + Auroville + Mahabalipuram"
+          ],
+          "notes": []
+        },
+        {
+          "id": "alternate-bangalore-wonderla",
+          "state": "Karnataka",
+          "title": "Bangalore Wonderla Combos",
+          "subtitle": "Wonderla-focused 3D/2N routes",
+          "duration": { "days": 3, "nights": 2, "code": "3D/2N", "label": "3 Days / 2 Nights" },
+          "image": { "src": "/grpic/im5.jpeg", "alt": "Bangalore Wonderla package" },
+          "combos": [
+            "Bengaluru + Wonderla + Mysuru",
+            "Bengaluru + Wonderla + Coorg",
+            "Mysuru + Wonderla + Bengaluru"
+          ],
+          "notes": []
+        }
+      ]
+    }
+  ]
+}
