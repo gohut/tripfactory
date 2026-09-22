@@ -54,6 +54,13 @@ export function SiteFooter({ className = "", mode = "desktop", onAction }: SiteF
         <p>{home.texts.contact_footer_website}</p>
       </div>
 
+      <p className="site-footer-credit">
+        Crafted by{" "}
+        <a href="https://noospacewebsolutions.blogspot.com/" target="_blank" rel="noopener noreferrer">
+          Noospace
+        </a>
+      </p>
+
       <p className="site-footer-copyright">{home.texts.footer_copyright}</p>
     </footer>
   );

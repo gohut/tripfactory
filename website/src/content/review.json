@@ -1,76 +1,256 @@
 {
   "reviews": [
     {
-      "id": "review_vtv_mukund",
-      "name": "Mukund M",
-      "subName": "VTV Institution, Trichy",
-      "review": "Liked the trip very much. The students were comfortable throughout, and the itinerary was handled neatly enough that we already started discussing next year.",
+      "id": "review_ksr_suresh",
+      "name": "Suresh Kumar",
+      "subName": "Trip Coordinator, KSR Educational Institutions",
+      "review": "Buses reached every spot right on time and the food arranged on the way was clean and tasty. Our girl students felt safe throughout, and the driver plus staff were super friendly. Loved the DJ setup on the bus, it made the whole trip lively!",
       "starCount": 5,
-      "logoLocation": "/asset/logo.png",
-      "logoSize": {
-        "width": 78,
-        "height": 36
-      }
+      "logoLocation": "/Logo_Folder/KSR.jpeg",
+      "logoSize": { "width": 110, "height": 66 }
     },
     {
-      "id": "review_keerthi_college",
-      "name": "Keerthi M",
-      "subName": "College Tour Coordinator",
-      "review": "The buses arrived on time, food stops were planned well, and every small change from our side was managed without creating stress for the students.",
+      "id": "review_dbs_priya",
+      "name": "Priya Dharshini",
+      "subName": "Bank Manager, DBS Bank",
+      "review": "Planned a trip for our team and everything was spot on, right from pickup time to drop. The bus was comfortable for the long hours and the coordinators were always ready to help with a smile.",
       "starCount": 5,
-      "logoLocation": "/asset/cl1.png",
-      "logoSize": {
-        "width": 64,
-        "height": 42
-      }
+      "logoLocation": "/Logo_Folder/DBS.png",
+      "logoSize": { "width": 110, "height": 66 }
     },
     {
-      "id": "review_arun_school",
-      "name": "Arun Prakash",
-      "subName": "Green Valley School",
-      "review": "A very smooth school trip experience with responsive coordinators, clean transport, and practical planning from pickup to return.",
+      "id": "review_ppg_karthik",
+      "name": "Karthik Raja",
+      "subName": "Cultural Club Coordinator, PPG College of Arts and Science",
+      "review": "Took our students for an educational trip and honestly it went smoother than expected. Food stops were hygienic, timings were never delayed, and the DJ in the bus kept everyone's energy up throughout the journey.",
       "starCount": 5,
-      "logoLocation": "/asset/cl2.png",
-      "logoSize": {
-        "width": 72,
-        "height": 34
-      }
+      "logoLocation": "/Logo_Folder/ppg.png",
+      "logoSize": { "width": 110, "height": 66 }
     },
     {
-      "id": "review_nisha_hr",
-      "name": "Nisha R",
-      "subName": "Corporate HR Team",
-      "review": "Our team outing needed multiple pickup points and a tight schedule. TripFactory kept everything moving calmly, and the group came back genuinely happy.",
+      "id": "review_sns_deepa",
+      "name": "Deepa Shree",
+      "subName": "Faculty In-charge, SNS Institutions",
+      "review": "Safety was our biggest concern since we had many girl students, but the team made sure everyone felt secure at every stop. Bus was neat and comfortable, and staff were patient and friendly with the kids.",
       "starCount": 5,
-      "logoLocation": "/asset/logo.png",
-      "logoSize": {
-        "width": 78,
-        "height": 36
-      }
+      "logoLocation": "/Logo_Folder/sns.png",
+      "logoSize": { "width": 76, "height": 38 }
     },
     {
-      "id": "review_praveen_admin",
-      "name": "Praveen S",
-      "subName": "Admin Department",
-      "review": "The coordination was clear, pricing was transparent, and the driver team was polite. We would happily choose them again for student travel.",
+      "id": "review_capgemini_arjun",
+      "name": "Arjun Kumar",
+      "subName": "HR Team, Capgemini",
+      "review": "Our office team trip needed multiple pickups across the city and they managed it without any delay. Good music in the bus, tasty food breaks, and the whole coordination felt very professional.",
       "starCount": 4,
-      "logoLocation": "/asset/cl1.png",
-      "logoSize": {
-        "width": 64,
-        "height": 42
-      }
+      "logoLocation": "/Logo_Folder/capgemini.png",
+      "logoSize": { "width": 90, "height": 30 }
     },
     {
-      "id": "review_lavanya_faculty",
-      "name": "Lavanya K",
-      "subName": "Faculty In-charge",
-      "review": "Parents appreciated the updates, students enjoyed the destination, and our faculty team felt supported throughout the journey.",
+      "id": "review_kovaikalaimagal_nithya",
+      "name": "Nithya Sri",
+      "subName": "Student Welfare Officer, Kovai Kalaimagal College of Arts and Science",
+      "review": "Everything from pickup to drop was on time, which parents really appreciated. The bus was clean and comfortable, and the DJ made the students dance the whole way, they still talk about it.",
       "starCount": 5,
-      "logoLocation": "/asset/cl2.png",
-      "logoSize": {
-        "width": 72,
-        "height": 34
-      }
+      "logoLocation": "/Logo_Folder/kovai_kalaimagal.png",
+      "logoSize": { "width": 68, "height": 44 }
+    },
+    {
+      "id": "review_infosys_sathish",
+      "name": "Sathish Kumar",
+      "subName": "Employee Engagement Team, Infosys",
+      "review": "Booked this for our team outing and the whole trip was hassle free. Timings were accurate, the bus AC and seats were comfortable for the long drive, and the staff handled last minute changes calmly.",
+      "starCount": 5,
+      "logoLocation": "/Logo_Folder/infosys.png",
+      "logoSize": { "width": 88, "height": 32 }
+    },
+    {
+      "id": "review_cognizant_kavya",
+      "name": "Kavya Sri",
+      "subName": "HR Coordinator, Cognizant",
+      "review": "Loved how organised the whole trip was, from the pickup points to the food stops. Music in the bus was the highlight for our team, and the coordinators were friendly and quick to respond.",
+      "starCount": 4,
+      "logoLocation": "/Logo_Folder/cognizant.png",
+      "logoSize": { "width": 82, "height": 30 }
+    },
+    {
+      "id": "review_ksb_prasanna",
+      "name": "Prasanna Venkatesan",
+      "subName": "Admin Team, KSB Limited",
+      "review": "We had a strict schedule for our company trip and they stuck to it perfectly. Bus was comfortable, food was clean, and the staff were courteous throughout the journey.",
+      "starCount": 5,
+      "logoLocation": "/Logo_Folder/ksb.png",
+      "logoSize": { "width": 80, "height": 36 }
+    },
+    {
+      "id": "review_kprcas_swetha",
+      "name": "Swetha Priya",
+      "subName": "Ladies Hostel Warden, KPR College of Arts and Science",
+      "review": "Since it was mostly girl students, safety was our top priority and they didn't disappoint. Every halt was well planned, food was hygienic, and the staff made sure no one felt uncomfortable at any point.",
+      "starCount": 5,
+      "logoLocation": "/Logo_Folder/kprcas.png",
+      "logoSize": { "width": 74, "height": 40 }
+    },
+    {
+      "id": "review_vidyaavikas_gokul",
+      "name": "Gokul Raj",
+      "subName": "Student Coordinator, Vidyaa Vikas College of Engineering and Technology",
+      "review": "Our trip had a lot of stops but somehow they managed the timing perfectly every single time. Bus was comfortable for the overnight journey and the DJ kept everyone awake and dancing.",
+      "starCount": 4,
+      "logoLocation": "/Logo_Folder/vidyaa_vikas.png",
+      "logoSize": { "width": 66, "height": 44 }
+    },
+    {
+      "id": "review_svs_anitha",
+      "name": "Anitha Devi",
+      "subName": "Faculty Coordinator, SVS Educational Institutions",
+      "review": "Food arrangements were clean and on time at every halt, which was a big relief for us with so many students. Staff were friendly and patient, and the bus ride itself was smooth and comfortable.",
+      "starCount": 5,
+      "logoLocation": "/Logo_Folder/svs.png",
+      "logoSize": { "width": 72, "height": 34 }
+    },
+    {
+      "id": "review_srikrishnatech_vignesh",
+      "name": "Vignesh Raj",
+      "subName": "Student Council Head, Sri Krishna College of Technology",
+      "review": "The bus had a great sound system and honestly the DJ made the trip unforgettable for our batch. Timings were maintained well and the staff were approachable whenever we needed help.",
+      "starCount": 5,
+      "logoLocation": "/Logo_Folder/sri_krishna_college_of_technology.png",
+      "logoSize": { "width": 70, "height": 42 }
+    },
+    {
+      "id": "review_dreamgroup_yamuna",
+      "name": "Yamuna Devi",
+      "subName": "HR Executive, Dream Group",
+      "review": "Organised our annual outing with a big group and everything from pickup to food breaks was on schedule. Bus was spacious and comfortable, and the crew was warm and helpful throughout.",
+      "starCount": 4,
+      "logoLocation": "/Logo_Folder/dream.png",
+      "logoSize": { "width": 76, "height": 32 }
+    },
+    {
+      "id": "review_acsmch_dinesh",
+      "name": "Dinesh Kumar",
+      "subName": "Student Affairs Coordinator, ACS Medical College and Hospital",
+      "review": "With so many girl students on this trip, safety was non negotiable for us and the team handled it responsibly at every stop. Food was hygienic and the bus ride was smooth the whole way.",
+      "starCount": 5,
+      "logoLocation": "/Logo_Folder/acsmch.png",
+      "logoSize": { "width": 78, "height": 44 }
+    },
+    {
+      "id": "review_mkumarasamy_poornima",
+      "name": "Poornima Devi",
+      "subName": "NSS Coordinator, M. Kumarasamy College of Engineering",
+      "review": "Every location was reached exactly on time, no delays at all which made planning easy for us. The bus was comfortable and the driver plus support staff were genuinely friendly.",
+      "starCount": 5,
+      "logoLocation": "/Logo_Folder/mkumarasamy.png",
+      "logoSize": { "width": 68, "height": 40 }
+    },
+    {
+      "id": "review_americancollege_rajesh",
+      "name": "Rajesh Kanna",
+      "subName": "Alumni Relations Officer, The American College, Madurai",
+      "review": "Took a group of alumni and current students together and the whole trip felt well managed. Good hygienic food stops, comfortable bus, and the DJ made the younger crowd really happy.",
+      "starCount": 5,
+      "logoLocation": "/Logo_Folder/american_college.png",
+      "logoSize": { "width": 74, "height": 44 }
+    },
+    {
+      "id": "review_accenture_hemalatha",
+      "name": "Hemalatha",
+      "subName": "People Experience Team, Accenture",
+      "review": "Corporate trips can get chaotic with everyone's different schedules, but this team kept it all on time. Bus was comfortable, staff were friendly, and the music on board kept the mood upbeat.",
+      "starCount": 4,
+      "logoLocation": "/Logo_Folder/accenture.png",
+      "logoSize": { "width": 86, "height": 30 }
+    },
+    {
+      "id": "review_sriranganathar_manikandan",
+      "name": "Manikandan",
+      "subName": "Transport In-charge, Sri Ranganathar Institutions",
+      "review": "Handled a large batch of students smoothly, with correct timing at every checkpoint. Food was hygienic and the staff were always friendly and quick to sort out any small issue.",
+      "starCount": 5,
+      "logoLocation": "/Logo_Folder/sri_ranganathar.png",
+      "logoSize": { "width": 70, "height": 38 }
+    },
+    {
+      "id": "review_djacademy_sridevi",
+      "name": "Sridevi",
+      "subName": "Student Coordinator, DJ Academy for Managerial Excellence",
+      "review": "Being a management college we expected professionalism and we got exactly that, right on time at every stop. The bus was comfortable and honestly the DJ setup was the best part of the whole trip.",
+      "starCount": 5,
+      "logoLocation": "/Logo_Folder/djacademy.png",
+      "logoSize": { "width": 66, "height": 40 }
+    },
+    {
+      "id": "review_kalaikalvi_prakash",
+      "name": "Prakash Raj",
+      "subName": "Cultural Coordinator, Kalaikalvi College of Arts and Science",
+      "review": "Our girl students felt completely safe throughout the trip, which mattered most to us as faculty. Food was clean, bus was comfortable, and the staff were friendly with everyone.",
+      "starCount": 5,
+      "logoLocation": "/Logo_Folder/kalaikalvi.png",
+      "logoSize": { "width": 72, "height": 42 }
+    },
+    {
+      "id": "review_sriramakrishna_vidhya",
+      "name": "Vidhya Lakshmi",
+      "subName": "Faculty In-charge, Sri Ramakrishna College of Arts and Science",
+      "review": "Loved how punctual they were at every single stop, it made the whole trip stress free for us. The DJ in the bus turned a simple journey into a mini celebration for the students.",
+      "starCount": 5,
+      "logoLocation": "/Logo_Folder/sri_ramakrishana.png",
+      "logoSize": { "width": 70, "height": 44 }
+    },
+    {
+      "id": "review_psg_ganesh",
+      "name": "Ganesh Babu",
+      "subName": "Student Welfare Officer, PSG College of Arts and Science",
+      "review": "Took a big batch and the coordination was excellent, timings were never an issue. Bus was comfortable, food stops were hygienic, and the staff were patient with all our requests.",
+      "starCount": 4,
+      "logoLocation": "/Logo_Folder/psg.png",
+      "logoSize": { "width": 80, "height": 40 }
+    },
+    {
+      "id": "review_rathinam_keerthana",
+      "name": "Keerthana R",
+      "subName": "Placement Coordinator, Rathinam Group of Institutions",
+      "review": "Everything about the trip felt thoughtfully planned, from safe drop offs for our girl students to clean food stops. Staff were friendly throughout and the bus ride was genuinely comfortable.",
+      "starCount": 5,
+      "logoLocation": "/Logo_Folder/rathinam.png",
+      "logoSize": { "width": 76, "height": 36 }
+    },
+    {
+      "id": "review_pgpgroup_senthil",
+      "name": "Senthil Kumar",
+      "subName": "HR Manager, PGP Group",
+      "review": "Our team trip stayed exactly on schedule despite multiple pickup points across the city. Bus was comfortable, food breaks were clean, and the crew handled everything with a smile.",
+      "starCount": 4,
+      "logoLocation": "/Logo_Folder/pgp_group.png",
+      "logoSize": { "width": 68, "height": 42 }
+    },
+    {
+      "id": "review_mahendra_abinaya",
+      "name": "Abinaya S",
+      "subName": "Student Coordinator, Mahendra Educational Institutions",
+      "review": "Safety of our girl students was handled really well at every stop, we didn't have to worry at all. The bus was comfortable and the DJ made sure no one got bored during the long ride.",
+      "starCount": 5,
+      "logoLocation": "/Logo_Folder/mahendra.png",
+      "logoSize": { "width": 84, "height": 36 }
+    },
+    {
+      "id": "review_srikrishnaartsandscience_vasanth",
+      "name": "Vasanth Kumar",
+      "subName": "Trip In-charge, Sri Krishna Arts and Science College",
+      "review": "Timings were accurate throughout and the food arranged for us was fresh and hygienic. The staff were friendly and always ready to help, and the bus itself was very comfortable for the distance we covered.",
+      "starCount": 5,
+      "logoLocation": "/Logo_Folder/sri_krishna_arts_and_science.png",
+      "logoSize": { "width": 62, "height": 40 }
+    },
+    {
+      "id": "review_srm_sowmya",
+      "name": "Sowmya Ranjani",
+      "subName": "Student Council Coordinator, SRM Institute of Science and Technology",
+      "review": "Massive batch of students but they still managed to keep everything on time without any confusion. Bus was comfortable, food was clean, and the DJ on board made it a trip everyone still talks about.",
+      "starCount": 5,
+      "logoLocation": "/Logo_Folder/srm.png",
+      "logoSize": { "width": 82, "height": 40 }
     }
   ]
 }

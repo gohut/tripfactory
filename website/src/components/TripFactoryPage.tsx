@@ -1218,9 +1218,48 @@ function useAdvancedAnimations() {
   }, []);
 }
 
+function useMobileContentHeight(scale: number) {
+  const [height, setHeight] = useState(MOBILE_CANVAS_HEIGHT);
+
+  useEffect(() => {
+    const measure = () => {
+      const canvas = document.querySelector<HTMLElement>(".tf-mobile-canvas");
+      const footer = canvas?.querySelector<HTMLElement>(".tf-home-site-footer--mobile");
+      if (!canvas || !footer) return;
+
+      // The footer (and every other canvas child) is position: absolute, so
+      // the canvas's own box never grows to contain it — the static
+      // MOBILE_CANVAS_HEIGHT from trip-factory-animations.json is what the
+      // shell wrapper's height (and its overflow: hidden clip) was based on.
+      // Measuring the footer's actual bottom edge instead means the wrapper
+      // always fits the real content, even as the footer grows.
+      const canvasTop = canvas.getBoundingClientRect().top;
+      const footerBottom = footer.getBoundingClientRect().bottom;
+      const unscaledExtent = (footerBottom - canvasTop) / scale;
+
+      setHeight((current) => {
+        const next = Math.max(MOBILE_CANVAS_HEIGHT, Math.ceil(unscaledExtent) + 32);
+        return next === current ? current : next;
+      });
+    };
+
+    measure();
+    // Re-measure after fonts/images settle, since layout can shift slightly on load.
+    const settleTimer = window.setTimeout(measure, 300);
+    window.addEventListener("resize", measure);
+    return () => {
+      window.clearTimeout(settleTimer);
+      window.removeEventListener("resize", measure);
+    };
+  }, [scale]);
+
+  return height;
+}
+
 export default function TripFactoryPage() {
   useAdvancedAnimations();
   const mobileScale = useMobileScale();
+  const mobileContentHeight = useMobileContentHeight(mobileScale);
   const { sliderIndexes, moveSlider } = useSliderIndexes();
   const searchParams = useSearchParams();
   const searchParamsKey = searchParams.toString();
@@ -1382,7 +1421,7 @@ export default function TripFactoryPage() {
           />
         </div>
       </div>
-      <div className="tf-mobile-shell" style={{ height: MOBILE_CANVAS_HEIGHT * mobileScale }}>
+      <div className="tf-mobile-shell" style={{ height: mobileContentHeight * mobileScale }}>
         <div className="tf-canvas tf-mobile-canvas" style={{ transform: `scale(${mobileScale})` }}>
           <MobilePage
             buttonAction={buttonAction}
